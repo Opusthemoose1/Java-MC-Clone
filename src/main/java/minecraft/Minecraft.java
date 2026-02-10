@@ -10,6 +10,8 @@ import java.nio.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.glUseProgram;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -17,6 +19,7 @@ public class Minecraft {
 
     private Window window;
     private Shader shader;
+    private Cube cube;
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -41,6 +44,7 @@ public class Minecraft {
         // bindings available for use.
         GL.createCapabilities();
         this.shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
+        this.cube = new Cube();
     }
 
     private void loop() {
@@ -53,6 +57,10 @@ public class Minecraft {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window.getWindowHandle()) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+            glUseProgram(this.shader.shaderProgramId);
+            glBindVertexArray(this.cube.getVAO());
+            glDrawArrays(GL_TRIANGLES, 0, 3);
 
             glfwSwapBuffers(window.getWindowHandle()); // swap the color buffers
 

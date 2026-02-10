@@ -45,6 +45,9 @@ public class Shader {
         if (glGetProgrami(this.shaderProgramId, GL_LINK_STATUS) == GL_FALSE) {
             throw new IllegalStateException("Failed to link program.");
         }
+        // Once the shaders are bound to a program object we can remove the individual objects
+        glDeleteShader(v);
+        glDeleteShader(f);
 
 
     }
