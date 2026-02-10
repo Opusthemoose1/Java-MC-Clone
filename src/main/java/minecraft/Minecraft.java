@@ -1,5 +1,6 @@
 package minecraft;
 
+import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -20,6 +21,8 @@ public class Minecraft {
     private Window window;
     private Shader shader;
     private Cube cube;
+    private Texture tex;
+
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -44,7 +47,11 @@ public class Minecraft {
         // bindings available for use.
         GL.createCapabilities();
         this.shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
-        this.cube = new Cube();
+        this.cube = new Cube(new Vector3f(0.0f, 0.0f,0.0f));
+        this.tex = new Texture("src/resources/textures/cobblestone.png");
+
+        this.shader.setMatrix4(cube.getModelMatrix(), "model");
+        System.out.println(cube.getModelMatrix().toString());
     }
 
     private void loop() {
@@ -59,6 +66,7 @@ public class Minecraft {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
             glUseProgram(this.shader.shaderProgramId);
+            glBindTexture(GL_TEXTURE_2D, this.tex.getTextureID());
             glBindVertexArray(this.cube.getVAO());
             glDrawArrays(GL_TRIANGLES, 0, 3);
 

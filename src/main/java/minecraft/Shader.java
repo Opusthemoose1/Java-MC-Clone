@@ -1,5 +1,8 @@
 package minecraft;
 
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,6 +52,15 @@ public class Shader {
         glDeleteShader(v);
         glDeleteShader(f);
 
+
+    }
+    public void setMatrix4(Matrix4f mat, String uniformName)
+    {
+        int location = glGetUniformLocation(this.shaderProgramId, uniformName);
+        try (MemoryStack stack = MemoryStack.stackPush())
+        {
+            glUniformMatrix4fv(location, false, mat.get(stack.mallocFloat(16)));
+        };
 
     }
 }
