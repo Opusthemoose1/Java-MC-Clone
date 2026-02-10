@@ -23,7 +23,6 @@ public class Minecraft {
     private Cube cube;
     private Texture tex;
     private Camera camera;
-
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -49,37 +48,64 @@ public class Minecraft {
         // bindings available for use.
         GL.createCapabilities();
         this.shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
-        this.cube = new Cube(new Vector3f(0.0f, 0.0f,0.0f));
+        this.cube = new Cube(new Vector3f(0.0f, 0.0f,-2.0f));
         this.tex = new Texture("src/resources/textures/cobblestone.png");
-        this.camera = new Camera(new Vector3f(0.0f, 1.0f, 0.0f));
-        this.camera.updateProjectionMatrix(90.0f, 1920, 1080);
+        this.camera = new Camera(new Vector3f(0.0f, 0.0f, 0.0f));
+        this.camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
 
-
+        this.shader.bind();
         this.shader.setMatrix4(cube.getModelMatrix(), "model");
-        System.out.println(cube.getModelMatrix().toString());
+        this.shader.setMatrix4(camera.getProjectionMatrix(), "projection");
+
+        Input.init(this.window.getWindowHandle());
+        // Turn on depth buffer
+        glEnable(GL_DEPTH_TEST);
     }
 
-    private void loop() {
 
+    private void loop() {
 
         // Set the clear color
         glClearColor(0.0f, 0.2f, 0.8f, 0.0f);
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
+        double lastFrameTime = 0.0;
         while ( !glfwWindowShouldClose(window.getWindowHandle()) ) {
+            double currentFrameTime = glfwGetTime();
+            double deltaTime = currentFrameTime - lastFrameTime;
+            lastFrameTime = currentFrameTime;
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            glUseProgram(this.shader.shaderProgramId);
+            this.shader.bind();
+            this.shader.setMatrix4(camera.getViewMatrix(), "view");
             glBindTexture(GL_TEXTURE_2D, this.tex.getTextureID());
             glBindVertexArray(this.cube.getVAO());
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
 
             glfwSwapBuffers(window.getWindowHandle()); // swap the color buffers
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
-            glfwPollEvents();
+            Input.poll();
+            if (Input.isKeyDown(GLFW_KEY_W))
+            {
+
+                this.camera.processInput(Camera_Direction.FORWARD, (float)deltaTime);
+            }
+            if (Input.isKeyDown(GLFW_KEY_S))
+            {
+                this.camera.processInput(Camera_Direction.BACKWARD, (float)deltaTime);
+            }
+            if (Input.isKeyDown(GLFW_KEY_D))
+            {
+                this.camera.processInput(Camera_Direction.RIGHT, (float)deltaTime);
+            }
+            if (Input.isKeyDown(GLFW_KEY_A))
+            {
+                this.camera.processInput(Camera_Direction.LEFT, (float)deltaTime);
+            }
         }
     }
 

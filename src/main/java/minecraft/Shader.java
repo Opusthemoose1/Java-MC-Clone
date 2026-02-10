@@ -54,9 +54,14 @@ public class Shader {
 
 
     }
+    public void bind()
+    {
+        glUseProgram(this.shaderProgramId);
+    }
     public void setMatrix4(Matrix4f mat, String uniformName)
     {
         int location = glGetUniformLocation(this.shaderProgramId, uniformName);
+        if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
         try (MemoryStack stack = MemoryStack.stackPush())
         {
             glUniformMatrix4fv(location, false, mat.get(stack.mallocFloat(16)));

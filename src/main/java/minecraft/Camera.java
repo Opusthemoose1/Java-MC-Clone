@@ -40,16 +40,26 @@ public class Camera {
     }
     public void updateProjectionMatrix(float fov, float width, float height)
     {
-        this.projection.perspective((float)Math.toRadians(fov), width / height, 0.1f, 100.0f);
+        this.projection.identity().perspective(
+                (float) Math.toRadians(fov),
+                width / height,
+                0.1f,
+                100.0f
+        );
     }
     public Matrix4f getViewMatrix()
     {
-        return view.lookAt(this.position, this.position.add(this.front), this.up);
+        return view.identity().lookAt(
+                position,
+                tmp.set(position).add(front),
+                up
+        );
     }
     private final Vector3f tmp = new Vector3f(); // Just for vector operations
     public void processInput(Camera_Direction dir, float deltaTime)
     {
-        float velocity = 0.1f * deltaTime;
+        float velocity = 10.0f * deltaTime;
+
         switch(dir)
         {
             case FORWARD:
@@ -68,15 +78,27 @@ public class Camera {
     }
     private void updateCameraVectors()
     {
-        Vector3f temp_front = new Vector3f();
-        temp_front.x = (float) (cos(Math.toRadians(this.yaw)) * cos(Math.toRadians(this.pitch)));
-        temp_front.y = (float)sin(Math.toRadians(this.pitch));
-        temp_front.z = (float) (sin(Math.toRadians(this.yaw)) * cos(Math.toRadians(this.pitch)));
-        this.front = temp_front.normalize();
-        Vector3f temp_right = new Vector3f();
-        this.right = temp_right.cross(this.front, this.worldUp).normalize();
-        this.up = up.cross(this.right, this.front).normalize();
+        front = new Vector3f(
+                (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))),
+                (float)(Math.sin(Math.toRadians(pitch))),
+                (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)))
+        ).normalize();
+
+        // right = front × worldUp
+        right = new Vector3f(front).cross(worldUp).normalize();
+
+        // up = right × front
+        up = new Vector3f(right).cross(front).normalize();
+
 
     }
 
+    public Matrix4f getProjectionMatrix() {
+      //  return this.projection;
+        return this.projection;
+
+    }
+    public Vector3f getPosition() {
+        return this.position;
+    }
 }
