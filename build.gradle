@@ -30,6 +30,12 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'minecraft.Minecraft'
+    }
+}
+
 dependencies {
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 

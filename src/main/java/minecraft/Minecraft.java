@@ -40,6 +40,7 @@ public class Minecraft {
     }
 
     private void init() {
+//        glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         this.window = new Window(1920, 1080);
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
