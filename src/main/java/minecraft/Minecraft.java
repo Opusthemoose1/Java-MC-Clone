@@ -22,6 +22,7 @@ public class Minecraft {
     private Shader shader;
     private Cube cube;
     private Texture tex;
+    private Camera camera;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -49,6 +50,9 @@ public class Minecraft {
         this.shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
         this.cube = new Cube(new Vector3f(0.0f, 0.0f,0.0f));
         this.tex = new Texture("src/resources/textures/cobblestone.png");
+        this.camera = new Camera(new Vector3f(0.0f, 1.0f, 0.0f));
+        this.camera.updateProjectionMatrix(90.0f, 1920, 1080);
+
 
         this.shader.setMatrix4(cube.getModelMatrix(), "model");
         System.out.println(cube.getModelMatrix().toString());
