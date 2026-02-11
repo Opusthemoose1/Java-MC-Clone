@@ -1,6 +1,7 @@
 package minecraft;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
 import org.joml.Vector3f;
 
 import static java.lang.Math.cos;
@@ -24,6 +25,10 @@ public class Camera {
 
     private float yaw;
     private float pitch;
+
+    private Boolean firstMouse; // Detects if it's the first mouse movement
+    private double lastX;
+    private double lastY;
     Camera(Vector3f position)
     {
         this.projection = new Matrix4f();
@@ -35,6 +40,10 @@ public class Camera {
 
         this.yaw = -90.0f;
         this.pitch = 0.0f;
+
+        this.firstMouse = false;
+        this.lastX = 960;
+        this.lastY = 540;
 
         updateCameraVectors();
     }
@@ -69,12 +78,47 @@ public class Camera {
                 this.position.sub(tmp.set(this.front).mul(velocity));
                 break;
             case LEFT:
-                this.position.sub(tmp.set(this.right).mul(velocity));
+                tmp.set(this.front).cross(this.up).normalize().mul(velocity);
+                this.position.sub(tmp);
                 break;
             case RIGHT:
-                this.position.add(tmp.set(this.right).mul(velocity));
+                tmp.set(this.front).cross(this.up).normalize().mul(velocity);
+                this.position.add(tmp);
                 break;
+
         }
+    }
+    public void mouseControl(Vector2d mousePos)
+    {
+        if (this.firstMouse)
+        {
+            this.lastX = mousePos.x;
+            this.lastY = mousePos.y;
+            this.firstMouse = false;
+        }
+        double xoffset = mousePos.x - lastX;
+        double yoffset = lastY - mousePos.y;
+        lastX = mousePos.x;
+        lastY = mousePos.y;
+
+        float sensitivity = 0.1f;
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+
+        yaw   += (float)xoffset;
+        pitch += (float)yoffset;
+
+        if(pitch > 89.0f)
+            pitch = 89.0f;
+        if(pitch < -89.0f)
+            pitch = -89.0f;
+
+
+        Vector3f direction = new Vector3f();
+        direction.x = (float)(cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
+        direction.y = (float)sin(Math.toRadians(pitch));
+        direction.z = (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
+        this.front = direction.normalize();
     }
     private void updateCameraVectors()
     {

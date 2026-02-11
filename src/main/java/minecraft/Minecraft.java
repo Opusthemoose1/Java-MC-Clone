@@ -20,7 +20,7 @@ public class Minecraft {
 
     private Window window;
     private Shader shader;
-    private Cube cube;
+    private Chunk chunk;
     private Texture tex;
     private Camera camera;
     public void run() {
@@ -48,13 +48,13 @@ public class Minecraft {
         // bindings available for use.
         GL.createCapabilities();
         this.shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
-        this.cube = new Cube(new Vector3f(0.0f, 0.0f,-2.0f));
+        this.chunk = new Chunk(0, 0);
         this.tex = new Texture("src/resources/textures/cobblestone.png");
         this.camera = new Camera(new Vector3f(0.0f, 0.0f, 0.0f));
         this.camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
 
         this.shader.bind();
-        this.shader.setMatrix4(cube.getModelMatrix(), "model");
+        this.shader.setMatrix4(chunk.getModelMatrix(), "model");
         this.shader.setMatrix4(camera.getProjectionMatrix(), "projection");
 
         Input.init(this.window.getWindowHandle());
@@ -81,8 +81,8 @@ public class Minecraft {
             this.shader.bind();
             this.shader.setMatrix4(camera.getViewMatrix(), "view");
             glBindTexture(GL_TEXTURE_2D, this.tex.getTextureID());
-            glBindVertexArray(this.cube.getVAO());
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(this.chunk.getVAO());
+            glDrawArrays(GL_TRIANGLES, 0, 4096 * 36);
 
             glfwSwapBuffers(window.getWindowHandle()); // swap the color buffers
 
@@ -105,8 +105,14 @@ public class Minecraft {
             if (Input.isKeyDown(GLFW_KEY_A)) {
                 this.camera.processInput(Camera_Direction.LEFT, (float) deltaTime);
             }
+            if (Input.isKeyDown(GLFW_KEY_ESCAPE))
+            {
+                glfwSetWindowShouldClose(this.window.getWindowHandle(), true);
+            }
+            camera.mouseControl(Input.getMousePos());
         }
     }
+
 
     public static void main(String[] args) {
         new Minecraft().run();
