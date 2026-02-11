@@ -82,7 +82,7 @@ public class Minecraft {
             this.shader.setMatrix4(camera.getViewMatrix(), "view");
             glBindTexture(GL_TEXTURE_2D, this.tex.getTextureID());
             glBindVertexArray(this.chunk.getVAO());
-            glDrawArrays(GL_TRIANGLES, 0, 4096 * 36);
+            glDrawArrays(GL_TRIANGLES, 0, chunk.getVisibleBlocks() * 36);
 
             glfwSwapBuffers(window.getWindowHandle()); // swap the color buffers
 

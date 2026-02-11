@@ -66,13 +66,36 @@ public class Chunk {
     };
 
     private int VAO, VBO;
+    private int visibleBlocks;
     Matrix4f modelMatrix;
 
+    final int SIDE_LENGTH = 16;
+    byte[] blocks = new byte[SIDE_LENGTH * SIDE_LENGTH * SIDE_LENGTH];
+
     int offset_x, offset_y;
-    public Chunk(int x, int y) // x, y are the offsets from world origin
+    // VERY COOL FUNCTION that gets the block at the specified coordinates
+    private int index(int x, int y, int z)
     {
-        this.offset_x = x;
-        this.offset_y = y;
+        return x + SIDE_LENGTH * (y + SIDE_LENGTH * z);
+    }
+    // Returns true if the block can be seen from the outside, false if it's completed surrounded
+    private Boolean isBlockVisible(int x, int y, int z)
+    {
+        // Edge faces are always visible
+        if (x - 1 < 0 || y - 1 < 0 || z - 1 < 0) return true;
+        if (x + 1 > 15 || y + 1 > 15 || z + 1 > 15) return true;
+        return !(blocks[index(x - 1, y, z)] != 0 &&
+                blocks[index(x + 1, y, z)] != 0 &&
+                blocks[index(x, y - 1, z)] != 0 &&
+                blocks[index(x, y + 1, z)] != 0 &&
+                blocks[index(x, y, z - 1)] != 0 &&
+                blocks[index(x, y, z + 1)] != 0
+        );
+    }
+    public Chunk(int xOffset, int yOffset) // x, y are the offsets from world origin
+    {
+        this.offset_x = xOffset;
+        this.offset_y = yOffset;
         int SIDE_LENGTH = 16;
         final int FLOATS_PER_VERTEX = 5;
         final int VERTICES_PER_CUBE = 36;
@@ -81,29 +104,36 @@ public class Chunk {
         int cubeCount = SIDE_LENGTH * SIDE_LENGTH * SIDE_LENGTH;
         final float[] chunkData = new float[cubeCount * FLOATS_PER_CUBE]; // VBO For the chunk that gets updated
 
-        for (int i = 0; i < SIDE_LENGTH; i++)
+        for (int i = 0; i < cubeCount; i++)
         {
-            for (int j = 0; j < SIDE_LENGTH; j++)
+            this.blocks[i] = 1;
+        }
+        int visibleCount = 0;
+        for (int x = 0; x < SIDE_LENGTH; x++)
+        {
+            for (int y = 0; y < SIDE_LENGTH; y++)
             {
-                for (int k = 0; k < SIDE_LENGTH; k++)
+                for (int z = 0; z < SIDE_LENGTH; z++)
                 {
-                    int cubeIndex = i * SIDE_LENGTH * SIDE_LENGTH +
-                            j * SIDE_LENGTH +
-                            k;
-                    int base = cubeIndex * FLOATS_PER_CUBE;
+                    if (!isBlockVisible(x, y, z)) continue;
 
-                    System.arraycopy(vertices, 0, chunkData, base, FLOATS_PER_CUBE);
-                    for (int v = 0; v < VERTICES_PER_CUBE; v++) {
-                        int idx = base + v * FLOATS_PER_VERTEX;
-                        chunkData[idx] += (float) i;
-                        chunkData[idx + 1] += (float) j;
-                        chunkData[idx + 2] += (float) k;
-                    }
+                        int base = visibleCount * FLOATS_PER_CUBE;
+
+                        System.arraycopy(vertices, 0, chunkData, base, FLOATS_PER_CUBE);
+                        for (int v = 0; v < VERTICES_PER_CUBE; v++) {
+                            int idx = base + v * FLOATS_PER_VERTEX;
+                            chunkData[idx] += (float) x;
+                            chunkData[idx + 1] += (float) y;
+                            chunkData[idx + 2] += (float) z;
+                        }
+                        visibleCount++;
+
 
                 }
             }
         }
 
+        this.visibleBlocks = visibleCount;
         // Some changes relative to C/C++ OpenGL. glGenBuffers doesn't take any parameters, and will just return some buffer to write too
         this.VBO = glGenBuffers();
         this.VAO = glGenVertexArrays();
@@ -128,4 +158,5 @@ public class Chunk {
     }
     public int getVAO() {return this.VAO; };
     public Matrix4f getModelMatrix() {return this.modelMatrix; };
+    public int getVisibleBlocks() {return this.visibleBlocks; };
 }
