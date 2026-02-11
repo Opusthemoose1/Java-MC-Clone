@@ -102,9 +102,8 @@ public class Minecraft {
             {
                 this.camera.processInput(Camera_Direction.RIGHT, (float)deltaTime);
             }
-            if (Input.isKeyDown(GLFW_KEY_A))
-            {
-                this.camera.processInput(Camera_Direction.LEFT, (float)deltaTime);
+            if (Input.isKeyDown(GLFW_KEY_A)) {
+                this.camera.processInput(Camera_Direction.LEFT, (float) deltaTime);
             }
         }
     }
