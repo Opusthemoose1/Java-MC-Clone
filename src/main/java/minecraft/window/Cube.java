@@ -1,4 +1,4 @@
-package minecraft;
+package minecraft.window;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

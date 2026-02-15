@@ -1,4 +1,4 @@
-package minecraft;
+package minecraft.window.text;
 
 // Records the x, y, width, height, and character of the glyph.
 public record Glyph(

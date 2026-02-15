@@ -1,6 +1,7 @@
-package minecraft;
+package minecraft.window.texture;
 
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.nio.file.Path;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class Shader {
+public class Shader implements IShader {
 
     private int shaderProgramId;
 
@@ -28,7 +29,7 @@ public class Shader {
          }
     }
 
-    Shader(String vertShaderFilePath, String fragShaderFilePath) {
+    public Shader(String vertShaderFilePath, String fragShaderFilePath) {
         int v = glCreateShader(GL_VERTEX_SHADER);
         int f = glCreateShader(GL_FRAGMENT_SHADER);
         String vertSource, fragSource;

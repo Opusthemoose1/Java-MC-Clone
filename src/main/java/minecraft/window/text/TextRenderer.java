@@ -1,6 +1,6 @@
-package minecraft;
+package minecraft.window.text;
 
-import org.jetbrains.annotations.NotNull;
+import minecraft.window.texture.Shader;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
@@ -24,7 +24,7 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 // Capital letters start on row 4 column 1, end at row 5 column 10
 // Lowercase are row 6 column 1, row 7 coulmn 10
 // I'm being dense, it's literally called ascii.png. It's at their respective position in the ascii table
-public class TextRenderer {
+public class TextRenderer implements ITextRenderer {
 
     private final int VAO;
     private final int VBO;

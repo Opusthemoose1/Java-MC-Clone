@@ -1,22 +1,20 @@
-package minecraft;
+package minecraft.window.input;
 
 import org.joml.Vector2d;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Input {
+public class Input implements IInput {
 
     // A list of all possible keys
-    private static final boolean[] keys = new boolean[GLFW_KEY_LAST + 1];
+    private final boolean[] keys = new boolean[GLFW_KEY_LAST + 1];
 
-    private Vector2d mousePos;
+    private final Vector2d mousePos;
 
     public Input(long windowHandle) {
         glfwSetKeyCallback(windowHandle, (w, key, scancode, action, mods) -> {
             if (key >= 0) {
-                Input.keys[key] = action != GLFW_RELEASE;
+                keys[key] = action != GLFW_RELEASE;
             }
         });
         mousePos = new Vector2d(0, 0);
@@ -32,7 +30,7 @@ public class Input {
         glfwPollEvents();
     }
 
-    public static boolean isKeyDown(int key) {
+    public boolean isKeyDown(int key) {
         return keys[key];
     }
 

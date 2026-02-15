@@ -1,4 +1,4 @@
-package minecraft;
+package minecraft.window.texture;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -13,8 +13,7 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 public class Texture {
     private int textureID;
 
-    Texture(String filePath)
-    {
+    Texture(String filePath) {
         try (MemoryStack stack = MemoryStack.stackPush())
         {
             IntBuffer width = stack.mallocInt(1);
@@ -36,5 +35,6 @@ public class Texture {
             STBImage.stbi_image_free(image);
         }
     }
-    int getTextureID() {return this.textureID; };
+
+    public int getTextureID() {return this.textureID; };
 }

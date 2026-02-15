@@ -1,4 +1,4 @@
-package minecraft;
+package minecraft.window;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
@@ -33,7 +33,7 @@ public class Camera {
     private double lastX;
     private double lastY;
 
-    Camera(Vector3f position) {
+    public Camera(Vector3f position) {
         this.perspective = new Matrix4f();
         this.ortho = new Matrix4f();
         this.view = new Matrix4f();
