@@ -15,12 +15,12 @@ enum Camera_Direction {
 }
 
 public class Camera {
-    private Matrix4f projection;
-    private Matrix4f view;
-    private Vector3f position;
+    private final Matrix4f perspective;
+    private final Matrix4f ortho;
+    private final Matrix4f view;
+    private final Vector3f position;
     private Vector3f front;
-    private Vector3f right;
-    private Vector3f worldUp;
+    private final Vector3f worldUp;
     private Vector3f up;
 
     private float yaw;
@@ -31,7 +31,8 @@ public class Camera {
     private double lastY;
     Camera(Vector3f position)
     {
-        this.projection = new Matrix4f();
+        this.perspective = new Matrix4f();
+        this.ortho = new Matrix4f();
         this.view = new Matrix4f();
 
         this.position = position;
@@ -49,12 +50,13 @@ public class Camera {
     }
     public void updateProjectionMatrix(float fov, float width, float height)
     {
-        this.projection.identity().perspective(
+        this.perspective.identity().perspective(
                 (float) Math.toRadians(fov),
                 width / height,
                 0.1f,
                 100.0f
         );
+        this.ortho.identity().ortho(0, width, height, 0, -1, 1);
     }
     public Matrix4f getViewMatrix()
     {
@@ -129,7 +131,7 @@ public class Camera {
         ).normalize();
 
         // right = front × worldUp
-        right = new Vector3f(front).cross(worldUp).normalize();
+        Vector3f right = new Vector3f(front).cross(worldUp).normalize();
 
         // up = right × front
         up = new Vector3f(right).cross(front).normalize();
@@ -137,11 +139,8 @@ public class Camera {
 
     }
 
-    public Matrix4f getProjectionMatrix() {
-      //  return this.projection;
-        return this.projection;
-
-    }
+    public Matrix4f getProjectionMatrix() {return this.perspective; }
+    public Matrix4f getOrtho() {return this.ortho; }
     public Vector3f getPosition() {
         return this.position;
     }

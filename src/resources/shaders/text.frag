@@ -8,5 +8,14 @@ uniform sampler2D fontAtlas;
 void main()
 {
     vec4 sample = texture(fontAtlas, texCoords);
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0) * sample;
+    //   If the sampled textures is just black, make it transparent
+    if (sample.rgb == vec3(0.0, 0.0, 0.0))
+    {
+        FragColor = vec4(1.0, 1.0, 1.0, 0.0) * sample;
+    }
+    // Else, just keep it white
+    else
+    {
+        FragColor = vec4(1.0, 1.0, 1.0, 1.0) * sample;
+    }
 }

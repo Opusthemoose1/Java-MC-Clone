@@ -13,15 +13,23 @@ public class Shader {
     int shaderProgramId;
     private static void compileShader(int shader, String code)
     {
-
         glShaderSource(
                 shader,
                 code
             );
          glCompileShader(shader);
-         if (glGetShaderi(shader, GL_COMPILE_STATUS) != GL_TRUE) {
-             throw new IllegalStateException("Failed to compile shader.");
+
+         int status = glGetShaderi(shader, GL_COMPILE_STATUS);
+
+         if (status == GL_FALSE)
+         {
+             String infoLog = glGetShaderInfoLog(shader);
+             throw new IllegalStateException("Failed to compile shader: \n" + infoLog);
+
          }
+
+
+
 
     }
     Shader(String vertShaderFilePath, String fragShaderFilePath)

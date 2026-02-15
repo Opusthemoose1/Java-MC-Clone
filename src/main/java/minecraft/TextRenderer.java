@@ -1,5 +1,7 @@
 package minecraft;
 
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
@@ -23,10 +25,12 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 // Lowercase are row 6 column 1, row 7 coulmn 10
 // I'm being dense, it's literally called ascii.png. It's at their respective position in the ascii table
 public class TextRenderer {
-    private int VAO, VBO, textureID;
-    private Shader text_shader;
+    private final int VAO;
+    private final int VBO;
+    private final int textureID;
+    private final Shader text_shader;
     FloatBuffer vertexData;
-    private Glyph[] glyphs;
+    private final Glyph[] glyphs;
     // Inject shader
     public TextRenderer(String filePath, Shader shader) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -48,21 +52,29 @@ public class TextRenderer {
             glGenerateMipmap(GL_TEXTURE_2D);
             STBImage.stbi_image_free(image);
 
+            float atlasSize = 1024.0f;
+            float cellSize = 64.0f;
+
             this.glyphs = new Glyph[255];
             for (int i = 0; i < 255; i++)
             {
-                this.glyphs[i].letter = i;
-                // TODO: Fix magic numbers by passing them in the constructor. I call it "kicking the can down the road"
-                this.glyphs[i].sizeX = 40;
-                this.glyphs[i].sizeY = 56;
+                this.glyphs[i] = new Glyph();
+                this.glyphs[i].letter = (char)i;
 
-                int row = i % 15;
-                // top left
-                this.glyphs[i].u0 = (row * 64.0f) / 1024.0f;
-                this.glyphs[i].u1 = ((row * 64.0f) + 40.0f) / 1024.0f;
+                int col = i % 16;
+                int row = i / 16;
 
-                this.glyphs[i].v0 = (row * 64.0f) / 1024.0f;
-                this.glyphs[i].v1 = ((row * 64.0f) - 56.0f) / 1024.0f;
+                float x = col * cellSize;
+                float y = row * cellSize;
+
+                this.glyphs[i].sizeX = 64;
+                this.glyphs[i].sizeY = 64;
+
+                this.glyphs[i].u0 = x / atlasSize;
+                this.glyphs[i].u1 = (x + 64.0f) / atlasSize;
+
+                this.glyphs[i].v0 = y / atlasSize;
+                this.glyphs[i].v1 = (y + 64.0f) / atlasSize;
 
             }
         }
@@ -93,34 +105,21 @@ public class TextRenderer {
         glBindVertexArray(0);
 
     }
-    public void renderText(Vector2f screenPos, String text)
+    public void renderText(Matrix4f projection, Vector2f screenPos, float scale, String text)
     {
         this.text_shader.bind();
+        this.text_shader.setMatrix4(projection, "projection");
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this.textureID);
         glBindVertexArray(this.VAO);
-
-        float screenPosX = screenPos.x;
-        float screenPosY = screenPos.y;
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
 
         char[] characterArray = text.toCharArray();
         // i will force java to be C++
-        for (char ch : characterArray)
+        for (int i = 0; i < characterArray.length; i++)
         {
-            Glyph glyph = this.glyphs[ch];
-
-            float w = glyph.sizeX;
-            float h = glyph.sizeY;
-
-            float[] vertices = {
-                    screenPosX + glyph.sizeX, screenPosY,               glyph.u1, glyph.v0, // Top right
-                    screenPosX + glyph.sizeX, screenPosY + glyph.sizeY, glyph.u1, glyph.v1, // Bottom right
-                    screenPosX              , screenPosY + glyph.sizeY, glyph.u0, glyph.v0, // Bottom left
-
-                    screenPosX + glyph.sizeX, screenPosY,               glyph.u1, glyph.v0, // Top right
-                    screenPosX              , screenPosY + glyph.sizeY, glyph.u0, glyph.v0, // Bottom left
-                    screenPosX,               screenPosY,               glyph.u0, glyph.v0, // Top left
-                };
+            float[] vertices = getFloats(screenPos, scale, characterArray[i], i);
             glBindBuffer(GL_ARRAY_BUFFER, this.VBO);
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
 
@@ -128,7 +127,31 @@ public class TextRenderer {
 
         }
         glBindVertexArray(0);
+        glDisable(GL_BLEND);
 
+    }
+
+    private float[] getFloats(Vector2f screenPos, float scale, char ch, int index) {
+        Glyph glyph = this.glyphs[ch];
+
+        float y = screenPos.y;
+
+        float w = glyph.sizeX * scale;
+        float h = glyph.sizeY * scale;
+
+        float x = screenPos.x + (w * index);
+
+        return new float[]{
+                // First triangle
+                x,     y,     glyph.u0, glyph.v0,  // top-left
+                x+w,   y,     glyph.u1, glyph.v0,  // top-right
+                x+w,   y+h,   glyph.u1, glyph.v1,  // bottom-right
+
+                // Second triangle
+                x,     y,     glyph.u0, glyph.v0,  // top-left
+                x+w,   y+h,   glyph.u1, glyph.v1,  // bottom-right
+                x,     y+h,   glyph.u0, glyph.v1   // bottom-left
+        };
     }
 
     public int getTextureID() {
