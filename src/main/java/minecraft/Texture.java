@@ -11,18 +11,19 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Texture {
-    int textureID;
+    private int textureID;
+
     Texture(String filePath)
     {
         try (MemoryStack stack = MemoryStack.stackPush())
         {
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
+            IntBuffer width = stack.mallocInt(1);
+            IntBuffer height = stack.mallocInt(1);
             IntBuffer channels = stack.mallocInt(1);
 
             ByteBuffer image = STBImage.stbi_load(
                     filePath,
-                    w, h, channels,
+                    width, height, channels,
                     4
             );
             if (image == null) throw new RuntimeException(STBImage.stbi_failure_reason());
@@ -30,7 +31,7 @@ public class Texture {
             this.textureID = glGenTextures();
             glBindTexture(GL_TEXTURE_2D, this.textureID);
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w.get(0), h.get(0), 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width.get(0), height.get(0), 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
             STBImage.stbi_image_free(image);
         }

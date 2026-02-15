@@ -3,19 +3,12 @@ package minecraft;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.*;
-import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
-
-import java.nio.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
 
 public class Minecraft {
 
@@ -25,6 +18,9 @@ public class Minecraft {
     private Texture tex;
     private Camera camera;
     private TextRenderer text;
+
+    private Input input;
+
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -54,14 +50,15 @@ public class Minecraft {
         this.tex = new Texture("src/resources/textures/cobblestone.png");
         this.camera = new Camera(new Vector3f(0.0f, 0.0f, 0.0f));
         this.camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
-        Shader text_shader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
-        this.text = new TextRenderer("src/resources/textures/ascii.png", text_shader );
+        Shader textShader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
+        this.text = new TextRenderer("src/resources/textures/ascii.png", textShader );
 
         this.shader.bind();
         this.shader.setMatrix4(chunk.getModelMatrix(), "model");
         this.shader.setMatrix4(camera.getProjectionMatrix(), "projection");
 
-        Input.init(this.window.getWindowHandle());
+        this.input = new Input(this.window.getWindowHandle());
+
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
     }
@@ -96,28 +93,14 @@ public class Minecraft {
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
-            Input.poll();
-            if (Input.isKeyDown(GLFW_KEY_W))
-            {
+            input.poll();
+            if (input.isKeyDown(GLFW_KEY_W)) this.camera.processInput(Camera.CameraDirection.FORWARD, (float)deltaTime);
+            if (input.isKeyDown(GLFW_KEY_S)) this.camera.processInput(Camera.CameraDirection.BACKWARD, (float)deltaTime);
+            if (input.isKeyDown(GLFW_KEY_D)) this.camera.processInput(Camera.CameraDirection.RIGHT, (float)deltaTime);
+            if (input.isKeyDown(GLFW_KEY_A)) this.camera.processInput(Camera.CameraDirection.LEFT, (float) deltaTime);
+            if (input.isKeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(this.window.getWindowHandle(), true);
 
-                this.camera.processInput(Camera_Direction.FORWARD, (float)deltaTime);
-            }
-            if (Input.isKeyDown(GLFW_KEY_S))
-            {
-                this.camera.processInput(Camera_Direction.BACKWARD, (float)deltaTime);
-            }
-            if (Input.isKeyDown(GLFW_KEY_D))
-            {
-                this.camera.processInput(Camera_Direction.RIGHT, (float)deltaTime);
-            }
-            if (Input.isKeyDown(GLFW_KEY_A)) {
-                this.camera.processInput(Camera_Direction.LEFT, (float) deltaTime);
-            }
-            if (Input.isKeyDown(GLFW_KEY_ESCAPE))
-            {
-                glfwSetWindowShouldClose(this.window.getWindowHandle(), true);
-            }
-            camera.mouseControl(Input.getMousePos());
+            camera.mouseControl(input.getMousePos());
         }
     }
 

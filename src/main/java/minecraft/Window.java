@@ -23,9 +23,11 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 // TODO: Singleton class, as we only want one instance of this
 public class Window {
+
     private int width;
     private int height;
     private final long window_handle; // Window handle for the GLFW context
+
     Window(int width, int height) {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -79,5 +81,6 @@ public class Window {
         // Make the window visible
         glfwShowWindow(this.window_handle);
     }
+
     public long getWindowHandle() {return this.window_handle;}
 }

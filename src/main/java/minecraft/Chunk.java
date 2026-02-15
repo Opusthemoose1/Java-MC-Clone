@@ -92,6 +92,7 @@ public class Chunk {
                 blocks[index(x, y, z + 1)] != 0
         );
     }
+
     public Chunk(int xOffset, int yOffset) // x, y are the offsets from world origin
     {
         this.offset_x = xOffset;
@@ -104,10 +105,8 @@ public class Chunk {
         int cubeCount = SIDE_LENGTH * SIDE_LENGTH * SIDE_LENGTH;
         final float[] chunkData = new float[cubeCount * FLOATS_PER_CUBE]; // VBO For the chunk that gets updated
 
-        for (int i = 0; i < cubeCount; i++)
-        {
-            this.blocks[i] = 1;
-        }
+        for (int i = 0; i < cubeCount; i++) this.blocks[i] = 1;
+
         int visibleCount = 0;
         for (int x = 0; x < SIDE_LENGTH; x++)
         {
@@ -156,7 +155,10 @@ public class Chunk {
         this.modelMatrix = new Matrix4f();
         modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
     }
+
     public int getVAO() {return this.VAO; };
+
     public Matrix4f getModelMatrix() {return this.modelMatrix; };
+
     public int getVisibleBlocks() {return this.visibleBlocks; };
 }

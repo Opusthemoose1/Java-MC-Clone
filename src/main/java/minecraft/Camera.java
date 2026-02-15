@@ -7,14 +7,17 @@ import org.joml.Vector3f;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-enum Camera_Direction {
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT
-}
-
 public class Camera {
+
+    public enum CameraDirection {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT
+    }
+
+    public static final float VELOCITY = 10f, MAX_PITCH = 89f;
+
     private final Matrix4f perspective;
     private final Matrix4f ortho;
     private final Matrix4f view;
@@ -29,8 +32,8 @@ public class Camera {
     private Boolean firstMouse; // Detects if it's the first mouse movement
     private double lastX;
     private double lastY;
-    Camera(Vector3f position)
-    {
+
+    Camera(Vector3f position) {
         this.perspective = new Matrix4f();
         this.ortho = new Matrix4f();
         this.view = new Matrix4f();
@@ -48,8 +51,8 @@ public class Camera {
 
         updateCameraVectors();
     }
-    public void updateProjectionMatrix(float fov, float width, float height)
-    {
+
+    public void updateProjectionMatrix(float fov, float width, float height) {
         this.perspective.identity().perspective(
                 (float) Math.toRadians(fov),
                 width / height,
@@ -58,42 +61,32 @@ public class Camera {
         );
         this.ortho.identity().ortho(0, width, height, 0, -1, 1);
     }
-    public Matrix4f getViewMatrix()
-    {
+
+    public Matrix4f getViewMatrix() {
+        Vector3f tmp = new Vector3f();
         return view.identity().lookAt(
                 position,
                 tmp.set(position).add(front),
                 up
         );
     }
-    private final Vector3f tmp = new Vector3f(); // Just for vector operations
-    public void processInput(Camera_Direction dir, float deltaTime)
-    {
-        float velocity = 10.0f * deltaTime;
 
-        switch(dir)
-        {
-            case FORWARD:
-                this.position.add(tmp.set(this.front).mul(velocity));
-                break;
-            case BACKWARD:
-                this.position.sub(tmp.set(this.front).mul(velocity));
-                break;
-            case LEFT:
-                tmp.set(this.front).cross(this.up).normalize().mul(velocity);
-                this.position.sub(tmp);
-                break;
-            case RIGHT:
-                tmp.set(this.front).cross(this.up).normalize().mul(velocity);
-                this.position.add(tmp);
-                break;
-
+    public void processInput(CameraDirection dir, float deltaTime) {
+        float velocity = VELOCITY * deltaTime;
+        switch(dir) {
+            case FORWARD -> this.position.add(new Vector3f(this.front).mul(velocity));
+            case BACKWARD -> this.position.sub(new Vector3f(this.front).mul(velocity));
+            case LEFT -> this.position.sub(getRightDirection().mul(velocity));
+            case RIGHT -> this.position.add(getRightDirection().mul(velocity));
         }
     }
-    public void mouseControl(Vector2d mousePos)
-    {
-        if (this.firstMouse)
-        {
+
+    private Vector3f getRightDirection() {
+        return new Vector3f(this.front).cross(this.up).normalize();
+    }
+
+    public void mouseControl(Vector2d mousePos) {
+        if (this.firstMouse) {
             this.lastX = mousePos.x;
             this.lastY = mousePos.y;
             this.firstMouse = false;
@@ -107,14 +100,10 @@ public class Camera {
         xoffset *= sensitivity;
         yoffset *= sensitivity;
 
-        yaw   += (float)xoffset;
-        pitch += (float)yoffset;
+        yaw   += (float) xoffset;
+        pitch += (float) yoffset;
 
-        if(pitch > 89.0f)
-            pitch = 89.0f;
-        if(pitch < -89.0f)
-            pitch = -89.0f;
-
+        pitch = Math.clamp(pitch, -MAX_PITCH, MAX_PITCH);
 
         Vector3f direction = new Vector3f();
         direction.x = (float)(cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
@@ -122,8 +111,8 @@ public class Camera {
         direction.z = (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
         this.front = direction.normalize();
     }
-    private void updateCameraVectors()
-    {
+
+    private void updateCameraVectors() {
         front = new Vector3f(
                 (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))),
                 (float)(Math.sin(Math.toRadians(pitch))),
@@ -135,13 +124,17 @@ public class Camera {
 
         // up = right × front
         up = new Vector3f(right).cross(front).normalize();
-
-
     }
 
-    public Matrix4f getProjectionMatrix() {return this.perspective; }
-    public Matrix4f getOrtho() {return this.ortho; }
+    public Matrix4f getProjectionMatrix() {
+        return new Matrix4f(this.perspective);
+    }
+
+    public Matrix4f getOrtho() {
+        return new Matrix4f(this.ortho);
+    }
+
     public Vector3f getPosition() {
-        return this.position;
+        return new Vector3f(this.position);
     }
 }
