@@ -156,7 +156,8 @@ public class Window implements IWindow {
         Texture cobblestoneTexture = textureMap.getTexture(Material.COBBLESTONE);
         glBindTexture(GL_TEXTURE_2D, cobblestoneTexture.getTextureID());
         glBindVertexArray(chunkLoader.getChunk().getVAO());
-        glDrawArrays(GL_TRIANGLES, 0, chunkLoader.getChunk().getVisibleBlocks() * 36);
+
+        glDrawElements(GL_TRIANGLES, chunkLoader.getChunk().getIndexCount(), GL_UNSIGNED_INT, 0);
 
         final String fpsCounter = String.valueOf(framesPerSecond);
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 64), 0.3f,"FPS: " + fpsCounter);
