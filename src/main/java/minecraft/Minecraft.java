@@ -12,6 +12,8 @@ import java.nio.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.system.MemoryStack.*;
@@ -25,6 +27,8 @@ public class Minecraft {
     private Texture tex;
     private Camera camera;
     private TextRenderer text;
+    // For getting JVM info
+    private  Runtime rt;
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
@@ -56,6 +60,7 @@ public class Minecraft {
         this.camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
         Shader text_shader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
         this.text = new TextRenderer("src/resources/textures/ascii.png", text_shader );
+        this.rt = Runtime.getRuntime();
 
         this.shader.bind();
         this.shader.setMatrix4(chunk.getModelMatrix(), "model");
@@ -87,10 +92,18 @@ public class Minecraft {
             this.shader.setMatrix4(camera.getViewMatrix(), "view");
             glBindTexture(GL_TEXTURE_2D, this.tex.getTextureID());
             glBindVertexArray(this.chunk.getVAO());
-            glDrawArrays(GL_TRIANGLES, 0, chunk.getVisibleBlocks() * 36);
+
+            glDrawElements(GL_TRIANGLES, chunk.getIndexCount(), GL_UNSIGNED_INT, 0);
 
             final String fpsCounter = String.valueOf(framesPerSecond);
+            // Debug info
             text.renderText(camera.getOrtho(), new Vector2f(10, 64), 0.3f,"FPS: " + fpsCounter);
+            final long total = this.rt.totalMemory();
+            final long free = this.rt.freeMemory();
+            final long max = this.rt.maxMemory();
+
+            final long used = total - free;
+            text.renderText(camera.getOrtho(), new Vector2f(10, 128), 0.3f,"Used: " + String.valueOf(used / 1024 / 1024) + " MB");
 
             glfwSwapBuffers(window.getWindowHandle()); // swap the color buffers
 

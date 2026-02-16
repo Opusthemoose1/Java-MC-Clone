@@ -3,6 +3,8 @@ package minecraft;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -20,56 +22,17 @@ world space
 For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
 public class Chunk {
-    // TODO: THIS IS VERY TEMPORARY! THIS WILL CHANGE A LOT!!
-    final float[] vertices = {
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    private final int VAO;
+    private final int EBO;
+    private final int indexCount;
 
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-
-    private int VAO, VBO;
     private int visibleBlocks;
     Matrix4f modelMatrix;
 
     final int SIDE_LENGTH = 16;
+    final int STRIDE = 5;
+
     byte[] blocks = new byte[SIDE_LENGTH * SIDE_LENGTH * SIDE_LENGTH];
 
     int offset_x, offset_y;
@@ -78,76 +41,174 @@ public class Chunk {
     {
         return x + SIDE_LENGTH * (y + SIDE_LENGTH * z);
     }
-    // Returns true if the block can be seen from the outside, false if it's completed surrounded
-    private Boolean isBlockVisible(int x, int y, int z)
+    // Returns true if the face is touching air
+    private Boolean isAir(int x, int y, int z)
     {
-        // Edge faces are always visible
-        if (x - 1 < 0 || y - 1 < 0 || z - 1 < 0) return true;
-        if (x + 1 > 15 || y + 1 > 15 || z + 1 > 15) return true;
-        return !(blocks[index(x - 1, y, z)] != 0 &&
-                blocks[index(x + 1, y, z)] != 0 &&
-                blocks[index(x, y - 1, z)] != 0 &&
-                blocks[index(x, y + 1, z)] != 0 &&
-                blocks[index(x, y, z - 1)] != 0 &&
-                blocks[index(x, y, z + 1)] != 0
-        );
+        if (x < 0 || y < 0 || z < 0 ||
+                x >= SIDE_LENGTH ||
+                y >= SIDE_LENGTH ||
+                z >= SIDE_LENGTH)
+        {
+            return true;
+        }
+
+        return blocks[index(x, y, z)] == 0;
     }
+
+    private void addBlock(ArrayList<Float> vertices, ArrayList<Integer> indices, int x, int y, int z)
+    {
+
+        final int[] faceIndices = {
+                0, 1, 3,
+                1, 2, 3
+        };
+        final int[][] dirs = {
+        { 1, 0, 0},
+        {-1, 0, 0},
+        { 0, 1, 0},
+        { 0,-1, 0},
+        { 0, 0, 1},
+        { 0, 0,-1}
+        };
+
+        for (int d = 0; d < 6; d++)
+        {
+            int nx = x + dirs[d][0];
+            int ny = y + dirs[d][1];
+            int nz = z + dirs[d][2];
+
+            if (isAir(nx, ny, nz))
+            {
+                float[] faceVertices = new float[0];
+                faceVertices = switch (d) {
+                    case 0 -> // Positive x face
+                            new float[]{
+                                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                                    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                                    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                            };
+                    case 1 -> // negative x face
+                            new float[]{
+                                    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                            };
+                    case 2 -> // positive y face
+                            new float[]{
+                                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                                    -0.5f, 0.5f, -0.5f, 1.0f, 0.0f,
+                                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+                                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                            };
+                    case 3 -> // negative y face
+                            new float[]{
+                                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+                                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                                    0.5f, -0.5f, 0.5f, 0.0f, 1.0f,
+                            };
+                    case 4 -> // positive z
+                            new float[]{
+                                    0.5f, -0.5f, 0.5f, 1.0f, 1.0f,
+                                    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+                                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+                                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                            };
+                    case 5 -> // negative z
+                            new float[]{
+                                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+                                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                                    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
+                                    0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+                            };
+                    default -> faceVertices;
+                };
+
+                // Update the position of each vertex in the face
+                for (int i = 0; i < 4; i++)
+                {
+                    faceVertices[i * STRIDE ] += (float)x;
+                    faceVertices[i * STRIDE + 1] += (float)y;
+                    faceVertices[i * STRIDE + 2] += (float)z;
+                }
+                // Copy over the index data
+                int baseVertex = this.visibleBlocks * 4;
+                for (int faceIndex : faceIndices) {
+                    indices.add(faceIndex + baseVertex);
+                }
+                // Copy over the float data
+                for (float faceVertex : faceVertices)
+                {
+                    vertices.add(faceVertex);
+                }
+                this.visibleBlocks++;
+
+            }
+
+        }
+
+    }
+
     public Chunk(int xOffset, int yOffset) // x, y are the offsets from world origin
     {
         this.offset_x = xOffset;
         this.offset_y = yOffset;
-        int SIDE_LENGTH = 16;
-        final int FLOATS_PER_VERTEX = 5;
-        final int VERTICES_PER_CUBE = 36;
-        final int FLOATS_PER_CUBE = VERTICES_PER_CUBE * FLOATS_PER_VERTEX;
+        final int SIDE_LENGTH = 16;
 
-        int cubeCount = SIDE_LENGTH * SIDE_LENGTH * SIDE_LENGTH;
-        final float[] chunkData = new float[cubeCount * FLOATS_PER_CUBE]; // VBO For the chunk that gets updated
 
-        for (int i = 0; i < cubeCount; i++)
+        for (int i = 0; i < 16 * 16 * 16; i++)
         {
             this.blocks[i] = 1;
         }
-        int visibleCount = 0;
+
+        this.visibleBlocks = 0;
+
+        ArrayList<Float> vertices = new ArrayList<Float>();
+        ArrayList<Integer> indices = new ArrayList<Integer>();
+
         for (int x = 0; x < SIDE_LENGTH; x++)
         {
             for (int y = 0; y < SIDE_LENGTH; y++)
             {
                 for (int z = 0; z < SIDE_LENGTH; z++)
                 {
-                    if (!isBlockVisible(x, y, z)) continue;
-
-                        int base = visibleCount * FLOATS_PER_CUBE;
-
-                        System.arraycopy(vertices, 0, chunkData, base, FLOATS_PER_CUBE);
-                        for (int v = 0; v < VERTICES_PER_CUBE; v++) {
-                            int idx = base + v * FLOATS_PER_VERTEX;
-                            chunkData[idx] += (float) x;
-                            chunkData[idx + 1] += (float) y;
-                            chunkData[idx + 2] += (float) z;
-                        }
-                        visibleCount++;
-
-
+                    addBlock(vertices, indices, x, y, z);
                 }
             }
         }
 
-        this.visibleBlocks = visibleCount;
         // Some changes relative to C/C++ OpenGL. glGenBuffers doesn't take any parameters, and will just return some buffer to write too
-        this.VBO = glGenBuffers();
+        int VBO = glGenBuffers();
         this.VAO = glGenVertexArrays();
-        glBindBuffer(GL_ARRAY_BUFFER, this.VBO);
+        this.EBO = glGenBuffers();
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBindVertexArray(this.VAO);
+
+        float[] vertexArray = new float[vertices.size()];
+        int vi = 0;
+        for (Float f : vertices)
+            vertexArray[vi++] = f;
+
+        int[] indexArray = new int[indices.size()];
+        int ii = 0;
+        for (Integer i : indices)
+            indexArray[ii++] = i;
+
+        this.indexCount = indices.size();
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexArray, GL_STATIC_DRAW);
         // The vertices size in bytes no longer needs to be passed in
-        glBufferData(GL_ARRAY_BUFFER, chunkData, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertexArray, GL_STATIC_DRAW);
 
-        final int STRIDE = (3 + 2) * Float.BYTES;
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, STRIDE, 0L);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, STRIDE * Float.BYTES, 0L);
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, STRIDE, 3L * Float.BYTES);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, STRIDE * Float.BYTES, 3L * Float.BYTES);
         glEnableVertexAttribArray(1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -157,6 +218,8 @@ public class Chunk {
         modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
     }
     public int getVAO() {return this.VAO; };
+    public int getEBO() {return this.EBO; };
+    public int getIndexCount() {return this.indexCount; }
     public Matrix4f getModelMatrix() {return this.modelMatrix; };
     public int getVisibleBlocks() {return this.visibleBlocks; };
 }
