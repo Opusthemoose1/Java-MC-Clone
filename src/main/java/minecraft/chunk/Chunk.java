@@ -42,7 +42,7 @@ public class Chunk {
     // Returns true if the face is touching air
     private Boolean isAir(int x, int y, int z)
     {
-        return getChunkBlock(x, y, z) == AIR;
+        return getChunkBlock(x, y, z) == AIR || getChunkBlock(x, y, z) == null;
     }
 
     private ChunkBlock getChunkBlock(int x, int y, int z) {
