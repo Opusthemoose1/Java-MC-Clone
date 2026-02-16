@@ -1,4 +1,4 @@
-package minecraft;
+package minecraft.window;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -53,8 +53,10 @@ public class Cube {
             -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
             -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
+
     private int VAO, VBO;
-    Matrix4f modelMatrix;
+    private final Matrix4f modelMatrix;
+
     Cube(Vector3f position)
     {
         // Some changes relative to C/C++ OpenGL. glGenBuffers doesn't take any parameters, and will just return some buffer to write too
@@ -80,6 +82,8 @@ public class Cube {
         modelMatrix.translate(position);
 
     }
+
     public int getVAO() {return this.VAO; };
+
     public Matrix4f getModelMatrix() {return this.modelMatrix; };
 }

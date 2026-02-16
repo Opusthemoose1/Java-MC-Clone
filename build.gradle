@@ -31,8 +31,16 @@ repositories {
 }
 
 jar {
+    duplicatesStrategy "exclude" // Required for Gradle 7+ to avoid errors with duplicate entries
+
     manifest {
-        attributes 'Main-Class': 'minecraft.Minecraft'
+        attributes 'Main-Class': 'minecraft.Minecraft' // Replace with your main class
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    into('resources') {
+        from 'src/resources'
     }
 }
 

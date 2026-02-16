@@ -1,6 +1,6 @@
-package minecraft;
+package minecraft.window.text;
 
-import org.jetbrains.annotations.NotNull;
+import minecraft.window.texture.Shader;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
@@ -24,13 +24,15 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 // Capital letters start on row 4 column 1, end at row 5 column 10
 // Lowercase are row 6 column 1, row 7 coulmn 10
 // I'm being dense, it's literally called ascii.png. It's at their respective position in the ascii table
-public class TextRenderer {
+public class TextRenderer implements ITextRenderer {
+
     private final int VAO;
     private final int VBO;
     private final int textureID;
     private final Shader text_shader;
     FloatBuffer vertexData;
     private final Glyph[] glyphs;
+
     // Inject shader
     public TextRenderer(String filePath, Shader shader) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -56,10 +58,8 @@ public class TextRenderer {
             float cellSize = 64.0f;
 
             this.glyphs = new Glyph[255];
-            for (int i = 0; i < 255; i++)
-            {
-                this.glyphs[i] = new Glyph();
-                this.glyphs[i].letter = (char)i;
+            for (int i = 0; i < 255; i++) {
+                char letter = (char)i;
 
                 int col = i % 16;
                 int row = i / 16;
@@ -67,15 +67,13 @@ public class TextRenderer {
                 float x = col * cellSize;
                 float y = row * cellSize;
 
-                this.glyphs[i].sizeX = 64;
-                this.glyphs[i].sizeY = 64;
+                int sizeX = 64, sizeY = 64;
 
-                this.glyphs[i].u0 = x / atlasSize;
-                this.glyphs[i].u1 = (x + 64.0f) / atlasSize;
+                float u0 = x / atlasSize, u1 = (x + 64.0f) / atlasSize;
 
-                this.glyphs[i].v0 = y / atlasSize;
-                this.glyphs[i].v1 = (y + 64.0f) / atlasSize;
+                float v0 = y / atlasSize, v1 = (y + 64.0f) / atlasSize;
 
+                this.glyphs[i] = new Glyph(letter, sizeX, sizeY, u0, u1, v0, v1, 0, 0);
             }
         }
         this.text_shader = shader;
@@ -105,6 +103,7 @@ public class TextRenderer {
         glBindVertexArray(0);
 
     }
+
     public void renderText(Matrix4f projection, Vector2f screenPos, float scale, String text)
     {
         this.text_shader.bind();
@@ -136,21 +135,21 @@ public class TextRenderer {
 
         float y = screenPos.y;
 
-        float w = glyph.sizeX * scale;
-        float h = glyph.sizeY * scale;
+        float w = glyph.sizeX() * scale;
+        float h = glyph.sizeY() * scale;
 
         float x = screenPos.x + (w * index);
 
         return new float[]{
                 // First triangle
-                x,     y,     glyph.u0, glyph.v0,  // top-left
-                x+w,   y,     glyph.u1, glyph.v0,  // top-right
-                x+w,   y+h,   glyph.u1, glyph.v1,  // bottom-right
+                x,     y,     glyph.u0(), glyph.v0(),  // top-left
+                x+w,   y,     glyph.u1(), glyph.v0(),  // top-right
+                x+w,   y+h,   glyph.u1(), glyph.v1(),  // bottom-right
 
                 // Second triangle
-                x,     y,     glyph.u0, glyph.v0,  // top-left
-                x+w,   y+h,   glyph.u1, glyph.v1,  // bottom-right
-                x,     y+h,   glyph.u0, glyph.v1   // bottom-left
+                x,     y,     glyph.u0(), glyph.v0(),  // top-left
+                x+w,   y+h,   glyph.u1(), glyph.v1(),  // bottom-right
+                x,     y+h,   glyph.u0(), glyph.v1()   // bottom-left
         };
     }
 

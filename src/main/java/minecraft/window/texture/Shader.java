@@ -1,6 +1,7 @@
-package minecraft;
+package minecraft.window.texture;
 
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
@@ -9,10 +10,11 @@ import java.nio.file.Path;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class Shader {
-    int shaderProgramId;
-    private static void compileShader(int shader, String code)
-    {
+public class Shader implements IShader {
+
+    private int shaderProgramId;
+
+    private static void compileShader(int shader, String code) {
         glShaderSource(
                 shader,
                 code
@@ -21,19 +23,13 @@ public class Shader {
 
          int status = glGetShaderi(shader, GL_COMPILE_STATUS);
 
-         if (status == GL_FALSE)
-         {
+         if (status == GL_FALSE) {
              String infoLog = glGetShaderInfoLog(shader);
              throw new IllegalStateException("Failed to compile shader: \n" + infoLog);
-
          }
-
-
-
-
     }
-    Shader(String vertShaderFilePath, String fragShaderFilePath)
-    {
+
+    public Shader(String vertShaderFilePath, String fragShaderFilePath) {
         int v = glCreateShader(GL_VERTEX_SHADER);
         int f = glCreateShader(GL_FRAGMENT_SHADER);
         String vertSource, fragSource;
@@ -59,15 +55,14 @@ public class Shader {
         // Once the shaders are bound to a program object we can remove the individual objects
         glDeleteShader(v);
         glDeleteShader(f);
-
-
     }
+
     public void bind()
     {
         glUseProgram(this.shaderProgramId);
     }
-    public void setMatrix4(Matrix4f mat, String uniformName)
-    {
+
+    public void setMatrix4(Matrix4f mat, String uniformName) {
         int location = glGetUniformLocation(this.shaderProgramId, uniformName);
         if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
         try (MemoryStack stack = MemoryStack.stackPush())
