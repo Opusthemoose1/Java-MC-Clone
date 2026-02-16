@@ -2,12 +2,19 @@ package minecraft.block;
 
 public enum Material {
 
-    COBBLESTONE("cobblestone.png");
+    AIR(0, null),
+    COBBLESTONE(1, "cobblestone.png");
 
+    private final int id;
     private final String textureName;
 
-    Material(String textureName) {
+    Material(int id, String textureName) {
+        this.id = id;
         this.textureName = textureName;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTextureFileName() {
