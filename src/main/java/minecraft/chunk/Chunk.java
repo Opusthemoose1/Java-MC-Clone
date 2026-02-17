@@ -1,6 +1,7 @@
 package minecraft.chunk;
 
 import minecraft.block.Material;
+import minecraft.timer.Timer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -36,7 +37,7 @@ public class Chunk {
 
     ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
 
-    int offset_x, offset_y;
+    int offset_x, offset_z;
     // Returns true if the face is touching air
     private Boolean isAir(int x, int y, int z)
     {
@@ -116,9 +117,9 @@ public class Chunk {
                 // Update the position of each vertex in the face
                 for (int i = 0; i < 4; i++)
                 {
-                    faceVertices[i * STRIDE ] += (float)x;
+                    faceVertices[i * STRIDE ] += (float)x + this.offset_x;
                     faceVertices[i * STRIDE + 1] += (float)y;
-                    faceVertices[i * STRIDE + 2] += (float)z;
+                    faceVertices[i * STRIDE + 2] += (float)z + this.offset_z;
                 }
                 // Copy over the index data
                 int baseVertex = this.visibleBlocks * 4;
@@ -138,10 +139,13 @@ public class Chunk {
 
     }
 
-    public Chunk(int xOffset, int yOffset) // x, y are the offsets from world origin
+    public Chunk(int xOffset, int zOffset) // x, z are the offsets from world origin
     {
+        Timer timeToCreateChunk = new Timer();
+        timeToCreateChunk.startTimer();
+
         this.offset_x = xOffset;
-        this.offset_y = yOffset;
+        this.offset_z = zOffset;
         final int SIDE_LENGTH = 16;
 
         for (int i = 0; i < SIDE_LENGTH; i++)
@@ -160,7 +164,7 @@ public class Chunk {
             {
                 for (int z = 0; z < SIDE_LENGTH; z++)
                 {
-                    addBlock(vertices, indices, x, y, z);
+                    addBlock(vertices, indices, x , y, z );
                 }
             }
         }
@@ -202,6 +206,10 @@ public class Chunk {
         // Initialize the model matrix to identity
         this.modelMatrix = new Matrix4f();
         modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
+
+        timeToCreateChunk.endTimer();
+        System.out.println("Time to build chunk: " + timeToCreateChunk.getTimeInMilliseconds() + " ms");
+
     }
     public int getVAO() {return this.VAO; };
     public int getEBO() {return this.EBO; };

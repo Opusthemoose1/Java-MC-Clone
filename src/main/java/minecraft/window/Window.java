@@ -1,11 +1,14 @@
 package minecraft.window;
 
+import minecraft.chunk.Chunk;
 import minecraft.chunk.ChunkLoader;
+import minecraft.chunk.ChunkRenderer;
 import minecraft.chunk.IChunkLoader;
 import minecraft.window.text.ITextRenderer;
 import minecraft.window.texture.IShader;
 import minecraft.block.Material;
 import minecraft.window.input.IInput;
+import minecraft.window.texture.Shader;
 import minecraft.window.texture.Texture;
 import minecraft.window.texture.TextureMap;
 import org.joml.Vector2f;
@@ -41,8 +44,7 @@ public class Window implements IWindow {
     private double lastFrameTime = 0;
 
     private final Camera camera;
-    private final TextureMap textureMap;
-    private IShader shader;
+    private ChunkRenderer chunkRenderer;
     private ITextRenderer textRenderer;
     private IChunkLoader chunkLoader;
 
@@ -57,10 +59,12 @@ public class Window implements IWindow {
 
         this.width = width;
         this.height = height;
-        this.textureMap = textureMap;
+
         this.camera = camera;
 
         initializeWindow();
+
+
     }
 
     public int getWidth() {
@@ -75,12 +79,10 @@ public class Window implements IWindow {
         this.input = input;
     }
 
+    public void setChunkRenderer(ChunkRenderer renderer) { this.chunkRenderer = renderer; }
+
     public void setChunkLoader(ChunkLoader chunkLoader) {
         this.chunkLoader = chunkLoader;
-    }
-
-    public void setShader(IShader shader) {
-        this.shader = shader;
     }
 
     public void setTextRenderer(ITextRenderer textRenderer) {
@@ -113,12 +115,6 @@ public class Window implements IWindow {
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-            // Center the window
-//            glfwSetWindowPos(
-//                    this.windowHandle,
-//                    (vidmode.width() - pWidth.get(0)) / 2,
-//                    (vidmode.height() - pHeight.get(0)) / 2
-//            );
         } // the stack frame is popped automatically
 
         // Make the OpenGL context current
@@ -150,14 +146,15 @@ public class Window implements IWindow {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        this.shader.bind();
-        this.shader.setMatrix4(camera.getViewMatrix(), "view");
-
-        Texture cobblestoneTexture = textureMap.getTexture(Material.COBBLESTONE);
-        glBindTexture(GL_TEXTURE_2D, cobblestoneTexture.getTextureID());
-        glBindVertexArray(chunkLoader.getChunk().getVAO());
-
-        glDrawElements(GL_TRIANGLES, chunkLoader.getChunk().getIndexCount(), GL_UNSIGNED_INT, 0);
+//        this.shader.bind();
+//        this.shader.setMatrix4(camera.getViewMatrix(), "view");
+//
+//        Texture cobblestoneTexture = textureMap.getTexture(Material.COBBLESTONE);
+//        glBindTexture(GL_TEXTURE_2D, cobblestoneTexture.getTextureID());
+//        glBindVertexArray(chunkLoader.getChunk().getVAO());
+//
+//        glDrawElements(GL_TRIANGLES, chunkLoader.getChunk().getIndexCount(), GL_UNSIGNED_INT, 0);
+         chunkRenderer.drawChunks(chunkLoader.getCurrentlyRenderedChunks(), camera);
 
         final String fpsCounter = String.valueOf(framesPerSecond);
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 64), 0.3f,"FPS: " + fpsCounter);

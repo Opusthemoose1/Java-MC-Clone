@@ -1,6 +1,7 @@
 package minecraft;
 
 import minecraft.chunk.ChunkLoader;
+import minecraft.chunk.ChunkRenderer;
 import minecraft.window.Camera;
 import minecraft.window.text.TextRenderer;
 import minecraft.window.Window;
@@ -19,6 +20,8 @@ public class Main {
     private static final String DEFAULT_RESOURCE_PATH = "src/resources";
 
     public static void main(String[] args) {
+
+
 
         TextureMap textureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/");
 
@@ -39,17 +42,18 @@ public class Main {
         TextRenderer text = new TextRenderer("src/resources/textures/ascii.png", textShader );
         window.setTextRenderer(text);
 
+
+        window.setChunkRenderer(new ChunkRenderer(textureMap,
+                new Shader("src/resources/shaders/basic.vert",
+                        "src/resources/shaders/basic.frag")));
+
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
 
-        Shader shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
-        shader.bind();
-        shader.setMatrix4(camera.getProjectionMatrix(), "projection");
+
         ChunkLoader chunkLoader = new ChunkLoader();
-        shader.setMatrix4(chunkLoader.getChunk().getModelMatrix(), "model"); //TODO remove
 
         window.setChunkLoader(chunkLoader);
-        window.setShader(shader);
 
         Input input = new Input(window.getWindowHandle());
         window.setInput(input);
