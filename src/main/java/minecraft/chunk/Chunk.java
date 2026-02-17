@@ -1,5 +1,6 @@
 package minecraft.chunk;
 
+import minecraft.block.Material;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -33,26 +34,22 @@ public class Chunk {
     final int SIDE_LENGTH = 16;
     final int STRIDE = 5;
 
-    byte[] blocks = new byte[SIDE_LENGTH * SIDE_LENGTH * SIDE_LENGTH];
+    ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
 
     int offset_x, offset_y;
-    // VERY COOL FUNCTION that gets the block at the specified coordinates
-    private int index(int x, int y, int z)
-    {
-        return x + SIDE_LENGTH * (y + SIDE_LENGTH * z);
-    }
     // Returns true if the face is touching air
     private Boolean isAir(int x, int y, int z)
     {
+        return getChunkBlock(x, y, z) == null;
+    }
+
+    private ChunkBlock getChunkBlock(int x, int y, int z) {
         if (x < 0 || y < 0 || z < 0 ||
                 x >= SIDE_LENGTH ||
                 y >= SIDE_LENGTH ||
-                z >= SIDE_LENGTH)
-        {
-            return true;
-        }
+                z >= SIDE_LENGTH) return null;
 
-        return blocks[index(x, y, z)] == 0;
+        return blocks[z][y][x];
     }
 
     private void addBlock(ArrayList<Float> vertices, ArrayList<Integer> indices, int x, int y, int z)
@@ -62,25 +59,16 @@ public class Chunk {
                 0, 1, 3,
                 1, 2, 3
         };
-        final int[][] dirs = {
-        { 1, 0, 0},
-        {-1, 0, 0},
-        { 0, 1, 0},
-        { 0,-1, 0},
-        { 0, 0, 1},
-        { 0, 0,-1}
-        };
 
-        for (int d = 0; d < 6; d++)
-        {
-            int nx = x + dirs[d][0];
-            int ny = y + dirs[d][1];
-            int nz = z + dirs[d][2];
+        for (ChunkDirction direction : ChunkDirction.values()) {
+            int nx = x + direction.getX();
+            int ny = y + direction.getY();
+            int nz = z + direction.getZ();
 
             if (isAir(nx, ny, nz))
             {
-                float[] faceVertices = new float[0];
-                faceVertices = switch (d) {
+                float[] faceVertices;
+                faceVertices = switch (direction.getIndex()) { //TODO: make each of the below be a record, decompose all of this into a function
                     case 0 -> // Positive x face
                             new float[]{
                                     0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
@@ -116,14 +104,13 @@ public class Chunk {
                                     -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
                                     0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
                             };
-                    case 5 -> // negative z
+                    default -> // negative z
                             new float[]{
                                     0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
                                     -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
                                     -0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
                                     0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
                             };
-                    default -> faceVertices;
                 };
 
                 // Update the position of each vertex in the face
@@ -157,11 +144,10 @@ public class Chunk {
         this.offset_y = yOffset;
         final int SIDE_LENGTH = 16;
 
-
-        for (int i = 0; i < 16 * 16 * 16; i++)
-        {
-            this.blocks[i] = 1;
-        }
+        for (int i = 0; i < SIDE_LENGTH; i++)
+            for (int j = 0; j < SIDE_LENGTH; j++)
+                for (int k = 0; k < SIDE_LENGTH; k++)
+                    blocks[i][j][k] = new ChunkBlock((byte) Material.COBBLESTONE.getId());
 
         this.visibleBlocks = 0;
 
