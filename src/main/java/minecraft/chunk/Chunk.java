@@ -24,8 +24,6 @@ For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
 public class Chunk {
 
-    private static final ChunkBlock AIR = new ChunkBlock((byte) Material.AIR.getId());
-
     private final int VAO;
     private final int EBO;
     private final int indexCount;
@@ -42,7 +40,7 @@ public class Chunk {
     // Returns true if the face is touching air
     private Boolean isAir(int x, int y, int z)
     {
-        return getChunkBlock(x, y, z) == AIR || getChunkBlock(x, y, z) == null;
+        return getChunkBlock(x, y, z) == null;
     }
 
     private ChunkBlock getChunkBlock(int x, int y, int z) {
