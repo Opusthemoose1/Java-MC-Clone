@@ -6,6 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
@@ -27,7 +28,8 @@ public class Chunk {
 
     private final int VAO;
     private final int EBO;
-    private final int indexCount;
+    private int indexCount;
+    private int vertexCount;
 
     private int visibleBlocks;
     Matrix4f modelMatrix;
@@ -38,6 +40,78 @@ public class Chunk {
     ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
 
     int offset_x, offset_z;
+
+    float[] GPU_vertex_data;
+    int[] GPU_index_data;
+
+    private void addVertex(float v)
+    {
+        if (vertexCount >= GPU_vertex_data.length)
+        {
+            GPU_vertex_data = Arrays.copyOf(GPU_vertex_data, GPU_vertex_data.length * 2);
+        }
+        GPU_vertex_data[vertexCount++] = v;
+    }
+
+    private void addIndex(int i)
+    {
+        if (indexCount >= GPU_index_data.length)
+        {
+            GPU_index_data = Arrays.copyOf(GPU_index_data, GPU_index_data.length * 2);
+        }
+        GPU_index_data[indexCount++] = i;
+    }
+
+    private static final float[][] FACE_VERTICES = {
+            // Positive X
+            {
+                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            },
+
+            // Negative X
+            {
+                    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            },
+
+            // Positive Y
+            {
+                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+                    -0.5f, 0.5f, -0.5f, 1.0f, 0.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            },
+
+            // Negative Y
+            {
+                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+                    0.5f, -0.5f, 0.5f, 0.0f, 1.0f,
+            },
+
+            // Positive Z
+            {
+                    0.5f, -0.5f, 0.5f, 1.0f, 1.0f,
+                    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            },
+
+            // Negative Z
+            {
+                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+                    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
+                    0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            }
+    };
+
     // Returns true if the face is touching air
     private Boolean isAir(int x, int y, int z)
     {
@@ -53,7 +127,7 @@ public class Chunk {
         return blocks[z][y][x];
     }
 
-    private void addBlock(ArrayList<Float> vertices, ArrayList<Integer> indices, int x, int y, int z)
+    private void addBlock(int x, int y, int z)
     {
 
         final int[] faceIndices = {
@@ -68,68 +142,25 @@ public class Chunk {
 
             if (isAir(nx, ny, nz))
             {
-                float[] faceVertices;
-                faceVertices = switch (direction.getIndex()) { //TODO: make each of the below be a record, decompose all of this into a function
-                    case 0 -> // Positive x face
-                            new float[]{
-                                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                                    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                                    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-                                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-                            };
-                    case 1 -> // negative x face
-                            new float[]{
-                                    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-                                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-                            };
-                    case 2 -> // positive y face
-                            new float[]{
-                                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                                    -0.5f, 0.5f, -0.5f, 1.0f, 0.0f,
-                                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-                                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-                            };
-                    case 3 -> // negative y face
-                            new float[]{
-                                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-                                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-                                    0.5f, -0.5f, 0.5f, 0.0f, 1.0f,
-                            };
-                    case 4 -> // positive z
-                            new float[]{
-                                    0.5f, -0.5f, 0.5f, 1.0f, 1.0f,
-                                    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-                                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-                                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-                            };
-                    default -> // negative z
-                            new float[]{
-                                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-                                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                                    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
-                                    0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-                            };
-                };
-
+                float[] faceVertices = FACE_VERTICES[direction.getIndex()];
                 // Update the position of each vertex in the face
                 for (int i = 0; i < 4; i++)
                 {
-                    faceVertices[i * STRIDE ] += (float)x + this.offset_x;
-                    faceVertices[i * STRIDE + 1] += (float)y;
-                    faceVertices[i * STRIDE + 2] += (float)z + this.offset_z;
+                    int base = i * STRIDE;
+
+                    // First three are xyz
+                    addVertex(faceVertices[base]    + x + offset_x);
+                    addVertex(faceVertices[base + 1] + y);
+                    addVertex(faceVertices[base + 2] + z + offset_z);
+
+                    // Last two are uv (texture coordinates)
+                    addVertex(faceVertices[base + 3]);
+                    addVertex(faceVertices[base + 4]);
                 }
                 // Copy over the index data
                 int baseVertex = this.visibleBlocks * 4;
                 for (int faceIndex : faceIndices) {
-                    indices.add(faceIndex + baseVertex);
-                }
-                // Copy over the float data
-                for (float faceVertex : faceVertices)
-                {
-                    vertices.add(faceVertex);
+                    addIndex(faceIndex + baseVertex);
                 }
                 this.visibleBlocks++;
 
@@ -141,9 +172,12 @@ public class Chunk {
 
     public Chunk(int xOffset, int zOffset) // x, z are the offsets from world origin
     {
+
         Timer timeToCreateChunk = new Timer();
         timeToCreateChunk.startTimer();
 
+        this.vertexCount = 0;
+        this.indexCount = 0;
         this.offset_x = xOffset;
         this.offset_z = zOffset;
         final int SIDE_LENGTH = 16;
@@ -153,10 +187,11 @@ public class Chunk {
                 for (int k = 0; k < SIDE_LENGTH; k++)
                     blocks[i][j][k] = new ChunkBlock((byte) Material.COBBLESTONE.getId());
 
+
         this.visibleBlocks = 0;
 
-        ArrayList<Float> vertices = new ArrayList<Float>();
-        ArrayList<Integer> indices = new ArrayList<Integer>();
+        GPU_vertex_data = new float[4096];
+        GPU_index_data = new int[4096];
 
         for (int x = 0; x < SIDE_LENGTH; x++)
         {
@@ -164,7 +199,7 @@ public class Chunk {
             {
                 for (int z = 0; z < SIDE_LENGTH; z++)
                 {
-                    addBlock(vertices, indices, x , y, z );
+                    addBlock(x, y, z);
                 }
             }
         }
@@ -177,22 +212,13 @@ public class Chunk {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBindVertexArray(this.VAO);
 
-        float[] vertexArray = new float[vertices.size()];
-        int vi = 0;
-        for (Float f : vertices)
-            vertexArray[vi++] = f;
-
-        int[] indexArray = new int[indices.size()];
-        int ii = 0;
-        for (Integer i : indices)
-            indexArray[ii++] = i;
-
-        this.indexCount = indices.size();
+        GPU_vertex_data = Arrays.copyOf(GPU_vertex_data, vertexCount);
+        GPU_index_data = Arrays.copyOf(GPU_index_data, indexCount);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexArray, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, GPU_index_data, GL_STATIC_DRAW);
         // The vertices size in bytes no longer needs to be passed in
-        glBufferData(GL_ARRAY_BUFFER, vertexArray, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, GPU_vertex_data, GL_STATIC_DRAW);
 
 
         glVertexAttribPointer(0, 3, GL_FLOAT, false, STRIDE * Float.BYTES, 0L);
