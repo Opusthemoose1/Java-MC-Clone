@@ -51,7 +51,7 @@ public class Main {
         glEnable(GL_DEPTH_TEST);
 
 
-        ChunkLoader chunkLoader = new ChunkLoader();
+        ChunkLoader chunkLoader = new ChunkLoader(8);
 
         window.setChunkLoader(chunkLoader);
 

@@ -1,8 +1,8 @@
 package minecraft.chunk;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 public interface IChunkLoader {
 
-    public ArrayList<Chunk> getCurrentlyRenderedChunks();
+    Map<Long, Chunk> getCurrentlyRenderedChunks();
 }

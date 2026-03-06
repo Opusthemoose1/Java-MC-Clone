@@ -6,7 +6,7 @@ import minecraft.window.texture.Shader;
 import minecraft.window.texture.Texture;
 import minecraft.window.texture.TextureMap;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -20,11 +20,11 @@ public class ChunkRenderer {
     public ChunkRenderer(TextureMap map, Shader shader) {
         textures = map;
         chunkShader = shader;
-    };
+    }
 
-    public void drawChunks(ArrayList<Chunk> chunks, Camera camera)
+    public void drawChunks(Map<Long, Chunk> chunks, Camera camera)
     {
-        for (Chunk chunk : chunks)
+        for (Chunk chunk : chunks.values())
         {
             this.chunkShader.bind();
             this.chunkShader.setMatrix4(camera.getViewMatrix(), "view");

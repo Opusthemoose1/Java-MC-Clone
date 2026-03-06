@@ -5,7 +5,6 @@ import minecraft.timer.Timer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -237,9 +236,8 @@ public class Chunk {
         System.out.println("Time to build chunk: " + timeToCreateChunk.getTimeInMilliseconds() + " ms");
 
     }
-    public int getVAO() {return this.VAO; };
-    public int getEBO() {return this.EBO; };
+    public int getVAO() {return this.VAO; }
     public int getIndexCount() {return this.indexCount; }
-    public Matrix4f getModelMatrix() {return this.modelMatrix; };
-    public int getVisibleBlocks() {return this.visibleBlocks; };
+    public int getXPosition() {return this.offset_x; }
+    public int getYPosition() {return this.offset_z; }
 }
