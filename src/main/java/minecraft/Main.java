@@ -16,16 +16,14 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 public class Main {
 
-    private static final int DEFAULT_WIDTH = 1920, DEFAULT_HEIGHT = 1080;
+    private static final int DEFAULT_WIDTH = 1080, DEFAULT_HEIGHT = 720;
     private static final String DEFAULT_RESOURCE_PATH = "src/resources";
 
     public static void main(String[] args) {
 
-
-
         TextureMap textureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/");
 
-        Camera camera = new Camera(new Vector3f(0.0f, 0.0f, 0.0f));
+        Camera camera = new Camera(new Vector3f(0.0f, 18.0f, 0.0f));
         camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
 
         //TODO: Initialize GL in a way so that the context can be preserved for making new TextRenderer, Shader, etc., so that these dependencies can be added to Window constructor

@@ -39,10 +39,10 @@ public class Camera {
         this.view = new Matrix4f();
 
         this.position = position;
-        this.front = new Vector3f(0.0f, 0.0f, -1.0f);
+        this.front = new Vector3f(0.0f, 0.0f, 1.0f);
         this.worldUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
-        this.yaw = -90.0f;
+        this.yaw = 0.0f;
         this.pitch = 0.0f;
 
         this.firstMouse = false;

@@ -33,7 +33,7 @@ public class Chunk {
     private int visibleBlocks;
     Matrix4f modelMatrix;
 
-    final int SIDE_LENGTH = 16;
+    static final int SIDE_LENGTH = 16;
     final int STRIDE = 5;
 
     ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
@@ -117,7 +117,7 @@ public class Chunk {
         return getChunkBlock(x, y, z) == null;
     }
 
-    private ChunkBlock getChunkBlock(int x, int y, int z) {
+    public ChunkBlock getChunkBlock(int x, int y, int z) {
         if (x < 0 || y < 0 || z < 0 ||
                 x >= SIDE_LENGTH ||
                 y >= SIDE_LENGTH ||

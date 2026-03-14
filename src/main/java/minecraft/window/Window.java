@@ -157,7 +157,7 @@ public class Window implements IWindow {
          chunkRenderer.drawChunks(chunkLoader.getCurrentlyRenderedChunks(), camera);
 
         final String fpsCounter = String.valueOf(framesPerSecond);
-        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 64), 0.3f,"FPS: " + fpsCounter);
+        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter);
 
         glfwSwapBuffers(getWindowHandle()); // swap the color buffers
 
