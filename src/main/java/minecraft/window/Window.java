@@ -1,16 +1,11 @@
 package minecraft.window;
 
-import minecraft.chunk.Chunk;
 import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.ChunkRenderer;
 import minecraft.chunk.IChunkLoader;
 import minecraft.window.text.ITextRenderer;
-import minecraft.window.texture.IShader;
-import minecraft.block.Material;
 import minecraft.window.input.IInput;
-import minecraft.window.texture.Shader;
-import minecraft.window.texture.Texture;
-import minecraft.window.texture.TextureMap;
+
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -50,7 +45,7 @@ public class Window implements IWindow {
 
     private IInput input;
 
-    public Window(int width, int height, TextureMap textureMap, Camera camera) {
+    public Window(int width, int height, Camera camera) {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
@@ -146,14 +141,7 @@ public class Window implements IWindow {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-//        this.shader.bind();
-//        this.shader.setMatrix4(camera.getViewMatrix(), "view");
-//
-//        Texture cobblestoneTexture = textureMap.getTexture(Material.COBBLESTONE);
-//        glBindTexture(GL_TEXTURE_2D, cobblestoneTexture.getTextureID());
-//        glBindVertexArray(chunkLoader.getChunk().getVAO());
-//
-//        glDrawElements(GL_TRIANGLES, chunkLoader.getChunk().getIndexCount(), GL_UNSIGNED_INT, 0);
+
          chunkRenderer.drawChunks(chunkLoader.getCurrentlyRenderedChunks(), camera);
 
         final String fpsCounter = String.valueOf(framesPerSecond);

@@ -21,14 +21,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TextureMap textureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/");
-
         Camera camera = new Camera(new Vector3f(0.0f, 18.0f, 0.0f));
         camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
 
         //TODO: Initialize GL in a way so that the context can be preserved for making new TextRenderer, Shader, etc., so that these dependencies can be added to Window constructor
-        Window window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, textureMap, camera);
-
+        Window window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, camera);
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
@@ -36,12 +33,15 @@ public class Main {
         // bindings available for use.
         GL.createCapabilities();
 
+        TextureMap blockTextureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/blocks/");
+
+
         Shader textShader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
         TextRenderer text = new TextRenderer("src/resources/textures/ascii.png", textShader );
         window.setTextRenderer(text);
 
 
-        window.setChunkRenderer(new ChunkRenderer(textureMap,
+        window.setChunkRenderer(new ChunkRenderer(blockTextureMap,
                 new Shader("src/resources/shaders/basic.vert",
                         "src/resources/shaders/basic.frag")));
 
