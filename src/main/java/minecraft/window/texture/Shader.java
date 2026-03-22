@@ -68,7 +68,19 @@ public class Shader implements IShader {
         try (MemoryStack stack = MemoryStack.stackPush())
         {
             glUniformMatrix4fv(location, false, mat.get(stack.mallocFloat(16)));
-        };
+        }
 
+    }
+    public void setInt(int integer, String uniformName)
+    {
+        int location = glGetUniformLocation(shaderProgramId, uniformName);
+        if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
+        glUniform1i(location, integer);
+    }
+    public void setIntArray(int[] array, String uniformName)
+    {
+        int location = glGetUniformLocation(shaderProgramId, uniformName);
+        if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
+        glUniform1iv(location, array);
     }
 }

@@ -12,6 +12,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glVertexAttribIPointer;
 import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
@@ -34,7 +35,7 @@ public class Chunk {
     Matrix4f modelMatrix;
 
     static final int SIDE_LENGTH = 16;
-    final int STRIDE = 5;
+    final int STRIDE = 6;
 
     ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
 
@@ -62,52 +63,52 @@ public class Chunk {
     }
 
     private static final float[][] FACE_VERTICES = {
-            // Positive X
+            // Positive X. X Y Z | U V | blockType
             {
-                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+                    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
             },
 
             // Negative X
             {
-                    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
             },
 
             // Positive Y
             {
-                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-                    -0.5f, 0.5f, -0.5f, 1.0f, 0.0f,
-                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+                    -0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
             },
 
             // Negative Y
             {
-                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-                    0.5f, -0.5f, 0.5f, 0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f
             },
 
             // Positive Z
             {
-                    0.5f, -0.5f, 0.5f, 1.0f, 1.0f,
-                    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+                    0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
             },
 
             // Negative Z
             {
-                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-                    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
-                    0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
+                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
             }
     };
 
@@ -155,6 +156,9 @@ public class Chunk {
                     // Last two are uv (texture coordinates)
                     addVertex(faceVertices[base + 3]);
                     addVertex(faceVertices[base + 4]);
+
+                    addVertex(faceVertices[base + 5] = blocks[x][y][z].materialId() - 1);
+
                 }
                 // Copy over the index data
                 int baseVertex = this.visibleBlocks * 4;
@@ -184,7 +188,12 @@ public class Chunk {
         for (int i = 0; i < SIDE_LENGTH; i++)
             for (int j = 0; j < SIDE_LENGTH; j++)
                 for (int k = 0; k < SIDE_LENGTH; k++)
-                    blocks[i][j][k] = new ChunkBlock((byte) Material.COBBLESTONE.getId());
+                {
+                    if (j == SIDE_LENGTH - 1) blocks[i][j][k] = new ChunkBlock((byte) Material.DIRT.getId());
+                    else blocks[i][j][k] = new ChunkBlock((byte) Material.COBBLESTONE.getId());
+
+                }
+
 
 
         this.visibleBlocks = 0;
@@ -225,6 +234,9 @@ public class Chunk {
 
         glVertexAttribPointer(1, 2, GL_FLOAT, false, STRIDE * Float.BYTES, 3L * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 1, GL_FLOAT, false, STRIDE * Float.BYTES, 5L * Float.BYTES);
+        glEnableVertexAttribArray(2);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);

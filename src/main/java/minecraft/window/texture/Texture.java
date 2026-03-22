@@ -12,8 +12,10 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Texture {
     private int textureID;
+    private String path;
 
     Texture(String filePath) {
+        path = filePath;
         try (MemoryStack stack = MemoryStack.stackPush())
         {
             IntBuffer width = stack.mallocInt(1);
@@ -37,4 +39,5 @@ public class Texture {
     }
 
     public int getTextureID() {return this.textureID; };
+    public String getFilePath() {return this.path; };
 }

@@ -53,44 +53,15 @@ public class TextureMap implements ITextureMap {
             }
             if (key.equals("dirt"))
             {
-                textureMap.put(Material.DIRT, new Texture(file.getPath()  ));
+                textureMap.put(Material.DIRT, new Texture(file.getPath()));
             }
 
         }
 
+
         System.out.println("Loaded " + textureMap.size() + " block textures.");
     }
 
-    private void createTextureArray(String texutrePath)
-    {
-        int texArray = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
-
-        int numTextures = Path.of(texturePath).getNameCount();
-        System.out.println("Num of textures: " + numTextures);
-
-        // TODO: Move STBI functions out as it's shared by Texture
-//        try (MemoryStack stack = MemoryStack.stackPush())
-//        {
-//            IntBuffer width = stack.mallocInt(1);
-//            IntBuffer height = stack.mallocInt(1);
-//            IntBuffer channels = stack.mallocInt(1);
-//
-//            ByteBuffer image = STBImage.stbi_load(
-//                    filePath,
-//                    width, height, channels,
-//                    4
-//            );
-//            if (image == null) throw new RuntimeException(STBImage.stbi_failure_reason());
-//
-//        // Allocate storage for N layers
-//        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, width, height, numTextures, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-//
-//        // Upload each texture as a layer
-//        for (int i = 0; i < numTextures; i++) {
-//            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, textureData[i]);
-//        }
-    }
     @Override
     public Texture getTexture(Material material) {
         Texture texture = textureMap.get(material);
@@ -100,4 +71,5 @@ public class TextureMap implements ITextureMap {
         }
         return texture;
     }
+    public HashMap<Material, Texture> getTextureMap() {return textureMap; };
 }
