@@ -6,8 +6,11 @@ import org.joml.Vector3f;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static org.lwjgl.opengl.GL11.glViewport;
 
-public class Camera {
+public class Camera implements CameraObserver {
+
+
 
     public enum CameraDirection {
         FORWARD,
@@ -21,45 +24,48 @@ public class Camera {
     private final Matrix4f perspective;
     private final Matrix4f ortho;
     private final Matrix4f view;
-    private final Vector3f position;
+    private  Vector3f position;
     private Vector3f front;
     private final Vector3f worldUp;
     private Vector3f up;
 
-    private float yaw;
-    private float pitch;
+    private float yaw, pitch, fov;
+    private float screenWidth, screenHeight;
 
     private Boolean firstMouse; // Detects if it's the first mouse movement
-    private double lastX;
-    private double lastY;
+    private double lastX, lastY;
 
-    public Camera(Vector3f position) {
+    public Camera()  {
         this.perspective = new Matrix4f();
         this.ortho = new Matrix4f();
         this.view = new Matrix4f();
 
-        this.position = position;
+        this.position = new Vector3f(0.0f, 0.0f, 0.0f);
         this.front = new Vector3f(0.0f, 0.0f, 1.0f);
         this.worldUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
         this.yaw = 0.0f;
         this.pitch = 0.0f;
+        this.fov = 90.0f;
 
         this.firstMouse = false;
         this.lastX = 960;
         this.lastY = 540;
 
+        screenWidth = 720;
+        screenHeight = 480;
+
         updateCameraVectors();
     }
 
-    public void updateProjectionMatrix(float fov, float width, float height) {
+    public void updateProjectionMatrix() {
         this.perspective.identity().perspective(
                 (float) Math.toRadians(fov),
-                width / height,
+                screenWidth / screenHeight,
                 0.1f,
                 100.0f
         );
-        this.ortho.identity().ortho(0, width, height, 0, -1, 1);
+        this.ortho.identity().ortho(0, screenWidth, screenHeight, 0, -1, 1);
     }
 
     public Matrix4f getViewMatrix() {
@@ -136,5 +142,66 @@ public class Camera {
 
     public Vector3f getPosition() {
         return new Vector3f(this.position);
+    }
+
+    @Override
+    public void onFramebufferResize(int width, int height) {
+        glViewport(0, 0, width, height);
+        screenWidth = width;
+        screenHeight = height;
+        updateProjectionMatrix();
+
+    }
+
+    public static class Builder
+    {
+        private Vector3f position; // World position
+        private float yaw, pitch, fov;
+        private float scrWidth, scrHeight;
+
+        public Builder position(Vector3f pos) {
+            this.position = pos;
+            return this;
+        }
+        public Builder yaw(float yaw)
+        {
+            this.yaw = yaw;
+            return this;
+        }
+        public Builder pitch(float pitch)
+        {
+            this.pitch = pitch;
+            return this;
+        }
+        public Builder fov(float fov)
+        {
+            this.fov = fov;
+            return this;
+        }
+        public Builder screenWidth(float width)
+        {
+            this.scrWidth = width;
+            return this;
+        }
+        public Builder screenHeight(float height)
+        {
+            this.scrHeight = height;
+            return this;
+        }
+        public Camera build()
+        {
+            Camera camera = new Camera();
+            camera.position = position;
+            camera.yaw = yaw;
+            camera.pitch = pitch;
+            camera.fov = fov;
+            camera.screenWidth = scrWidth;
+            camera.screenHeight = scrHeight;
+
+            camera.updateProjectionMatrix();
+
+            return camera;
+        }
+
     }
 }

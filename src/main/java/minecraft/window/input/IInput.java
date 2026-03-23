@@ -1,13 +1,18 @@
 package minecraft.window.input;
 
+import minecraft.window.CameraObserver;
 import org.joml.Vector2d;
 
 public interface IInput {
 
-    public void poll();
+    void poll();
 
-    public boolean isKeyDown(int key);
+    boolean isKeyDown(int key);
 
-    public Vector2d getMousePos();
+    Vector2d getMousePos();
+
+    void attach(CameraObserver observer);
+
+    void detach(CameraObserver observer);
 
 }

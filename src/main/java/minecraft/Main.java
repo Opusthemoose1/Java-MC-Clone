@@ -11,8 +11,7 @@ import minecraft.window.texture.TextureMap;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
 
@@ -21,25 +20,34 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Camera camera = new Camera(new Vector3f(0.0f, 18.0f, 0.0f));
-        camera.updateProjectionMatrix(90.0f, 1920.0f, 1080.0f);
 
         //TODO: Initialize GL in a way so that the context can be preserved for making new TextRenderer, Shader, etc., so that these dependencies can be added to Window constructor
-        Window window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT, camera);
+        //TODO: Turn window into a builder pattern
+        Window window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+
+        Camera camera = new Camera.Builder()
+                .position(new Vector3f(0.0f, 18.0f, 0.0f))
+                .yaw(0.0f)
+                .pitch(0.0f)
+                .fov(90.0f)
+                .screenWidth(window.getWidth())
+                .screenHeight(window.getHeight())
+                .build();
+
+        window.setCamera(camera);
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
-
         TextureMap blockTextureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/blocks/");
 
 
         Shader textShader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
         TextRenderer text = new TextRenderer("src/resources/textures/ascii.png", textShader );
-        window.setTextRenderer(text);
 
+        window.setTextRenderer(text);
 
         window.setChunkRenderer(new ChunkRenderer(blockTextureMap,
                 new Shader("src/resources/shaders/basic.vert",
@@ -54,6 +62,7 @@ public class Main {
         window.setChunkLoader(chunkLoader);
 
         Input input = new Input(window.getWindowHandle());
+        input.attach(camera);
         window.setInput(input);
 
         Minecraft minecraft = new Minecraft(window);
