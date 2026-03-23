@@ -67,6 +67,22 @@ public class Vector implements IVector {
     }
 
     @Override
+    public IVector subtract(IVector vector) {
+        setX(getX() - vector.getX());
+        setY(getY() - vector.getY());
+        setZ(getZ() - vector.getZ());
+        return this;
+    }
+
+    @Override
+    public IVector subtract(float x, float y, float z) {
+        setX(getX() - x);
+        setY(getY() - y);
+        setZ(getZ() - z);
+        return this;
+    }
+
+    @Override
     public IVector multiply(float c) {
         setX(c * getX());
         setY(c * getY());
@@ -99,5 +115,15 @@ public class Vector implements IVector {
     public IVector normalize() {
         jomlVector.normalize();
         return this;
+    }
+
+    @Override
+    public IVector cross(IVector vector) {
+        jomlVector.cross(vector.toJOML());
+        return this;
+    }
+
+    public Vector3f toJOML() {
+        return new Vector3f(getX(), getY(), getZ());
     }
 }

@@ -2,6 +2,8 @@ package minecraft;
 
 import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.ChunkRenderer;
+import minecraft.math.IVector;
+import minecraft.math.Vector;
 import minecraft.window.Camera;
 import minecraft.window.text.TextRenderer;
 import minecraft.window.Window;
@@ -15,6 +17,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
 
+    private static final IVector INITIAL_CAMERA_POSITION = new Vector(0f, 18f, 0f);
     private static final int DEFAULT_WIDTH = 1080, DEFAULT_HEIGHT = 720;
     private static final String DEFAULT_RESOURCE_PATH = "src/resources";
 
@@ -26,7 +29,7 @@ public class Main {
         Window window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
         Camera camera = new Camera.Builder()
-                .position(new Vector3f(0.0f, 18.0f, 0.0f))
+                .position(INITIAL_CAMERA_POSITION)
                 .yaw(0.0f)
                 .pitch(0.0f)
                 .fov(90.0f)

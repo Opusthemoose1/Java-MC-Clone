@@ -1,5 +1,7 @@
 package minecraft.math;
 
+import org.joml.Vector3f;
+
 public interface IVector {
 
     public float getX();
@@ -18,6 +20,10 @@ public interface IVector {
 
     public IVector add(float x, float y, float z);
 
+    public IVector subtract(IVector vector);
+
+    public IVector subtract(float x, float y, float z);
+
     public IVector multiply(float c);
 
     public IVector divide(float c);
@@ -29,5 +35,9 @@ public interface IVector {
     public float length();
 
     public IVector normalize();
+
+    public IVector cross(IVector vector);
+
+    public Vector3f toJOML();
 
 }

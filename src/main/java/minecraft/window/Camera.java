@@ -1,5 +1,7 @@
 package minecraft.window;
 
+import minecraft.math.IVector;
+import minecraft.math.Vector;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
@@ -9,8 +11,6 @@ import static java.lang.Math.sin;
 import static org.lwjgl.opengl.GL11.glViewport;
 
 public class Camera implements CameraObserver {
-
-
 
     public enum CameraDirection {
         FORWARD,
@@ -24,10 +24,10 @@ public class Camera implements CameraObserver {
     private final Matrix4f perspective;
     private final Matrix4f ortho;
     private final Matrix4f view;
-    private  Vector3f position;
-    private Vector3f front;
-    private final Vector3f worldUp;
-    private Vector3f up;
+    private  IVector position;
+    private IVector front;
+    private final IVector worldUp;
+    private IVector up;
 
     private float yaw, pitch, fov;
     private float screenWidth, screenHeight;
@@ -40,9 +40,9 @@ public class Camera implements CameraObserver {
         this.ortho = new Matrix4f();
         this.view = new Matrix4f();
 
-        this.position = new Vector3f(0.0f, 0.0f, 0.0f);
-        this.front = new Vector3f(0.0f, 0.0f, 1.0f);
-        this.worldUp = new Vector3f(0.0f, 1.0f, 0.0f);
+        this.position = new Vector(0.0f, 0.0f, 0.0f);
+        this.front = new Vector(0.0f, 0.0f, 1.0f);
+        this.worldUp = new Vector(0.0f, 1.0f, 0.0f);
 
         this.yaw = 0.0f;
         this.pitch = 0.0f;
@@ -69,26 +69,26 @@ public class Camera implements CameraObserver {
     }
 
     public Matrix4f getViewMatrix() {
-        Vector3f tmp = new Vector3f();
+        IVector positionPlusFront = position.clone().add(front);
         return view.identity().lookAt(
-                position,
-                tmp.set(position).add(front),
-                up
+                new Vector3f(position.getX(), position.getY(), position.getZ()),
+                new Vector3f(positionPlusFront.getX(), positionPlusFront.getY(), positionPlusFront.getZ()),
+                new Vector3f(up.getX(), up.getY(), up.getZ())
         );
     }
 
     public void processInput(CameraDirection dir, float deltaTime) {
         float velocity = VELOCITY * deltaTime;
         switch(dir) {
-            case FORWARD -> this.position.add(new Vector3f(this.front).mul(velocity));
-            case BACKWARD -> this.position.sub(new Vector3f(this.front).mul(velocity));
-            case LEFT -> this.position.sub(getRightDirection().mul(velocity));
-            case RIGHT -> this.position.add(getRightDirection().mul(velocity));
+            case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
+            case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));
+            case LEFT -> this.position.subtract(getRightDirection().multiply(velocity));
+            case RIGHT -> this.position.add(getRightDirection().multiply(velocity));
         }
     }
 
-    private Vector3f getRightDirection() {
-        return new Vector3f(this.front).cross(this.up).normalize();
+    private IVector getRightDirection() {
+        return this.front.clone().cross(this.up).normalize();
     }
 
     public void mouseControl(Vector2d mousePos) {
@@ -111,25 +111,26 @@ public class Camera implements CameraObserver {
 
         pitch = Math.clamp(pitch, -MAX_PITCH, MAX_PITCH);
 
-        Vector3f direction = new Vector3f();
-        direction.x = (float)(cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
-        direction.y = (float)sin(Math.toRadians(pitch));
-        direction.z = (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)));
+        IVector direction = new Vector(
+                (float)(cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch))),
+                (float)sin(Math.toRadians(pitch)),
+                (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)))
+        );
         this.front = direction.normalize();
     }
 
     private void updateCameraVectors() {
-        front = new Vector3f(
+        front = new Vector(
                 (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))),
                 (float)(Math.sin(Math.toRadians(pitch))),
                 (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)))
         ).normalize();
 
         // right = front × worldUp
-        Vector3f right = new Vector3f(front).cross(worldUp).normalize();
+        IVector right = front.clone().cross(worldUp).normalize();
 
         // up = right × front
-        up = new Vector3f(right).cross(front).normalize();
+        up = right.clone().cross(front).normalize();
     }
 
     public Matrix4f getProjectionMatrix() {
@@ -140,8 +141,8 @@ public class Camera implements CameraObserver {
         return new Matrix4f(this.ortho);
     }
 
-    public Vector3f getPosition() {
-        return new Vector3f(this.position);
+    public IVector getPosition() {
+        return position.clone();
     }
 
     @Override
@@ -155,11 +156,11 @@ public class Camera implements CameraObserver {
 
     public static class Builder
     {
-        private Vector3f position; // World position
+        private IVector position; // World position
         private float yaw, pitch, fov;
         private float scrWidth, scrHeight;
 
-        public Builder position(Vector3f pos) {
+        public Builder position(IVector pos) {
             this.position = pos;
             return this;
         }

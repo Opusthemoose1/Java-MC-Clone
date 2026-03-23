@@ -12,7 +12,6 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glVertexAttribIPointer;
 import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
@@ -25,6 +24,8 @@ world space
 For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
 public class Chunk {
+
+    private static final int GPU_BUFFER_SIZE = 4096;
 
     private final int VAO;
     private final int EBO;
@@ -39,27 +40,27 @@ public class Chunk {
 
     ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
 
-    int offset_x, offset_z;
+    int offsetX, offsetZ;
 
-    float[] GPU_vertex_data;
-    int[] GPU_index_data;
+    float[] GPUVertexData;
+    int[] GPUIndexData;
 
     private void addVertex(float v)
     {
-        if (vertexCount >= GPU_vertex_data.length)
+        if (vertexCount >= GPUVertexData.length)
         {
-            GPU_vertex_data = Arrays.copyOf(GPU_vertex_data, GPU_vertex_data.length * 2);
+            GPUVertexData = Arrays.copyOf(GPUVertexData, GPUVertexData.length * 2);
         }
-        GPU_vertex_data[vertexCount++] = v;
+        GPUVertexData[vertexCount++] = v;
     }
 
     private void addIndex(int i)
     {
-        if (indexCount >= GPU_index_data.length)
+        if (indexCount >= GPUIndexData.length)
         {
-            GPU_index_data = Arrays.copyOf(GPU_index_data, GPU_index_data.length * 2);
+            GPUIndexData = Arrays.copyOf(GPUIndexData, GPUIndexData.length * 2);
         }
-        GPU_index_data[indexCount++] = i;
+        GPUIndexData[indexCount++] = i;
     }
 
     private static final float[][] FACE_VERTICES = {
@@ -149,9 +150,9 @@ public class Chunk {
                     int base = i * STRIDE;
 
                     // First three are xyz
-                    addVertex(faceVertices[base]    + x + offset_x);
+                    addVertex(faceVertices[base]    + x + offsetX);
                     addVertex(faceVertices[base + 1] + y);
-                    addVertex(faceVertices[base + 2] + z + offset_z);
+                    addVertex(faceVertices[base + 2] + z + offsetZ);
 
                     // Last two are uv (texture coordinates)
                     addVertex(faceVertices[base + 3]);
@@ -181,8 +182,8 @@ public class Chunk {
 
         this.vertexCount = 0;
         this.indexCount = 0;
-        this.offset_x = xOffset;
-        this.offset_z = zOffset;
+        this.offsetX = xOffset;
+        this.offsetZ = zOffset;
         final int SIDE_LENGTH = 16;
 
         for (int i = 0; i < SIDE_LENGTH; i++)
@@ -198,8 +199,8 @@ public class Chunk {
 
         this.visibleBlocks = 0;
 
-        GPU_vertex_data = new float[4096];
-        GPU_index_data = new int[4096];
+        GPUVertexData = new float[GPU_BUFFER_SIZE];
+        GPUIndexData = new int[GPU_BUFFER_SIZE];
 
         for (int x = 0; x < SIDE_LENGTH; x++)
         {
@@ -220,13 +221,13 @@ public class Chunk {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBindVertexArray(this.VAO);
 
-        GPU_vertex_data = Arrays.copyOf(GPU_vertex_data, vertexCount);
-        GPU_index_data = Arrays.copyOf(GPU_index_data, indexCount);
+        GPUVertexData = Arrays.copyOf(GPUVertexData, vertexCount);
+        GPUIndexData = Arrays.copyOf(GPUIndexData, indexCount);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, GPU_index_data, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, GPUIndexData, GL_STATIC_DRAW);
         // The vertices size in bytes no longer needs to be passed in
-        glBufferData(GL_ARRAY_BUFFER, GPU_vertex_data, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, GPUVertexData, GL_STATIC_DRAW);
 
 
         glVertexAttribPointer(0, 3, GL_FLOAT, false, STRIDE * Float.BYTES, 0L);
@@ -250,6 +251,6 @@ public class Chunk {
     }
     public int getVAO() {return this.VAO; }
     public int getIndexCount() {return this.indexCount; }
-    public int getXPosition() {return this.offset_x; }
-    public int getYPosition() {return this.offset_z; }
+    public int getXPosition() {return this.offsetX; }
+    public int getYPosition() {return this.offsetZ; }
 }
