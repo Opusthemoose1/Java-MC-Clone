@@ -1,17 +1,14 @@
 package minecraft;
 
-import minecraft.chunk.IChunkLoader;
 import minecraft.window.*;
-import minecraft.window.texture.Shader;
 import org.lwjgl.opengl.*;
 
-import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Minecraft {
 
-    private IWindow window;
+    private final IWindow window;
 
     public Minecraft(IWindow window) {
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
