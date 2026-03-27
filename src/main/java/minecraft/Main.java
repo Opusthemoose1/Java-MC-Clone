@@ -59,10 +59,6 @@ public class Main {
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
 
-        ChunkLoader chunkLoader = new ChunkLoader(8);
-
-        window.setChunkLoader(chunkLoader);
-
         Input input = new Input(window.getWindowHandle());
         input.attach(camera);
         window.setInput(input);

@@ -1,5 +1,9 @@
 package minecraft;
 
+import minecraft.entity.Entity;
+import minecraft.entity.EntityFactory;
+import minecraft.entity.EntityManager;
+import minecraft.entity.Player;
 import minecraft.window.*;
 import org.lwjgl.opengl.*;
 
@@ -13,6 +17,11 @@ public class Minecraft {
     public Minecraft(IWindow window) {
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         this.window = window;
+
+        EntityManager.GetInstance();
+        Entity player = EntityManager.newEntity(EntityFactory.EntityType.PLAYER);
+        EntityManager.attach(player);
+
     }
 
     public void run() {

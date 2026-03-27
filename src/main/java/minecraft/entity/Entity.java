@@ -1,5 +1,8 @@
 package minecraft.entity;
 
+import minecraft.block.Material;
+import minecraft.chunk.ChunkBlock;
+import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
@@ -49,11 +52,9 @@ abstract public class Entity {
     abstract float getWeight();
 
     public boolean isOnSolidGround() {
-
-
-
-
-        return true; //TODO check if the block -1 in y direction is not air
+        ChunkBlock block = ChunkLoader.GetInstance().getBlock(location.getX(), location.getY() - 1, location.getZ());
+        // Check if the block below us is
+        return block.materialId() != Material.AIR.getId();//TODO check if the block -1 in y direction is not air
     }
 
     public void tick() {

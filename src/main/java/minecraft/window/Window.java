@@ -3,6 +3,7 @@ package minecraft.window;
 import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.ChunkRenderer;
 import minecraft.chunk.IChunkLoader;
+import minecraft.entity.EntityManager;
 import minecraft.window.text.ITextRenderer;
 import minecraft.window.input.IInput;
 
@@ -11,6 +12,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
+import javax.xml.stream.events.EndElement;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -38,7 +40,6 @@ public class Window implements IWindow {
     private Camera camera;
     private ChunkRenderer chunkRenderer;
     private ITextRenderer textRenderer;
-    private IChunkLoader chunkLoader;
 
     private IInput input;
 
@@ -70,10 +71,6 @@ public class Window implements IWindow {
     }
 
     public void setChunkRenderer(ChunkRenderer renderer) { this.chunkRenderer = renderer; }
-
-    public void setChunkLoader(ChunkLoader chunkLoader) {
-        this.chunkLoader = chunkLoader;
-    }
 
     public void setTextRenderer(ITextRenderer textRenderer) {
         this.textRenderer = textRenderer;
@@ -116,10 +113,6 @@ public class Window implements IWindow {
         glfwShowWindow(this.windowHandle);
     }
 
-    public IChunkLoader getChunkLoader() {
-        return chunkLoader;
-    }
-
     public long getWindowHandle() {return this.windowHandle;}
 
     public boolean canContinueLoop() {
@@ -136,8 +129,11 @@ public class Window implements IWindow {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
+        // Draw the chunks
+        chunkRenderer.drawChunks(ChunkLoader.GetInstance().getCurrentlyRenderedChunks(), camera);
 
-         chunkRenderer.drawChunks(chunkLoader.getCurrentlyRenderedChunks(), camera);
+        // Tick all registered entities
+        EntityManager.GetInstance().tickAllEntities();
 
         final String fpsCounter = String.valueOf(framesPerSecond);
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter);

@@ -15,8 +15,6 @@ public interface IWindow {
 
     public void setInput(IInput input);
 
-    public IChunkLoader getChunkLoader();
-
     public void free();
 
     public boolean canContinueLoop();

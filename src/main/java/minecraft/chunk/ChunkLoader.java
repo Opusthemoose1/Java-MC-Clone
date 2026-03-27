@@ -3,11 +3,28 @@ package minecraft.chunk;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: Facade pattern around chunk renderer, chunk loader etc to have all the chunk API in a single class
 public class ChunkLoader implements IChunkLoader {
 
-    private final Map<Long, Chunk> currentlyRenderedChunks;
+    private static Map<Long, Chunk> currentlyRenderedChunks;
+    private static int renderDistance = 16;
 
-    public ChunkLoader(int renderDistance){
+    private static ChunkLoader chunkLoader = null;
+
+    private ChunkLoader() {};
+
+    public static ChunkLoader GetInstance()
+    {
+        if (chunkLoader == null)
+        {
+            InitializeChunks(renderDistance);
+            chunkLoader = new ChunkLoader();
+        }
+        return chunkLoader;
+    }
+
+
+    private static void InitializeChunks(int renderDistance){
         currentlyRenderedChunks = new HashMap<>();
         final int CHUNK_SIZE = 16;
         // Render it from the center of the player. Divide render distance by 2, go from -renderDistance/2 to renderDistance/2
@@ -21,11 +38,11 @@ public class ChunkLoader implements IChunkLoader {
         }
     }
 
-    private long turnOffsetIntoKey(int x, int y)
+    private static long turnOffsetIntoKey(int x, int y)
     {
         return (((long)x) << 32) | (y & 0xffffffffL);
     }
-    private void registerChunk(Chunk chunk)
+    private static void registerChunk(Chunk chunk)
     {
         // ChatGPT generated this, but it compacts the x, y position of a chunk into a single 64 bit long
         // This requires less code for insertion, but makes it less readable. But this goes on "under the hood"
