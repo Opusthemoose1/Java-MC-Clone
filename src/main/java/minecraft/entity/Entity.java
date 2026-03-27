@@ -49,6 +49,10 @@ abstract public class Entity {
     abstract float getWeight();
 
     public boolean isOnSolidGround() {
+
+
+
+
         return true; //TODO check if the block -1 in y direction is not air
     }
 

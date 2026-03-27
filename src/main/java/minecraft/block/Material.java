@@ -3,8 +3,8 @@ package minecraft.block;
 public enum Material {
 
     AIR(0, null),
-    COBBLESTONE(1, "cobblestone"),
-    DIRT(2, "dirt");
+    DIRT(1, "dirt"),
+    COBBLESTONE(2, "cobblestone");
 
     private final int id;
     private final String textureName;

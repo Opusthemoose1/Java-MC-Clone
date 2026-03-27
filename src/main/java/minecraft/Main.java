@@ -56,6 +56,7 @@ public class Main {
                 new Shader("src/resources/shaders/basic.vert",
                         "src/resources/shaders/basic.frag")));
 
+        
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
 

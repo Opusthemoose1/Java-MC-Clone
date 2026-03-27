@@ -58,6 +58,8 @@ public class Camera implements CameraObserver {
         updateCameraVectors();
     }
 
+    public float getScreenWidth() {return screenWidth; }
+    public float getScreenHeight() {return screenHeight; }
     public void updateProjectionMatrix() {
         this.perspective.identity().perspective(
                 (float) Math.toRadians(fov),
