@@ -24,8 +24,6 @@ public class EntityTest {
     public void testVelocityIsChanagedAfterAttack() {
         Entity chicken = factory.createChicken();
         Player player = (Player) factory.createPlayer();
-        IVector chickenInitVelocity = chicken.getVelocity();
-        IVector playerInitVelocity = player.getVelocity();
 
         player.attack(chicken);
 

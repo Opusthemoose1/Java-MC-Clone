@@ -32,7 +32,6 @@ public class Camera implements CameraObserver {
     private float yaw, pitch, fov;
     private float screenWidth, screenHeight;
 
-    private Boolean firstMouse; // Detects if it's the first mouse movement
     private double lastX, lastY;
 
     public Camera()  {
@@ -48,7 +47,6 @@ public class Camera implements CameraObserver {
         this.pitch = 0.0f;
         this.fov = 90.0f;
 
-        this.firstMouse = false;
         this.lastX = 960;
         this.lastY = 540;
 
@@ -94,11 +92,6 @@ public class Camera implements CameraObserver {
     }
 
     public void mouseControl(Vector2d mousePos) {
-        if (this.firstMouse) {
-            this.lastX = mousePos.x;
-            this.lastY = mousePos.y;
-            this.firstMouse = false;
-        }
         double xoffset = mousePos.x - lastX;
         double yoffset = lastY - mousePos.y;
         lastX = mousePos.x;

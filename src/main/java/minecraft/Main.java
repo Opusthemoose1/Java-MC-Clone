@@ -10,7 +10,6 @@ import minecraft.window.Window;
 import minecraft.window.input.Input;
 import minecraft.window.texture.Shader;
 import minecraft.window.texture.TextureMap;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -59,7 +58,6 @@ public class Main {
         
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
-
 
         ChunkLoader chunkLoader = new ChunkLoader(8);
 
