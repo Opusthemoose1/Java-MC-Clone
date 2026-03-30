@@ -2,7 +2,7 @@ package minecraft.entity;
 
 import minecraft.chunk.Location;
 
-public class Ogre extends AttackingEntity {
+public class Ogre extends HostileEntity {
 
     static final float INITIAL_HEALTH = 11f, ATTACK_DAMAGE = 2f, WEIGHT = 1.0f;
 

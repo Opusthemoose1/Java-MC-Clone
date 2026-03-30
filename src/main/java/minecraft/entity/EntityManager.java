@@ -1,6 +1,11 @@
 package minecraft.entity;
 
+import minecraft.chunk.Location;
+
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /*
 EntityManager is a singleton point of access for managing all entities in the game.
@@ -45,6 +50,16 @@ public class EntityManager {
         {
             entity.tick();
         }
+    }
+
+    public Set<Entity> getEntitiesNearby(Location location, double radius) {
+        Set<Entity> nearby = new HashSet<>();
+        for (Entity entity : entities) {
+            if (entity.getLocation().getDistance(location) <= radius) {
+                nearby.add(entity);
+            }
+        }
+        return nearby;
     }
 
 }

@@ -23,6 +23,11 @@ public class Player extends AttackingEntity {
         return WEIGHT;
     }
 
+    @Override
+    public boolean isPlayer() {
+        return true;
+    }
+
     public void jump() {
         addVelocity(0, JUMP_DELTA_Y, 0);
     }

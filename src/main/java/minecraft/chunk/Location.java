@@ -1,6 +1,7 @@
 package minecraft.chunk;
 
 import minecraft.math.IVector;
+import minecraft.math.Vector;
 
 public class Location {
 
@@ -52,6 +53,17 @@ public class Location {
 
     public Location clone() {
         return createLocation(x, y, z, yaw, pitch);
+    }
+
+    public double getDistance(Location other) {
+        double deltaX = other.getX() - x;
+        double deltaY = other.getY() - y;
+        double deltaZ = other.getZ() - z;
+        return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+    }
+
+    public IVector toVector() {
+        return new Vector(x, y, z);
     }
 
 }

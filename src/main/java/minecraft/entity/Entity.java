@@ -9,7 +9,7 @@ import minecraft.math.Vector;
 
 abstract public class Entity {
 
-    private static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f;
+    public static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f, WALK_SPEED = 0.2f;
 
     private final Location location;
     private IVector velocity = Vector.newZeroVector();
@@ -41,6 +41,11 @@ abstract public class Entity {
         return velocity.clone();
     }
 
+    public void setVelocity(IVector velocity) {
+        if (velocity == null) velocity = new Vector();
+        this.velocity = velocity;
+    }
+
     public void addVelocity(float x, float y, float z) {
         velocity.add(x, y, z);
     }
@@ -66,4 +71,11 @@ abstract public class Entity {
         else velocity.add(0, GRAVITY, 0);
     }
 
+    public boolean isPlayer() {
+        return false;
+    }
+
+    public boolean isHostile() {
+        return false;
+    }
 }

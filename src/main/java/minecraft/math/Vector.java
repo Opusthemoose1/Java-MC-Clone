@@ -13,6 +13,10 @@ public class Vector implements IVector {
         return new Vector(0, 0, 0);
     }
 
+    public Vector() {
+        jomlVector = new Vector3f();
+    }
+
     public Vector(float x, float y, float z) {
         jomlVector = new Vector3f(x, y, z); //necessary to instantiate Vector3f since it is an external library with no factory pattern
     }
