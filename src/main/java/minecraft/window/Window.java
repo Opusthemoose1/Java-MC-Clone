@@ -2,7 +2,6 @@ package minecraft.window;
 
 import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.ChunkRenderer;
-import minecraft.chunk.IChunkLoader;
 import minecraft.entity.EntityManager;
 import minecraft.window.text.ITextRenderer;
 import minecraft.window.input.IInput;
@@ -12,7 +11,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
-import javax.xml.stream.events.EndElement;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -133,7 +131,7 @@ public class Window implements IWindow {
         chunkRenderer.drawChunks(ChunkLoader.GetInstance().getCurrentlyRenderedChunks(), camera);
 
         // Tick all registered entities
-        EntityManager.GetInstance().tickAllEntities();
+        EntityManager.getInstance().tickAllEntities();
 
         final String fpsCounter = String.valueOf(framesPerSecond);
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter);

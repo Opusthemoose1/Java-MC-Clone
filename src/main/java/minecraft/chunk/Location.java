@@ -1,7 +1,6 @@
 package minecraft.chunk;
 
 import minecraft.math.IVector;
-import org.joml.Vector3f;
 
 public class Location {
 

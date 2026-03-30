@@ -3,7 +3,7 @@ package minecraft.entity;
 import java.util.ArrayList;
 
 /*
-EntityManager is a global point of access for managing all entities in the game.
+EntityManager is a singleton point of access for managing all entities in the game.
 It'll handle updating, registering, deregistering etc.
 This is more of a facade pattern on top of everything but it reduces parameter passing everywhere
 
@@ -11,32 +11,33 @@ This is more of a facade pattern on top of everything but it reduces parameter p
 public class EntityManager {
 
     static ArrayList<Entity> entities = new ArrayList<>();
-    private static EntityManager manager = null;
+    private static EntityManager instance = null;
     private static final EntityFactory entityFactory = new EntityFactory();
 
     private EntityManager() {
     }
 
-    public static EntityManager GetInstance() {
-        if (manager == null) {
-            manager = new EntityManager();
+    public synchronized static EntityManager getInstance() {
+        if (instance == null) {
+            instance = new EntityManager();
         }
-        return manager;
+        return instance;
     }
 
-    public static void attach(Entity entity) {
+    public static void addEntity(Entity entity) {
         entities.add(entity);
     }
 
-    public static void detach(Entity entity) {
+    public static void removeEntity(Entity entity) {
         entities.remove(entity);
     }
 
-    // Generate a new entity with the entity factory. Note that you still need to attach the entity
-    // to receive tick updates. Just in case we want to create an entity but not tick it
-    public static Entity newEntity(EntityFactory.EntityType type){
-        return entityFactory.createEntity(type);
+    public static Entity createEntity(EntityFactory.EntityType type) {
+        Entity entity = entityFactory.createEntity(type);
+        addEntity(entity);
+        return entity;
     }
+
     // Force an update on all registered entities
     public static void tickAllEntities()
     {

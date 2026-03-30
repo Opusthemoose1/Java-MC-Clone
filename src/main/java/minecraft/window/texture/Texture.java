@@ -11,8 +11,9 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Texture {
-    private int textureID;
-    private String path;
+
+    private final int textureID;
+    private final String path;
 
     Texture(String filePath) {
         path = filePath;

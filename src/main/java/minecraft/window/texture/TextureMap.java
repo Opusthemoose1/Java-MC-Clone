@@ -1,8 +1,10 @@
 package minecraft.window.texture;
 
+import minecraft.Minecraft;
 import minecraft.block.Material;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -28,8 +30,7 @@ public class TextureMap implements ITextureMap {
         File textureDir = new File(texturePath);
 
         if (!textureDir.exists() || !textureDir.isDirectory()) {
-            System.err.println("Texture directory not found: " + texturePath);
-            return;
+            throw new RuntimeException("Texture directory not found: " + texturePath);
         }
 
         File[] textureFiles = textureDir.listFiles((dir, name) -> {
@@ -38,28 +39,24 @@ public class TextureMap implements ITextureMap {
         });
 
         if (textureFiles == null || textureFiles.length == 0) {
-            System.err.println("No texture files found in: " + texturePath);
-            return;
+            throw new RuntimeException("No texture files found in: " + texturePath);
         }
 
         for (File file : textureFiles) {
             String name = file.getName();           // "grass.png"
             String key  = name.substring(0, name.lastIndexOf('.')); // "grass"
 
-            // TODO: FACTORY PATTERN
-            if (key.equals("cobblestone"))
-            {
-                textureMap.put(Material.COBBLESTONE, new Texture(file.getPath() ));
-            }
-            if (key.equals("dirt"))
-            {
-                textureMap.put(Material.DIRT, new Texture(file.getPath()));
+            Material material;
+            try {
+                material = Material.valueOf(key.toUpperCase());
+            } catch (Exception ex) {
+                throw new RuntimeException("Invalid material: " + name);
             }
 
+            textureMap.put(material, new Texture(file.getPath()));
         }
 
-
-        System.out.println("Loaded " + textureMap.size() + " block textures.");
+        Minecraft.getLogger().info("Loaded {} block textures.", textureMap.size());
     }
 
     @Override
@@ -71,5 +68,10 @@ public class TextureMap implements ITextureMap {
         }
         return texture;
     }
-    public HashMap<Material, Texture> getTextureMap() {return textureMap; };
+
+    public Collection<Texture> getTextures() {
+        return textureMap.values();
+    }
+
+
 }

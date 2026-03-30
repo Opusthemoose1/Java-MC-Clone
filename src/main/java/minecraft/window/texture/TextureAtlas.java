@@ -22,17 +22,13 @@ record TileImage(ByteBuffer data, int width, int height) {}
 public class TextureAtlas {
     private int textureID; // Used for OpenGL textures
     private int atlasWidth, atlasHeight;
-    TextureMap map; // Map used to store all textures and material properties
     private final ArrayList<TileImage> tiles = new ArrayList<>();
     ByteBuffer atlas;
 
-    public TextureAtlas(TextureMap map)
-    {
-
-        this.map = map;
+    public TextureAtlas(TextureMap map) {
         STBImage.stbi_set_flip_vertically_on_load(true);
 
-        for (Texture texture : map.getTextureMap().values())
+        for (Texture texture : map.getTextures())
         {
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 IntBuffer w = stack.mallocInt(1);
@@ -47,11 +43,10 @@ public class TextureAtlas {
                 tiles.add(new TileImage(data, w.get(0), h.get(0)));
             }
         }
-        BuildAtlas();
-
+        buildAtlas();
     }
-    private void BuildAtlas()
-    {
+
+    private void buildAtlas() {
         // read dimensions from the first tile rather than a separate field
         int tileW = tiles.getFirst().width();
         int tileH = tiles.getFirst().height();
@@ -83,12 +78,11 @@ public class TextureAtlas {
 
         saveAtlasPng(atlas, atlasWidth, atlasHeight, "src/resources/textures/atlas.png");
         atlas.flip(); // reset position to 0 before passing to OpenGL
-        UploadAtlas(); // Create the OpenGL texture
+        uploadAtlas(); // Create the OpenGL texture
         // Free the memory associated with each texture (blame the fact this is a C library)
         for (TileImage tile : tiles) STBImage.stbi_image_free(tile.data());
 
     }
-
 
     void saveAtlasPng(ByteBuffer atlas, int atlasWidth, int atlasHeight, String path) {
         // duplicate so we don't disturb the buffer's position
@@ -105,8 +99,7 @@ public class TextureAtlas {
         );
     }
 
-    private void UploadAtlas()
-    {
+    private void uploadAtlas() {
         textureID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -119,5 +112,6 @@ public class TextureAtlas {
                 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
+
     public int getTextureID() {return textureID; }
 }

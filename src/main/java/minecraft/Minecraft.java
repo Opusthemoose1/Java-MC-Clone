@@ -3,14 +3,19 @@ package minecraft;
 import minecraft.entity.Entity;
 import minecraft.entity.EntityFactory;
 import minecraft.entity.EntityManager;
-import minecraft.entity.Player;
 import minecraft.window.*;
-import org.lwjgl.opengl.*;
+import org.slf4j.Logger;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Minecraft {
+
+    static Logger logger = org.slf4j.LoggerFactory.getLogger(Minecraft.class);
+
+    public static Logger getLogger() {
+        return logger;
+    }
 
     private final IWindow window;
 
@@ -18,9 +23,9 @@ public class Minecraft {
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         this.window = window;
 
-        EntityManager.GetInstance();
-        Entity player = EntityManager.newEntity(EntityFactory.EntityType.PLAYER);
-        EntityManager.attach(player);
+        EntityManager.getInstance();
+        Entity player = EntityManager.createEntity(EntityFactory.EntityType.PLAYER);
+        EntityManager.addEntity(player);
 
     }
 

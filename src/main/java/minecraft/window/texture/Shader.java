@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class Shader implements IShader {
 
-    private int shaderProgramId;
+    private final int shaderProgramId;
 
     private static void compileShader(int shader, String code) {
         glShaderSource(
@@ -62,23 +62,23 @@ public class Shader implements IShader {
         glUseProgram(this.shaderProgramId);
     }
 
-    public void setMatrix4(Matrix4f mat, String uniformName) {
+    public void setMatrix4(Matrix4f matrix, String uniformName) {
         int location = glGetUniformLocation(this.shaderProgramId, uniformName);
         if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
         try (MemoryStack stack = MemoryStack.stackPush())
         {
-            glUniformMatrix4fv(location, false, mat.get(stack.mallocFloat(16)));
+            glUniformMatrix4fv(location, false, matrix.get(stack.mallocFloat(16)));
         }
 
     }
-    public void setInt(int integer, String uniformName)
-    {
+
+    public void setInt(int integer, String uniformName) {
         int location = glGetUniformLocation(shaderProgramId, uniformName);
         if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
         glUniform1i(location, integer);
     }
-    public void setIntArray(int[] array, String uniformName)
-    {
+
+    public void setIntArray(int[] array, String uniformName) {
         int location = glGetUniformLocation(shaderProgramId, uniformName);
         if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
         glUniform1iv(location, array);
