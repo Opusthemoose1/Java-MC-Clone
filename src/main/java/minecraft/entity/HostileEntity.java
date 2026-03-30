@@ -31,11 +31,11 @@ abstract public class HostileEntity extends AttackingEntity {
     public void tick() {
         findOrUpdateTarget();
         if (target == null) {
-            setVelocity(null);
+            setWalkSpeed(0);
         } else {
-            IVector direction = target.getLocation().toVector().subtract(getLocation().toVector()).normalize();
-            direction.multiply(WALK_SPEED);
-            setVelocity(direction);
+            IVector direction = target.getLocation().toVector().subtract(getLocation().toVector());
+            setYaw(Location.getYaw(direction));
+            setWalkSpeed(WALK_SPEED);
         }
         super.tick();
     }

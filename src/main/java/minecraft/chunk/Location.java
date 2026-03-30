@@ -17,6 +17,10 @@ public class Location {
         return new Location(x, y, z, yaw, pitch);
     }
 
+    public static float getYaw(IVector vector) {
+        return (float) Math.toDegrees(Math.atan2(vector.getZ(), vector.getX()));
+    }
+
     private Location(float x, float y, float z, float yaw, float pitch) {
         this.x = x;
         this.y = y;
@@ -43,6 +47,14 @@ public class Location {
 
     public float getPitch() {
         return pitch;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
     }
 
     public void add(IVector vector) {
