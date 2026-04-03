@@ -76,20 +76,22 @@ public class Camera implements CameraObserver {
                 new Vector3f(up.getX(), up.getY(), up.getZ())
         );
     }
+//
+//    public void processInput(CameraDirection dir, float deltaTime) {
+//        float velocity = VELOCITY * deltaTime;
+//        switch(dir) {
+//            case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
+//            case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));
+//            case LEFT -> this.position.subtract(getRightDirection().multiply(velocity));
+//            case RIGHT -> this.position.add(getRightDirection().multiply(velocity));
+//        }
+//    }
 
-    public void processInput(CameraDirection dir, float deltaTime) {
-        float velocity = VELOCITY * deltaTime;
-        switch(dir) {
-            case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
-            case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));
-            case LEFT -> this.position.subtract(getRightDirection().multiply(velocity));
-            case RIGHT -> this.position.add(getRightDirection().multiply(velocity));
-        }
-    }
-
-    private IVector getRightDirection() {
+    public IVector getRightDirection() {
         return this.front.clone().cross(this.up).normalize();
     }
+
+    public IVector getFront() {return front; }
 
     public void mouseControl(Vector2d mousePos) {
         double xoffset = mousePos.x - lastX;
@@ -139,6 +141,8 @@ public class Camera implements CameraObserver {
     public IVector getPosition() {
         return position.clone();
     }
+
+    public void setPosition(IVector vec) { position = vec; }
 
     @Override
     public void onFramebufferResize(int width, int height) {

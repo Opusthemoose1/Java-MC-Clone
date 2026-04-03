@@ -1,6 +1,7 @@
 package minecraft.entity;
 
 import minecraft.chunk.Location;
+import minecraft.math.Vector;
 
 public class Player extends AttackingEntity {
 
@@ -25,6 +26,13 @@ public class Player extends AttackingEntity {
 
     @Override
     public boolean isPlayer() {
+        return true;
+    }
+
+    public boolean move(Vector displacement)
+    {
+        System.out.println(displacement.toJOML().toString());
+        addVelocity(displacement);
         return true;
     }
 

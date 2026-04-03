@@ -5,18 +5,21 @@ import minecraft.window.input.IInput;
 
 public interface IWindow {
 
-    public long getWindowHandle();
+    long getWindowHandle();
 
-    public void loop();
+    void loop();
 
-    public int getWidth();
+    int getWidth();
 
-    public int getHeight();
+    int getHeight();
 
-    public void setInput(IInput input);
+    void setInput(IInput input);
 
-    public void free();
+    void free();
 
-    public boolean canContinueLoop();
+    boolean canContinueLoop();
 
+    Camera getCamera();
+
+    double getDeltaTime();
 }

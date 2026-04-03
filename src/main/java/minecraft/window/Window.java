@@ -34,6 +34,7 @@ public class Window implements IWindow {
     private int width, height;
     private long windowHandle; // Window handle for the GLFW context
     private double lastFrameTime = 0;
+    private double deltaTime;
 
     private Camera camera;
     private ChunkRenderer chunkRenderer;
@@ -56,6 +57,8 @@ public class Window implements IWindow {
 
     public void setCamera(Camera camera) {this.camera = camera; }
 
+    public Camera getCamera() {return camera;}
+
     public int getWidth() {
         return width;
     }
@@ -63,6 +66,8 @@ public class Window implements IWindow {
     public int getHeight() {
         return height;
     }
+
+    public double getDeltaTime() {return deltaTime; }
 
     public void setInput(IInput input) {
         this.input = input;
@@ -83,8 +88,6 @@ public class Window implements IWindow {
         // Create the window
         this.windowHandle = glfwCreateWindow(this.width, this.height, "Minecraft", NULL, NULL);
         if ( this.windowHandle == NULL ) throw new RuntimeException("Failed to create the GLFW window");
-
-
 
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {
@@ -118,10 +121,9 @@ public class Window implements IWindow {
     }
 
     public void loop(){
-        if (!canContinueLoop()) return;
 
         double currentFrameTime = glfwGetTime();
-        double deltaTime = currentFrameTime - lastFrameTime;
+        deltaTime = currentFrameTime - lastFrameTime;
         double framesPerSecond = Math.round( 1.0f / deltaTime);
         lastFrameTime = currentFrameTime;
 
@@ -131,7 +133,7 @@ public class Window implements IWindow {
         chunkRenderer.drawChunks(ChunkLoader.GetInstance().getCurrentlyRenderedChunks(), camera);
 
         // Tick all registered entities
-        EntityManager.getInstance().tickAllEntities();
+        EntityManager.tickAllEntities();
 
         final String fpsCounter = String.valueOf(framesPerSecond);
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter);
@@ -141,6 +143,7 @@ public class Window implements IWindow {
         pollInputs((float) deltaTime);
 
         if (input != null) camera.mouseControl(input.getMousePos());
+
     }
 
     @Override
@@ -158,11 +161,6 @@ public class Window implements IWindow {
     // Poll for window events. The key callback above will only be invoked during this call.
     private void pollInputs(float deltaTime) {
         if (input == null) return;
-        input.poll();
-        if (input.isKeyDown(GLFW_KEY_W)) this.camera.processInput(Camera.CameraDirection.FORWARD, deltaTime);
-        if (input.isKeyDown(GLFW_KEY_S)) this.camera.processInput(Camera.CameraDirection.BACKWARD, deltaTime);
-        if (input.isKeyDown(GLFW_KEY_D)) this.camera.processInput(Camera.CameraDirection.RIGHT, deltaTime);
-        if (input.isKeyDown(GLFW_KEY_A)) this.camera.processInput(Camera.CameraDirection.LEFT, deltaTime);
         if (input.isKeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(getWindowHandle(), true);
 
     }

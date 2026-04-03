@@ -63,7 +63,7 @@ public class Main {
         input.attach(camera);
         window.setInput(input);
 
-        Minecraft minecraft = new Minecraft(window);
-        minecraft.run();
+        Minecraft.init(window, input);
+        Minecraft.run();
     }
 }
