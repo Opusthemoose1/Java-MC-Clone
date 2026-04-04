@@ -63,10 +63,10 @@ public class ChunkLoader implements IChunkLoader {
     // Get the block at the specified position. THIS ROUNDS IT DOWN TO THE NEAREST WHOLE NUMBER!
     public ChunkBlock getBlock(double x, double y, double z)
     {
-        final Chunk chunkToSearch = getChunk((int)x / Chunk.SIDE_LENGTH, (int)y / Chunk.SIDE_LENGTH);
+        final Chunk chunkToSearch = getChunk((int)x / Chunk.SIDE_LENGTH, (int)z / Chunk.SIDE_LENGTH);
         if (chunkToSearch == null)
         {
-            System.err.println("Chunk at (" + x + "," + y + ") does not exist");
+            System.err.println("Chunk at (" + (int)x + "," + (int)z + ") does not exist");
             return new ChunkBlock((byte) 0);
         }
         return chunkToSearch.getChunkBlock((int)x % Chunk.SIDE_LENGTH, (int)y % Chunk.SIDE_LENGTH, (int)z % Chunk.SIDE_LENGTH);

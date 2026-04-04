@@ -44,6 +44,7 @@ public class MoveCommand implements ICommand {
             camera.setPosition(camera_height);
             camera.updateCameraVectors();
 
+
         }
     }
 }

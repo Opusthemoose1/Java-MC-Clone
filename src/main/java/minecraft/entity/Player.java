@@ -31,8 +31,12 @@ public class Player extends AttackingEntity {
 
     public boolean move(Vector displacement)
     {
-        // System.out.println(displacement.toJOML().toString());
         this.setLocation(Location.createLocation(displacement.getX(), displacement.getY(), displacement.getZ()));
+        if (isOnSolidGround()) {
+
+            return true;
+        }
+
         return true;
     }
 

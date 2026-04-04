@@ -77,16 +77,6 @@ public class Camera implements CameraObserver {
                 new Vector3f(up.getX(), up.getY(), up.getZ())
         );
     }
-//
-    public void processInput(CameraDirection dir, float deltaTime, float velocity) {
-        velocity = velocity * deltaTime;
-        switch(dir) {
-            case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
-            case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));
-            case LEFT -> this.position.subtract(getRightDirection().multiply(velocity));
-            case RIGHT -> this.position.add(getRightDirection().multiply(velocity));
-        }
-    }
 
     public IVector getRightDirection() {
         return this.front.clone().cross(this.up).normalize();
@@ -115,6 +105,7 @@ public class Camera implements CameraObserver {
                 (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)))
         );
         this.front = direction.normalize();
+        updateCameraVectors();
     }
 
     public void updateCameraVectors() {
