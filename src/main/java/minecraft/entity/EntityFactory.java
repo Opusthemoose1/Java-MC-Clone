@@ -4,7 +4,7 @@ import minecraft.chunk.Location;
 
 public class EntityFactory {
 
-    private static final float DEFAULT_Y = 10;
+    private static final float DEFAULT_Y = 16;
 
     private float nextPositionX = 0;
 

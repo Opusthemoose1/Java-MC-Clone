@@ -31,8 +31,8 @@ public class Player extends AttackingEntity {
 
     public boolean move(Vector displacement)
     {
-        System.out.println(displacement.toJOML().toString());
-        addVelocity(displacement);
+        // System.out.println(displacement.toJOML().toString());
+        addVelocity(new Vector(1.0f, 0.0f, 0.0f));
         return true;
     }
 

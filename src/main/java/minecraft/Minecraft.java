@@ -9,6 +9,7 @@ import minecraft.window.*;
 import minecraft.window.input.IInput;
 import minecraft.window.input.Input;
 import minecraft.window.input.InputManager;
+import org.joml.Vector2f;
 import org.slf4j.Logger;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -72,6 +73,7 @@ public class Minecraft {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
+
         inputManager.pollInputs(input, window.getDeltaTime());
         window.loop();
     }

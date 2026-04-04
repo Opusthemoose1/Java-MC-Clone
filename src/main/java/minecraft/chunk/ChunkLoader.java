@@ -1,5 +1,7 @@
 package minecraft.chunk;
 
+import minecraft.block.Material;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +67,7 @@ public class ChunkLoader implements IChunkLoader {
         if (chunkToSearch == null)
         {
             System.err.println("Chunk at (" + x + "," + y + ") does not exist");
-            return null;
+            return new ChunkBlock((byte) 0);
         }
         return chunkToSearch.getChunkBlock((int)x % Chunk.SIDE_LENGTH, (int)y % Chunk.SIDE_LENGTH, (int)z % Chunk.SIDE_LENGTH);
 

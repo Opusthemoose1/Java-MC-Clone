@@ -77,15 +77,15 @@ public class Camera implements CameraObserver {
         );
     }
 //
-//    public void processInput(CameraDirection dir, float deltaTime) {
-//        float velocity = VELOCITY * deltaTime;
-//        switch(dir) {
-//            case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
-//            case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));
-//            case LEFT -> this.position.subtract(getRightDirection().multiply(velocity));
-//            case RIGHT -> this.position.add(getRightDirection().multiply(velocity));
-//        }
-//    }
+    public void processInput(CameraDirection dir, float deltaTime) {
+        float velocity = VELOCITY * deltaTime;
+        switch(dir) {
+            case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
+            case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));
+            case LEFT -> this.position.subtract(getRightDirection().multiply(velocity));
+            case RIGHT -> this.position.add(getRightDirection().multiply(velocity));
+        }
+    }
 
     public IVector getRightDirection() {
         return this.front.clone().cross(this.up).normalize();
@@ -116,7 +116,7 @@ public class Camera implements CameraObserver {
         this.front = direction.normalize();
     }
 
-    private void updateCameraVectors() {
+    public void updateCameraVectors() {
         front = new Vector(
                 (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))),
                 (float)(Math.sin(Math.toRadians(pitch))),

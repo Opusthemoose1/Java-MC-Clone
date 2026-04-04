@@ -9,7 +9,7 @@ import minecraft.math.Vector;
 
 abstract public class Entity {
 
-    public static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f, WALK_SPEED = 0.2f, FREEFALL_VELOCITY_MULTIPLIER = 0.2f;
+    public static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f, WALK_SPEED = 5.0f, FREEFALL_VELOCITY_MULTIPLIER = 0.2f;
 
     private final Location location;
     private IVector velocity = Vector.newZeroVector();
