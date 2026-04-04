@@ -24,5 +24,6 @@ public class InputManager {
         keyBindings.forEach((key, command) -> {
             if (glfwInput.isKeyDown(key)) command.execute((float)deltaTime);
         });
+
     }
 }

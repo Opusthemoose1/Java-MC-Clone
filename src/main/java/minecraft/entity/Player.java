@@ -32,7 +32,7 @@ public class Player extends AttackingEntity {
     public boolean move(Vector displacement)
     {
         // System.out.println(displacement.toJOML().toString());
-        addVelocity(new Vector(1.0f, 0.0f, 0.0f));
+        this.setLocation(Location.createLocation(displacement.getX(), displacement.getY(), displacement.getZ()));
         return true;
     }
 

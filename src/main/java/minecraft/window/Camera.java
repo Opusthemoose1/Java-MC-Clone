@@ -12,6 +12,7 @@ import static org.lwjgl.opengl.GL11.glViewport;
 
 public class Camera implements CameraObserver {
 
+
     public enum CameraDirection {
         FORWARD,
         BACKWARD,
@@ -77,8 +78,8 @@ public class Camera implements CameraObserver {
         );
     }
 //
-    public void processInput(CameraDirection dir, float deltaTime) {
-        float velocity = VELOCITY * deltaTime;
+    public void processInput(CameraDirection dir, float deltaTime, float velocity) {
+        velocity = velocity * deltaTime;
         switch(dir) {
             case FORWARD -> this.position.add(this.front.clone().multiply(velocity));
             case BACKWARD -> this.position.subtract(this.front.clone().multiply(velocity));

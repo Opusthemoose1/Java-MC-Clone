@@ -1,5 +1,6 @@
 package minecraft.command;
 
+import minecraft.chunk.Location;
 import minecraft.entity.Entity;
 import minecraft.entity.Player;
 import minecraft.math.IVector;
@@ -23,29 +24,26 @@ public class MoveCommand implements ICommand {
     @Override
     public void execute(float deltaTime)
     {
-        final Vector front = (Vector) camera.getFront();
-        final Vector right = (Vector) camera.getRightDirection();
 
-        Vector displacement = (Vector) switch(direction)
+        final Vector position_ = (Vector) camera.getPosition().clone();
+        Vector new_position = (Vector) switch(direction)
         {
-            case FORWARD -> front.multiply(Entity.WALK_SPEED * deltaTime);
-            case BACKWARD -> front.multiply(-Entity.WALK_SPEED * deltaTime);
-            case LEFT -> right.multiply(Entity.WALK_SPEED * deltaTime);
-            case RIGHT -> right.multiply(-Entity.WALK_SPEED * deltaTime);
+            case FORWARD -> position_.add(camera.getFront().clone().multiply(Entity.WALK_SPEED * deltaTime));
+            case BACKWARD -> position_.subtract(camera.getFront().clone().multiply(Entity.WALK_SPEED * deltaTime));
+            case LEFT -> position_.subtract(camera.getRightDirection().multiply(Entity.WALK_SPEED * deltaTime));
+            case RIGHT -> position_.add(camera.getRightDirection().multiply(Entity.WALK_SPEED * deltaTime));
         };
 
-        boolean moved = player.move(displacement);
+        boolean moved = player.move(new_position);
         if (moved) {
-            // The player's position is at their feet, so set the camera up by one block
-            IVector camera_height = player.getLocation().toVector();
-            camera_height.setY(camera_height.getY() + 1);
-
+            Vector camera_height = new Vector(
+                    player.getLocation().getX(),
+                    player.getLocation().getY(),
+                    player.getLocation().getZ()
+            );
             camera.setPosition(camera_height);
-            camera.processInput(direction, deltaTime);
-           // camera.updateCameraVectors();
-            System.out.println("Camera vector: " + camera.getFront().toJOML().toString());
-            System.out.println("Velocity: " + Entity.WALK_SPEED * deltaTime);
-            System.out.println("Player Position: " + player.getLocation().toVector().toJOML().toString());
+            camera.updateCameraVectors();
+
         }
     }
 }
