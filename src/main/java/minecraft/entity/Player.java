@@ -34,10 +34,10 @@ public class Player extends AttackingEntity {
         this.setLocation(Location.createLocation(displacement.getX(), displacement.getY(), displacement.getZ()));
         if (isOnSolidGround()) {
 
-            return true;
+            return false;
         }
-
         return true;
+
     }
 
     public void jump() {

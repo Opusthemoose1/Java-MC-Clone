@@ -252,5 +252,5 @@ public class Chunk {
     public int getVAO() {return this.VAO; }
     public int getIndexCount() {return this.indexCount; }
     public int getXPosition() {return this.offsetX; }
-    public int getYPosition() {return this.offsetZ; }
+    public int getZPosition() {return this.offsetZ; }
 }

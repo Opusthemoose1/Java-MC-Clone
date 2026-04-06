@@ -44,11 +44,17 @@ public class ChunkLoader implements IChunkLoader {
     {
         return (((long)x) << 32) | (y & 0xffffffffL);
     }
+
+    public static int roundToNearest16(int n) {
+        return (int) (Math.round((double) n / 16) * 16);
+    }
+    // Registers the chunk based on the X and Z position. X and Z are indexed by 16 (0, 16), (-16, 16)
     private static void registerChunk(Chunk chunk)
     {
+
         // ChatGPT generated this, but it compacts the x, y position of a chunk into a single 64 bit long
-        // This requires less code for insertion, but makes it less readable. But this goes on "under the hood"
-        long key = turnOffsetIntoKey(chunk.getXPosition(), chunk.getYPosition());
+        // This requires less code for insertion, but makes it less readable. But this goes on "under the hood
+        long key = turnOffsetIntoKey(chunk.getXPosition(), chunk.getZPosition());
 
         currentlyRenderedChunks.put(key, chunk);
     }
@@ -56,20 +62,23 @@ public class ChunkLoader implements IChunkLoader {
         return currentlyRenderedChunks;
     }
 
-    public Chunk getChunk(int x, int y)
+    public Chunk getChunk(int x, int z)
     {
-        return  currentlyRenderedChunks.get(turnOffsetIntoKey(x, y));
+      //  System.out.println("X: " + x / Chunk.SIDE_LENGTH + " Z: " + z / Chunk.SIDE_LENGTH);
+        return  currentlyRenderedChunks.get(turnOffsetIntoKey(x, z));
     }
     // Get the block at the specified position. THIS ROUNDS IT DOWN TO THE NEAREST WHOLE NUMBER!
     public ChunkBlock getBlock(double x, double y, double z)
     {
-        final Chunk chunkToSearch = getChunk((int)x / Chunk.SIDE_LENGTH, (int)z / Chunk.SIDE_LENGTH);
+        final int chunkOffsetX = roundToNearest16((int)x);
+        final int chunkOffsetZ = roundToNearest16((int)z);
+        final Chunk chunkToSearch = getChunk(chunkOffsetX, chunkOffsetZ);
         if (chunkToSearch == null)
         {
-            System.err.println("Chunk at (" + (int)x + "," + (int)z + ") does not exist");
+            System.err.println("Chunk at (" + chunkOffsetX + "," + chunkOffsetZ + ") does not exist");
             return new ChunkBlock((byte) 0);
         }
-        return chunkToSearch.getChunkBlock((int)x % Chunk.SIDE_LENGTH, (int)y % Chunk.SIDE_LENGTH, (int)z % Chunk.SIDE_LENGTH);
+        return chunkToSearch.getChunkBlock(chunkOffsetX % Chunk.SIDE_LENGTH, (int)y % Chunk.SIDE_LENGTH, chunkOffsetZ % Chunk.SIDE_LENGTH);
 
 
     }

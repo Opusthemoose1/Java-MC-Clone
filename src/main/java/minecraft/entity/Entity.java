@@ -56,7 +56,7 @@ abstract public class Entity {
     abstract float getWeight();
 
     public boolean isOnSolidGround() {
-        ChunkBlock block = ChunkLoader.GetInstance().getBlock(location.getX(), location.getY() - 1, location.getZ());
+        ChunkBlock block = ChunkLoader.GetInstance().getBlock(location.getZ(), location.getY() - 1, location.getX());
         if (block == null) block = new ChunkBlock((byte)Material.AIR.getId());
         // Check if the block below us is
         return block.materialId() != Material.AIR.getId();//TODO check if the block -1 in y direction is not air
