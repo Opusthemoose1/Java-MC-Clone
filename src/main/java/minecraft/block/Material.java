@@ -6,15 +6,15 @@ public enum Material {
     DIRT(1, "dirt"),
     COBBLESTONE(2, "cobblestone");
 
-    private final int id;
+    private final byte id;
     private final String textureName;
 
     Material(int id, String textureName) {
-        this.id = id;
+        this.id = (byte) id;
         this.textureName = textureName;
     }
 
-    public int getId() {
+    public byte getId() {
         return id;
     }
 

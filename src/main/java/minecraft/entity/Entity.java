@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.WorldContext;
 import minecraft.block.Material;
 import minecraft.chunk.ChunkBlock;
 import minecraft.chunk.ChunkLoader;
@@ -13,11 +14,13 @@ abstract public class Entity {
 
     private Location location;
     private IVector velocity = Vector.newZeroVector();
+    protected WorldContext context;
     private float health, walkSpeed;
 
-    protected Entity(Location location, float initialHealth) {
+    protected Entity(Location location, float initialHealth, WorldContext context) {
         this.location = location.clone();
         this.health = initialHealth;
+        this.context = context;
     }
 
     public boolean isDead() {
@@ -67,23 +70,23 @@ abstract public class Entity {
     }
 
     public void tick() {
-//        IVector walkVelocity;
-//        if (walkSpeed > 0) walkVelocity = new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
-//        else walkVelocity = new Vector();
-//
-//        if (isOnSolidGround()) {
-//            velocity.setY(0);
-//            velocity.multiply(FRICTION_MULTIPLIER);
-//            velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
-//                    Math.max(velocity.getY(), walkVelocity.getY()),
-//                    Math.max(velocity.getZ(), walkVelocity.getZ()));
-//            if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
-//            location.add(velocity);
-//        } else {
-//            walkVelocity.multiply(FREEFALL_VELOCITY_MULTIPLIER);
-//            velocity.add(0, GRAVITY, 0);
-//            location.add(velocity.clone().add(walkVelocity));
-//        }
+        IVector walkVelocity;
+        if (walkSpeed > 0) walkVelocity = new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
+        else walkVelocity = new Vector();
+
+        if (isOnSolidGround()) {
+            velocity.setY(0);
+            velocity.multiply(FRICTION_MULTIPLIER);
+            velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
+                    Math.max(velocity.getY(), walkVelocity.getY()),
+                    Math.max(velocity.getZ(), walkVelocity.getZ()));
+            if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
+            location.add(velocity);
+        } else {
+            walkVelocity.multiply(FREEFALL_VELOCITY_MULTIPLIER);
+            velocity.add(0, GRAVITY, 0);
+            location.add(velocity.clone().add(walkVelocity));
+        }
     }
 
     public void setYaw(float yaw) {

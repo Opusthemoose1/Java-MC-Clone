@@ -13,7 +13,7 @@ public class ChunkLoader implements IChunkLoader {
 
     private static ChunkLoader chunkLoader = null;
 
-    private ChunkLoader() {};
+    public ChunkLoader() {}; //TODO remove singleton
 
     public static ChunkLoader GetInstance()
     {

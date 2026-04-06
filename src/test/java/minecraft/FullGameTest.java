@@ -1,7 +1,10 @@
-package minecraft.entity;
+package minecraft;
 
 import minecraft.Minecraft;
+import minecraft.WorldContext;
+import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.ChunkRenderer;
+import minecraft.entity.EntityManager;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import minecraft.window.Camera;
@@ -64,7 +67,8 @@ public class FullGameTest {
         input.attach(camera);
         window.setInput(input);
 
-        Minecraft.init(window, input);
-        Minecraft.run();
+        WorldContext context = new WorldContext(new ChunkLoader(), new EntityManager());
+        Minecraft minecraft = new Minecraft(window, input, context);
+        minecraft.run();
     }
 }

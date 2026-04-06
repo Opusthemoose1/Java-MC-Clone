@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.WorldContext;
 import minecraft.chunk.Location;
 import minecraft.math.IVector;
 import minecraft.timer.Timer;
@@ -14,8 +15,8 @@ abstract public class HostileEntity extends AttackingEntity {
     private Entity target;
     private Timer chaseTimer;
 
-    protected HostileEntity(Location location, float initialHealth) {
-        super(location, initialHealth);
+    protected HostileEntity(Location location, float initialHealth, WorldContext context) {
+        super(location, initialHealth, context);
     }
 
     @Override
@@ -42,7 +43,7 @@ abstract public class HostileEntity extends AttackingEntity {
 
     private void findOrUpdateTarget() {
         if (target == null) {
-            Optional<Entity> first = EntityManager.getInstance().getEntitiesNearby(getLocation(), CHASE_RADIUS).stream().filter(Entity::isPlayer).findFirst();
+            Optional<Entity> first = context.getEntityManager().getEntitiesNearby(getLocation(), CHASE_RADIUS).stream().filter(Entity::isPlayer).findFirst();
             first.ifPresent(entity -> {
                 target = entity;
 

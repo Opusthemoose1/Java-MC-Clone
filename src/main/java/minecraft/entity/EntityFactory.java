@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.WorldContext;
 import minecraft.chunk.Location;
 
 public class EntityFactory {
@@ -8,24 +9,32 @@ public class EntityFactory {
 
     private float nextPositionX = 0;
 
+    private final WorldContext context;
+
     public enum EntityType {
         PLAYER,
         CHICKEN,
         OGRE,
     }
 
-    public EntityFactory() {
-
+    public EntityFactory(WorldContext context) {
+        this.context = context;
     }
 
     public Entity createEntity(EntityType type) {
-        Location location = Location.createLocation(nextPositionX, DEFAULT_Y, 0);
-        nextPositionX++;
+        return createEntity(type, null);
+    }
+
+    public Entity createEntity(EntityType type, Location location) {
+        if (location == null) {
+            location = Location.createLocation(nextPositionX, DEFAULT_Y, 0);
+            nextPositionX++;
+        }
 
         return switch (type) {
-            case PLAYER -> new Player(location);
-            case CHICKEN -> new Chicken(location);
-            case OGRE -> new Ogre(location);
+            case PLAYER -> new Player(location, context);
+            case CHICKEN -> new Chicken(location, context);
+            case OGRE -> new Ogre(location, context);
         };
     }
 
@@ -41,4 +50,15 @@ public class EntityFactory {
         return createEntity(EntityType.PLAYER);
     }
 
+    public Entity createChicken(Location location) {
+        return createEntity(EntityType.CHICKEN, location);
+    }
+
+    public Entity createOgre(Location location) {
+        return createEntity(EntityType.OGRE, location);
+    }
+
+    public Entity createPlayer(Location location) {
+        return createEntity(EntityType.PLAYER, location);
+    }
 }

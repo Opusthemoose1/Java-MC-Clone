@@ -1,15 +1,11 @@
 package minecraft;
 
+import minecraft.chunk.Location;
 import minecraft.command.MoveCommand;
-import minecraft.entity.Entity;
-import minecraft.entity.EntityFactory;
-import minecraft.entity.EntityManager;
 import minecraft.entity.Player;
 import minecraft.window.*;
-import minecraft.window.input.IInput;
 import minecraft.window.input.Input;
 import minecraft.window.input.InputManager;
-import org.joml.Vector2f;
 import org.slf4j.Logger;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -21,47 +17,29 @@ public class Minecraft {
         return logger;
     }
 
-    private static InputManager inputManager;
-    private static Minecraft minecraftInstance = null;
-    private static IWindow window = null;
-    private static Input input = null;
-    private static Player player = null;
+    private final InputManager inputManager;
+    private final IWindow window;
+    private final Input input;
+    private final Player player;
+    private final WorldContext context;
 
-    private Minecraft(IWindow window, Input input) {
-        Minecraft.window = window;
-        Minecraft.input = input;
-    }
-
-
-    public Minecraft getInstance() {
-      if (minecraftInstance == null)
-      {
-          throw new IllegalStateException("Minecraft not initialized. Call init(window) first.");
-      }
-      return minecraftInstance;
-
-    }
-    public static void init(IWindow window, Input input)
-    {
-        if (minecraftInstance != null) {
-            throw new IllegalStateException("Minecraft already initialized");
-        }
-        minecraftInstance = new Minecraft(window, input);
+    public Minecraft(IWindow window, Input input, WorldContext context) {
+        this.window = window;
+        this.input = input;
+        this.context = context;
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
 
-        EntityManager.getInstance();
-        player = (Player)EntityManager.createEntity(EntityFactory.EntityType.PLAYER);
-        EntityManager.addEntity(player);
+        player = new Player(Location.createLocation(0, 0, 0), context);
 
-        inputManager = new InputManager(Minecraft.input);
+        inputManager = new InputManager(input);
         inputManager.bind(GLFW_KEY_W, new MoveCommand(player, window.getCamera(), Camera.CameraDirection.FORWARD  ));
         inputManager.bind(GLFW_KEY_S, new MoveCommand(player, window.getCamera(), Camera.CameraDirection.BACKWARD  ));
         inputManager.bind(GLFW_KEY_A, new MoveCommand(player, window.getCamera(), Camera.CameraDirection.LEFT  ));
         inputManager.bind(GLFW_KEY_D, new MoveCommand(player, window.getCamera(), Camera.CameraDirection.RIGHT  ));
-
     }
 
-    public static void run() {
+
+    public void run() {
         glClearColor(0.0f, 0.2f, 0.8f, 0.0f);
 
         while (window.canContinueLoop()) loop();
@@ -69,12 +47,20 @@ public class Minecraft {
         window.free();
     }
 
-    private static void loop() {
+    private void loop() {
 
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
 
         inputManager.pollInputs(input, window.getDeltaTime());
+
+        // Tick all registered entities
+        context.getEntityManager().tickAllEntities();
+
         window.loop();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

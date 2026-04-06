@@ -1,11 +1,14 @@
 package minecraft.entity;
 
-import minecraft.math.IVector;
+import minecraft.TestChunkLoader;
+import minecraft.WorldContext;
+import minecraft.chunk.ChunkLoader;
 import org.junit.jupiter.api.Test;
 
 public class EntityTest {
 
-    private final EntityFactory factory = new EntityFactory();
+    private final WorldContext context = new WorldContext(new TestChunkLoader(), new EntityManager());
+    private final EntityFactory factory = new EntityFactory(context);
 
     @Test
     public void testEntityDies() {

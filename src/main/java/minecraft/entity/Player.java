@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.WorldContext;
 import minecraft.chunk.Location;
 import minecraft.math.Vector;
 
@@ -10,8 +11,8 @@ public class Player extends AttackingEntity {
             WEIGHT = 0.8f,
             JUMP_DELTA_Y = 2f;
 
-    public Player(Location location) {
-        super(location, INITIAL_HEALTH);
+    public Player(Location location, WorldContext context) {
+        super(location, INITIAL_HEALTH, context);
     }
 
     @Override

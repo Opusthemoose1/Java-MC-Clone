@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.WorldContext;
 import minecraft.chunk.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
@@ -8,8 +9,8 @@ abstract public class AttackingEntity extends Entity {
 
     static final float KNOCKBACK_MULTIPLIER = 0.1f;
 
-    protected AttackingEntity(Location location, float initialHealth) {
-        super(location, initialHealth);
+    protected AttackingEntity(Location location, float initialHealth, WorldContext context) {
+        super(location, initialHealth, context);
     }
 
     public void attack(Entity foe) {

@@ -132,9 +132,6 @@ public class Window implements IWindow {
         // Draw the chunks
         chunkRenderer.drawChunks(ChunkLoader.GetInstance().getCurrentlyRenderedChunks(), camera);
 
-        // Tick all registered entities
-        EntityManager.tickAllEntities();
-
         final String fpsCounter = String.valueOf(framesPerSecond);
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter);
 

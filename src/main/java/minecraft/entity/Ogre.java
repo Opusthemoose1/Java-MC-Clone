@@ -1,13 +1,14 @@
 package minecraft.entity;
 
+import minecraft.WorldContext;
 import minecraft.chunk.Location;
 
 public class Ogre extends HostileEntity {
 
     static final float INITIAL_HEALTH = 11f, ATTACK_DAMAGE = 2f, WEIGHT = 1.0f;
 
-    public Ogre(Location location) {
-        super(location, INITIAL_HEALTH);
+    public Ogre(Location location, WorldContext context) {
+        super(location, INITIAL_HEALTH, context);
     }
 
     @Override
