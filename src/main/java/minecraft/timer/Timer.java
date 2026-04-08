@@ -37,5 +37,8 @@ public class Timer {
         return (getEnd() - this.start) / 1_000_000_000.0;
     }
 
-
+    public void reset() {
+        end = -1;
+        startTimer();
+    }
 }

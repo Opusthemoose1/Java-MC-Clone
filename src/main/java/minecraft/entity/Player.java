@@ -2,14 +2,19 @@ package minecraft.entity;
 
 import minecraft.WorldContext;
 import minecraft.chunk.Location;
+import minecraft.math.IVector;
 import minecraft.math.Vector;
+import minecraft.window.CameraObserver;
 
 public class Player extends AttackingEntity {
 
-    static final float INITIAL_HEALTH = 20f,
+    public static final float INITIAL_HEALTH = 20f,
             ATTACK_DAMAGE = 4f,
             WEIGHT = 0.8f,
-            JUMP_DELTA_Y = 2f;
+            JUMP_DELTA_Y = 2f,
+            PLAYER_WALK_SPEED = 0.02f;
+
+    private IVector inputWalkSpeed = new Vector();
 
     public Player(Location location, WorldContext context) {
         super(location, INITIAL_HEALTH, context);
@@ -28,6 +33,15 @@ public class Player extends AttackingEntity {
     @Override
     public boolean isPlayer() {
         return true;
+    }
+
+    @Override
+    protected IVector getWalkingVelocity() {
+        return inputWalkSpeed.clone();
+    }
+
+    public void setWalkingVelocity(IVector velocity) {
+        inputWalkSpeed = velocity.clone();
     }
 
     public boolean move(Vector displacement)

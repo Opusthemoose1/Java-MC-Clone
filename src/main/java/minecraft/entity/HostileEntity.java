@@ -11,6 +11,7 @@ abstract public class HostileEntity extends AttackingEntity {
 
     private static final float CHASE_RADIUS = 5.0f;
     private static final float CHASE_OUT_OF_RADIUS_SECONDS = 5.0f;
+    private static final float HOSTILE_CHASE_WALK_SPEED = 0.5f;
 
     private Entity target;
     private Timer chaseTimer;
@@ -36,7 +37,7 @@ abstract public class HostileEntity extends AttackingEntity {
         } else {
             IVector direction = target.getLocation().toVector().subtract(getLocation().toVector());
             setYaw(Location.getYaw(direction));
-            setWalkSpeed(WALK_SPEED);
+            setWalkSpeed(HOSTILE_CHASE_WALK_SPEED);
         }
         super.tick();
     }

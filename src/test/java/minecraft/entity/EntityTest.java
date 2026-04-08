@@ -3,12 +3,15 @@ package minecraft.entity;
 import minecraft.TestChunkLoader;
 import minecraft.WorldContext;
 import minecraft.chunk.Location;
+import minecraft.math.IVector;
 import minecraft.math.Vector;
 import org.junit.jupiter.api.Test;
 
 public class EntityTest {
 
-    private final WorldContext context = new WorldContext(new TestChunkLoader(10), new EntityManager());
+    public static final int Y_LEVEL = 10;
+
+    private final WorldContext context = new WorldContext(new TestChunkLoader(Y_LEVEL), new EntityManager());
     private final EntityFactory entityFactory = new EntityFactory(context);
 
     @Test
@@ -38,7 +41,7 @@ public class EntityTest {
 
     @Test
     public void testFreeFall() {
-        int y = 20;
+        int y = Y_LEVEL + 10;
         Entity chicken = entityFactory.createChicken();
         chicken.setLocation(Location.createLocation(0, y, 0));
 
@@ -61,11 +64,14 @@ public class EntityTest {
     public void testFriction() {
         Entity glob = entityFactory.createOgre();
         glob.setLocation(Location.createLocation(0, 10, 0));
-        glob.setVelocity(new Vector(2, 0, 2));
+        IVector initVelocity = new Vector(2, 0, 2);
+        glob.setVelocity(initVelocity.clone());
 
         glob.tick();
 
+        //make sure glob is moving
         assert glob.getVelocity().length() > 0;
+        assert glob.getVelocity().length() < initVelocity.length(); //friction is applied each tick
         assert glob.getVelocity().getX() > 0;
         assert glob.getVelocity().getY() == 0;
         assert glob.getVelocity().getZ() > 0;

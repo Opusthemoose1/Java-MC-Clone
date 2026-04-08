@@ -2,6 +2,9 @@ package minecraft.chunk;
 
 import minecraft.math.IVector;
 import minecraft.math.Vector;
+import org.joml.Matrix3d;
+import org.joml.Matrix3f;
+import org.joml.Vector3f;
 
 public class Location {
 
@@ -84,6 +87,15 @@ public class Location {
         double deltaY = other.getY() - y;
         double deltaZ = other.getZ() - z;
         return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+    }
+
+    public IVector getDirection() {
+        //Z rotation followed by Y rotation
+        return new Vector(
+                (float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))),
+                (float) Math.sin(Math.toRadians(pitch)),
+                (float) (-Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw)))
+        ).normalize();
     }
 
     public IVector toVector() {

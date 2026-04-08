@@ -134,8 +134,7 @@ public class Window implements IWindow, FrameRenderPublisher {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        // Draw the chunks
-        Minecraft.getLogger().info("calling " + observers.size() + " observers"); //TODO remove
+        // Draw the chunks, entities, etc.
         for (FrameRenderObserver observer : observers) {
             observer.render(context);
         }
@@ -146,9 +145,6 @@ public class Window implements IWindow, FrameRenderPublisher {
         glfwSwapBuffers(getWindowHandle()); // swap the color buffers
 
         pollInputs((float) deltaTime);
-
-        if (input != null) camera.mouseControl(input.getMousePos());
-
     }
 
     @Override
@@ -176,6 +172,6 @@ public class Window implements IWindow, FrameRenderPublisher {
     private void pollInputs(float deltaTime) {
         if (input == null) return;
         if (input.isKeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(getWindowHandle(), true);
-
+        camera.mouseControl(input.getMousePos());
     }
 }

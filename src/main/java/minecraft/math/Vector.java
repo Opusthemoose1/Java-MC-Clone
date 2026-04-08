@@ -130,4 +130,9 @@ public class Vector implements IVector {
     public Vector3f toJOML() {
         return new Vector3f(getX(), getY(), getZ());
     }
+
+    @Override
+    public String toString() {
+        return "[" + getX() + ", " + getY() + ", " + getZ() + "]";
+    }
 }

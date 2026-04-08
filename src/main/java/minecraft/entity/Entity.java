@@ -9,7 +9,7 @@ import minecraft.math.Vector;
 
 abstract public class Entity {
 
-    public static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f, WALK_SPEED = 5.0f,
+    public static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f,
             FREEFALL_VELOCITY_MULTIPLIER = 0.2f, FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, EPSILON = 0.001f;
 
     private Location location;
@@ -21,6 +21,10 @@ abstract public class Entity {
         this.location = location.clone();
         this.health = initialHealth;
         this.context = context;
+    }
+
+    public WorldContext getContext() {
+        return context;
     }
 
     public boolean isDead() {
@@ -59,7 +63,7 @@ abstract public class Entity {
     abstract float getWeight();
 
     public boolean isOnSolidGround() {
-        return blockIsAir(EPSILON);
+        return location.getY() <= 0 || blockIsAir(EPSILON);
     }
 
     private boolean blockIsAir(float yOffset) {
@@ -71,7 +75,7 @@ abstract public class Entity {
         walkSpeed = Math.abs(speed);
     }
 
-    private IVector getWalkingVelocity() {
+    protected IVector getWalkingVelocity() {
         if (walkSpeed > 0) return new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
         else return new Vector();
     }

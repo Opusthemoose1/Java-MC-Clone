@@ -1,5 +1,6 @@
 package minecraft.window;
 
+import minecraft.entity.Player;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import org.joml.Matrix4f;
@@ -145,7 +146,7 @@ public class Camera implements CameraObserver {
 
     }
 
-    public static class Builder
+    public static class Builder //TODO: not sure if we need a builder here, there's no internal logic and everything can be set directly in constructor
     {
         private IVector position; // World position
         private float yaw, pitch, fov;

@@ -7,6 +7,7 @@ A simple Java reproduction of the classic block game
 2. ChunkRenderer and EntityRenderer are observers to Window, which pushes updates containing a WorldContext object
 3. Vector uses the facade pattern: JOML Vector3f implements 3 interfaces, Vector only implements IVector
 4. EntityManager uses the Iterator pattern to iterate over all entities
+5. InputManager returns a list of commands based on the player's inputs
 
 **Polymorphism Example**: Entities are polymorphic, with methods such as `Entity#getWeight()` and `AttackingEntity#getAttackDamage()` implemented by each concrete class.
 AttackingEntity is a subclass of Entity.

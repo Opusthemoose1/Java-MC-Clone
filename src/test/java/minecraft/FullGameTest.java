@@ -1,12 +1,17 @@
 package minecraft;
 
 import minecraft.chunk.ChunkRenderer;
+import minecraft.chunk.Location;
+import minecraft.command.MoveBackwardsCommand;
+import minecraft.command.MoveForwardCommand;
 import minecraft.entity.EntityManager;
+import minecraft.entity.Player;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import minecraft.window.Camera;
 import minecraft.window.Window;
 import minecraft.window.input.Input;
+import minecraft.window.input.InputManager;
 import minecraft.window.text.TextRenderer;
 import minecraft.window.texture.Shader;
 import minecraft.window.texture.TextureAtlas;
@@ -14,6 +19,8 @@ import minecraft.window.texture.TextureMap;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.opengl.GL;
 
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glEnable;
 
@@ -65,7 +72,12 @@ public class FullGameTest {
         window.setInput(input);
 
         WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
-        Minecraft minecraft = new Minecraft(window, input, context);
+        Player player = new Player(Location.createLocation(0f, 20f, 0f), context);
+        context.getEntityManager().addEntity(player);
+
+        Minecraft minecraft = new Minecraft(window, input, player);
+
+        glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         minecraft.run();
     }
 }
