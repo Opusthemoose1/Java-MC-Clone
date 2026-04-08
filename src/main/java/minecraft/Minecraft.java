@@ -1,8 +1,6 @@
 package minecraft;
 
-import minecraft.command.ICommand;
-import minecraft.command.MoveBackwardsCommand;
-import minecraft.command.MoveForwardCommand;
+import minecraft.command.*;
 import minecraft.entity.Player;
 import minecraft.math.Vector;
 import minecraft.timer.Timer;
@@ -29,9 +27,8 @@ public class Minecraft {
     private final WorldContext context;
     private final Timer tickTimer;
 
-    private final static float CAMERA_Y_OFFSET = 1;
     public final static int TICKS_PER_SECOND = 20;
-    public final static long SECONDS_PER_TICK = 1L/TICKS_PER_SECOND;
+    public final static long SECONDS_PER_TICK = 1/TICKS_PER_SECOND;
 
     public Minecraft(IWindow window, Input input, Player player) {
         this.window = window;
@@ -42,6 +39,9 @@ public class Minecraft {
 //        inputManager.bind(GLFW_KEY_W, new MoveCommand(player, window.getCamera(), Camera.CameraDirection.FORWARD  ));
         inputManager.bind(GLFW_KEY_W, new MoveForwardCommand(player));
         inputManager.bind(GLFW_KEY_S, new MoveBackwardsCommand(player));
+        inputManager.bind(GLFW_KEY_A, new MoveLeftCommand(player));
+        inputManager.bind(GLFW_KEY_D, new MoveRightCommand(player));
+        inputManager.bind(GLFW_KEY_SPACE, new JumpCommand(player));
         tickTimer = new Timer();
     }
 
@@ -59,7 +59,6 @@ public class Minecraft {
         // the window or has pressed the ESCAPE key.
 
         List<ICommand> commands = inputManager.pollInputs(input);
-        player.setWalkingVelocity(new Vector());
         for (ICommand command : commands) command.execute((float) window.getDeltaTime());
 
         tickGame();

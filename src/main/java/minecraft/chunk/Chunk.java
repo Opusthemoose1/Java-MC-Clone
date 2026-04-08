@@ -36,10 +36,10 @@ public class Chunk {
     private int visibleBlocks;
     private final Matrix4f modelMatrix;
 
-    public static final int CHUNK_SIZE = 16;
+    public static final int CHUNK_SIZE = 16, CHUNK_HEIGHT = 64;
     final int STRIDE = 6;
 
-    ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+    ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_HEIGHT][CHUNK_SIZE][CHUNK_SIZE];
 
     short offsetX, offsetZ;
 
@@ -120,10 +120,10 @@ public class Chunk {
     public ChunkBlock getChunkBlock(int x, int y, int z) {
         if (x < 0 || y < 0 || z < 0 ||
                 x >= CHUNK_SIZE ||
-                y >= CHUNK_SIZE ||
+                y >= CHUNK_HEIGHT ||
                 z >= CHUNK_SIZE) return null;
 
-        return blocks[z][y][x];
+        return blocks[y][x][z];
     }
 
     private void addBlock(int x, int y, int z)
@@ -156,7 +156,7 @@ public class Chunk {
                     addVertex(faceVertices[base + 3]);
                     addVertex(faceVertices[base + 4]);
 
-                    addVertex(faceVertices[base + 5] = blocks[x][y][z].getMaterialId() - 1);
+                    addVertex(faceVertices[base + 5] = blocks[y][x][z].getMaterialId() - 1);
 
                 }
                 // Copy over the index data
@@ -187,7 +187,7 @@ public class Chunk {
         for (int i = 0; i < SIDE_LENGTH; i++) {
             for (int j = 0; j < SIDE_LENGTH; j++) {
                 for (int k = 0; k < SIDE_LENGTH; k++) {
-                    if (j == SIDE_LENGTH - 1) blocks[i][j][k] = new ChunkBlock(Material.DIRT.getId());
+                    if (i == SIDE_LENGTH - 1) blocks[i][j][k] = new ChunkBlock(Material.DIRT.getId());
                     else blocks[i][j][k] = new ChunkBlock(Material.COBBLESTONE.getId());
                 }
             }

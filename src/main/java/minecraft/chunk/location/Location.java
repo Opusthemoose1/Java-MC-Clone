@@ -72,10 +72,18 @@ public class Location {
         this.pitch = pitch;
     }
 
-    public void add(IVector vector) {
+    public Location add(IVector vector) {
         this.x += vector.getX();
         this.y += vector.getY();
         this.z += vector.getZ();
+        return this;
+    }
+
+    public Location add(float x, float y, float z) {
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        return this;
     }
 
     public Location clone() {
@@ -101,6 +109,10 @@ public class Location {
     public IVector getRightDirection() {
         IVector up = new Vector(0, 1, 0);
         return getDirection().cross(up).normalize();
+    }
+
+    public IVector getUpDirection() {
+        return getRightDirection().clone().cross(getDirection()).normalize();
     }
 
     public IVector toVector() {

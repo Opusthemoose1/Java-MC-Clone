@@ -131,6 +131,10 @@ public class Vector implements IVector {
         return new Vector3f(getX(), getY(), getZ());
     }
 
+    public boolean isZero() {
+        return getX() == 0 && getY() == 0 && getZ() == 0;
+    }
+
     @Override
     public String toString() {
         return "[" + getX() + ", " + getY() + ", " + getZ() + "]";

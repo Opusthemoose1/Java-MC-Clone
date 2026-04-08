@@ -6,7 +6,6 @@ public class Timer {
 
     public Timer() {
         start = 0;
-        end = 0;
     }
 
     public long getStart() {

@@ -12,7 +12,7 @@ public class Player extends AttackingEntity implements YawPitchObserver {
             ATTACK_DAMAGE = 4f,
             WEIGHT = 0.8f,
             JUMP_DELTA_Y = 2f,
-            PLAYER_WALK_SPEED = 0.02f;
+            PLAYER_WALK_SPEED = 0.1f;
 
     private IVector inputWalkSpeed = new Vector();
 
@@ -35,25 +35,14 @@ public class Player extends AttackingEntity implements YawPitchObserver {
         return true;
     }
 
-    @Override
-    protected IVector getWalkingVelocity() {
-        return inputWalkSpeed.clone();
-    }
+//    @Override
+//    protected IVector getWalkingVelocity() {
+//        return inputWalkSpeed.clone();
+//    }
 
-    public void setWalkingVelocity(IVector velocity) {
-        inputWalkSpeed = velocity.clone();
-    }
-
-    public boolean move(Vector displacement)
-    {
-        this.setLocation(Location.createLocation(displacement.getX(), displacement.getY(), displacement.getZ()));
-        if (isOnSolidGround()) {
-
-            return false;
-        }
-        return true;
-
-    }
+//    public void setWalkingVelocity(IVector velocity) {
+//        inputWalkSpeed = velocity.clone();
+//    }
 
     public void jump() {
         addVelocity(0, JUMP_DELTA_Y, 0);

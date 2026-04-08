@@ -19,37 +19,31 @@ import static org.lwjgl.opengl.GL11.glViewport;
 public class Camera implements CameraObserver, YawPitchPublisher {
 
 
-    public static final float MAX_PITCH = 89f;
+    public static final float MAX_PITCH = 89f, CAMERA_Y_OFFSET = 1.75f;
 
     private final Matrix4f perspective;
     private final Matrix4f ortho;
     private final Matrix4f view;
     private Location location;
     private IVector front;
-    private final IVector worldUp;
     private IVector up;
 
-    private float fov;
+    private float fov = 90f;
     private float screenWidth, screenHeight;
 
     private final Set<YawPitchObserver> observers = new HashSet<>();
 
     private double lastX, lastY;
 
-    public Camera(Location location, int screenWidth, int screenHeight)  {
+    public Camera(Location location, int screenWidth, int screenHeight) {
         this.perspective = new Matrix4f();
         this.ortho = new Matrix4f();
         this.view = new Matrix4f();
 
         this.location = location.clone();
-        this.front = new Vector(0.0f, 0.0f, 1.0f);
-        this.worldUp = new Vector(0.0f, 1.0f, 0.0f);
 
-        this.fov = 90.0f;
-
-        this.lastX = screenWidth / 2.0;
+        this.lastX = screenWidth / 2.0; //initially, assume moues to be at the center of the screen
         this.lastY = screenHeight / 2.0;
-
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
@@ -57,8 +51,6 @@ public class Camera implements CameraObserver, YawPitchPublisher {
         updateProjectionMatrix();
     }
 
-    public float getScreenWidth() {return screenWidth; }
-    public float getScreenHeight() {return screenHeight; }
     public void updateProjectionMatrix() {
         this.perspective.identity().perspective(
                 (float) Math.toRadians(fov),
@@ -78,28 +70,18 @@ public class Camera implements CameraObserver, YawPitchPublisher {
         );
     }
 
-    public IVector getRightDirection() {
-        return this.front.clone().cross(this.up).normalize();
-    }
-
-    public IVector getFront() {return front; }
-
     public void mouseControl(Vector2d mousePos) {
-        double xoffset = mousePos.x - lastX;
-        double yoffset = lastY - mousePos.y;
+        double xOffset = mousePos.x - lastX;
+        double yOffset = lastY - mousePos.y;
         lastX = mousePos.x;
         lastY = mousePos.y;
 
         float sensitivity = 0.1f;
-        xoffset *= sensitivity;
-        yoffset *= sensitivity;
+        xOffset *= sensitivity;
+        yOffset *= sensitivity;
 
-//        yaw   += (float) xoffset;
-//        pitch += (float) yoffset;
-//
-//        pitch = Math.clamp(pitch, -MAX_PITCH, MAX_PITCH);
-        location.setYaw(location.getYaw() + (float) xoffset);
-        location.setPitch(Math.clamp(location.getPitch() + (float) yoffset, -MAX_PITCH, MAX_PITCH));
+        location.setYaw(location.getYaw() + (float) xOffset);
+        location.setPitch(Math.clamp(location.getPitch() + (float) yOffset, -MAX_PITCH, MAX_PITCH));
 
         updateCameraVectors();
         notifyObservers();
@@ -121,12 +103,7 @@ public class Camera implements CameraObserver, YawPitchPublisher {
 
     public void updateCameraVectors() {
         front = location.getDirection();
-
-        // right = front × worldUp
-        IVector right = location.getRightDirection();
-
-        // up = right × front
-        up = right.clone().cross(front).normalize();
+        up = location.getUpDirection(); // up = right × front
     }
 
     public Matrix4f getProjectionMatrix() {
@@ -143,10 +120,9 @@ public class Camera implements CameraObserver, YawPitchPublisher {
         screenWidth = width;
         screenHeight = height;
         updateProjectionMatrix();
-
     }
 
     public void setLocation(Location location) {
-        this.location = location.clone();
+        this.location = location.clone().add(0f, CAMERA_Y_OFFSET, 0f);
     }
 }

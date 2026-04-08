@@ -9,11 +9,11 @@ import minecraft.math.Vector;
 
 abstract public class Entity {
 
-    public static final float GRAVITY = -0.5f, FRICTION_MULTIPLIER = 0.98f, MINIMUM_VELOCITY = 0.01f,
+    public static final float GRAVITY = -0.2f, FRICTION_MULTIPLIER = 0.85f, MINIMUM_VELOCITY = 0.01f,
             FREEFALL_VELOCITY_MULTIPLIER = 0.2f, FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, EPSILON = 0.001f;
 
     private Location location;
-    private IVector velocity = Vector.newZeroVector();
+    private IVector velocity = Vector.newZeroVector(), instantaneousVelocity = Vector.newZeroVector();
     protected WorldContext context;
     private float health, walkSpeed, startingFreefallY = -1;
 
@@ -80,20 +80,35 @@ abstract public class Entity {
         else return new Vector();
     }
 
+    public IVector getInstantaneousVelocity() {
+        return instantaneousVelocity.clone();
+    }
+
+    public void addInstantaneousVelocity(IVector vector) {
+        instantaneousVelocity.add(vector.getX(), vector.getY(), vector.getZ());
+    }
+
     public void tick() {
-        IVector walkVelocity = getWalkingVelocity();
+        IVector walkVelocity = getInstantaneousVelocity();
         if (isOnSolidGround()) tickOnGround(walkVelocity);
         else tickInAir(walkVelocity);
+        instantaneousVelocity = Vector.newZeroVector();
     }
 
     private void tickOnGround(IVector walkVelocity) {
-        velocity.setY(0);
-        velocity.multiply(FRICTION_MULTIPLIER);
-        velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
-                Math.max(velocity.getY(), walkVelocity.getY()),
-                Math.max(velocity.getZ(), walkVelocity.getZ()));
-        if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
-        location.add(velocity);
+        if (walkVelocity.isZero()) {
+            velocity.setY(0);
+            velocity.multiply(FRICTION_MULTIPLIER);
+            velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
+                    Math.max(velocity.getY(), walkVelocity.getY()),
+                    Math.max(velocity.getZ(), walkVelocity.getZ()));
+            if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
+            location.add(velocity);
+        } else {
+            location.add(walkVelocity);
+            velocity = walkVelocity;
+            walkSpeed = 0;
+        }
 
         handleFallDamage();
     }
