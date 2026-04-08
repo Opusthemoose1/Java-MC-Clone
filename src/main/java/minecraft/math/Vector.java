@@ -3,7 +3,7 @@ package minecraft.math;
 import org.joml.Vector3f;
 
 /**
- * Adapter class to JOML Vector3f
+ * Adapter class to JOML Vector3f. Vector3f implements three interfaces, this implements one.
  */
 public class Vector implements IVector {
 

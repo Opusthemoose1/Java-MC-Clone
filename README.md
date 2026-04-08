@@ -2,10 +2,11 @@
 
 A simple Java reproduction of the classic block game
 
-### 3 Design Patterns
+### Notable Design Patterns
 1. Entities are created using the factory pattern (EntityFactory)
-2. Window uses the Observer Pattern to listen for changes to the window size
+2. ChunkRenderer and EntityRenderer are observers to Window, which pushes updates containing a WorldContext object
 3. Vector uses the facade pattern: JOML Vector3f implements 3 interfaces, Vector only implements IVector
+4. EntityManager uses the Iterator pattern to iterate over all entities
 
 **Polymorphism Example**: Entities are polymorphic, with methods such as `Entity#getWeight()` and `AttackingEntity#getAttackDamage()` implemented by each concrete class.
 AttackingEntity is a subclass of Entity.

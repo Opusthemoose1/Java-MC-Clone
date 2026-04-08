@@ -1,5 +1,6 @@
 package minecraft.window.texture;
 
+import minecraft.Minecraft;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -64,7 +65,7 @@ public class Shader implements IShader {
 
     public void setMatrix4(Matrix4f matrix, String uniformName) {
         int location = glGetUniformLocation(this.shaderProgramId, uniformName);
-        if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
+        if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
         try (MemoryStack stack = MemoryStack.stackPush())
         {
             glUniformMatrix4fv(location, false, matrix.get(stack.mallocFloat(16)));
@@ -74,13 +75,13 @@ public class Shader implements IShader {
 
     public void setInt(int integer, String uniformName) {
         int location = glGetUniformLocation(shaderProgramId, uniformName);
-        if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
+        if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
         glUniform1i(location, integer);
     }
 
     public void setIntArray(int[] array, String uniformName) {
         int location = glGetUniformLocation(shaderProgramId, uniformName);
-        if (location == -1) System.out.println("Failed to locate uniform " + uniformName);
+        if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
         glUniform1iv(location, array);
     }
 }

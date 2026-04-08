@@ -4,7 +4,7 @@ import minecraft.chunk.Location;
 
 import java.util.Set;
 
-public interface IEntityManager {
+public interface IEntityManager extends Iterable<Entity> {
 
     public void addEntity(Entity entity);
 
@@ -13,6 +13,5 @@ public interface IEntityManager {
     public void tickAllEntities();
 
     public Set<Entity> getEntitiesNearby(Location location, double radius);
-
 
 }

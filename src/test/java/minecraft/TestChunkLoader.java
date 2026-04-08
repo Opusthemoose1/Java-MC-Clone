@@ -5,15 +5,28 @@ import minecraft.chunk.Chunk;
 import minecraft.chunk.ChunkBlock;
 import minecraft.chunk.IChunkLoader;
 
+import java.util.List;
+
 public class TestChunkLoader implements IChunkLoader {
+
+    private final int yLevel;
+
+    public TestChunkLoader(int yLevel) {
+        this.yLevel = yLevel;
+    }
 
     @Override
     public Chunk getChunk(int x, int y) {
-        return null; //TODO
+        return null;
     }
 
     @Override
     public ChunkBlock getBlock(double x, double y, double z) {
-        return new ChunkBlock(y < 10 ? Material.COBBLESTONE.getId() : Material.AIR.getId());
+        return new ChunkBlock(y <= yLevel ? Material.COBBLESTONE.getId() : Material.AIR.getId());
+    }
+
+    @Override
+    public List<Chunk> getRenderedChunks() {
+        return List.of();
     }
 }

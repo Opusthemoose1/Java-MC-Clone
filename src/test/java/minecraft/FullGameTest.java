@@ -1,8 +1,5 @@
 package minecraft;
 
-import minecraft.Minecraft;
-import minecraft.WorldContext;
-import minecraft.chunk.ChunkLoader;
 import minecraft.chunk.ChunkRenderer;
 import minecraft.entity.EntityManager;
 import minecraft.math.IVector;
@@ -12,6 +9,7 @@ import minecraft.window.Window;
 import minecraft.window.input.Input;
 import minecraft.window.text.TextRenderer;
 import minecraft.window.texture.Shader;
+import minecraft.window.texture.TextureAtlas;
 import minecraft.window.texture.TextureMap;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.opengl.GL;
@@ -47,18 +45,17 @@ public class FullGameTest {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
-        TextureMap blockTextureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/blocks/");
-
 
         Shader textShader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
         TextRenderer text = new TextRenderer("src/resources/textures/ascii.png", textShader );
 
         window.setTextRenderer(text);
 
-        window.setChunkRenderer(new ChunkRenderer(blockTextureMap,
-                new Shader("src/resources/shaders/basic.vert",
-                        "src/resources/shaders/basic.frag")));
+        TextureMap blockTextureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/blocks/");
+        TextureAtlas textureAtlas = new TextureAtlas(blockTextureMap);
 
+        Shader shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
+        window.attach(new ChunkRenderer(textureAtlas, camera, shader));
 
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
@@ -67,7 +64,7 @@ public class FullGameTest {
         input.attach(camera);
         window.setInput(input);
 
-        WorldContext context = new WorldContext(new ChunkLoader(), new EntityManager());
+        WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
         Minecraft minecraft = new Minecraft(window, input, context);
         minecraft.run();
     }

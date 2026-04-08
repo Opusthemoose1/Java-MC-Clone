@@ -1,8 +1,8 @@
 package minecraft.window;
 
-import minecraft.chunk.ChunkLoader;
+import minecraft.Minecraft;
+import minecraft.WorldContext;
 import minecraft.chunk.ChunkRenderer;
-import minecraft.entity.EntityManager;
 import minecraft.window.text.ITextRenderer;
 import minecraft.window.input.IInput;
 
@@ -12,6 +12,8 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -29,7 +31,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 // TODO: Singleton class, as we only want one instance of this
-public class Window implements IWindow {
+public class Window implements IWindow, FrameRenderPublisher {
 
     private int width, height;
     private long windowHandle; // Window handle for the GLFW context
@@ -37,15 +39,20 @@ public class Window implements IWindow {
     private double deltaTime;
 
     private Camera camera;
-    private ChunkRenderer chunkRenderer;
     private ITextRenderer textRenderer;
+    private final GLFWErrorCallback loggerCallback;
+
+    private final Set<FrameRenderObserver> observers = new HashSet<>();
 
     private IInput input;
 
     public Window(int width, int height) {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
-        GLFWErrorCallback.createPrint(System.err).set();
+        loggerCallback = GLFWErrorCallback.create((error, description) -> {
+            String errorMsg = GLFWErrorCallback.getDescription(description);
+            Minecraft.getLogger().error("GLFW Error [{}]: {}", error, errorMsg);
+        });
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
 
@@ -72,8 +79,6 @@ public class Window implements IWindow {
     public void setInput(IInput input) {
         this.input = input;
     }
-
-    public void setChunkRenderer(ChunkRenderer renderer) { this.chunkRenderer = renderer; }
 
     public void setTextRenderer(ITextRenderer textRenderer) {
         this.textRenderer = textRenderer;
@@ -120,7 +125,7 @@ public class Window implements IWindow {
         return !glfwWindowShouldClose(getWindowHandle());
     }
 
-    public void loop(){
+    public void loop(WorldContext context){
 
         double currentFrameTime = glfwGetTime();
         deltaTime = currentFrameTime - lastFrameTime;
@@ -130,10 +135,13 @@ public class Window implements IWindow {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
         // Draw the chunks
-        chunkRenderer.drawChunks(ChunkLoader.GetInstance().getCurrentlyRenderedChunks(), camera);
+        Minecraft.getLogger().info("calling " + observers.size() + " observers"); //TODO remove
+        for (FrameRenderObserver observer : observers) {
+            observer.render(context);
+        }
 
         final String fpsCounter = String.valueOf(framesPerSecond);
-        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter);
+        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter); //TODO remove line or remove magic numbers
 
         glfwSwapBuffers(getWindowHandle()); // swap the color buffers
 
@@ -144,6 +152,16 @@ public class Window implements IWindow {
     }
 
     @Override
+    public void attach(FrameRenderObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void detach(FrameRenderObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
     public void free() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(getWindowHandle());
@@ -151,8 +169,7 @@ public class Window implements IWindow {
 
         // Terminate GLFW and free the error callback
         glfwTerminate();
-        GLFWErrorCallback callback = glfwSetErrorCallback(null);
-        if (callback != null) callback.free();
+        loggerCallback.free();
     }
 
     // Poll for window events. The key callback above will only be invoked during this call.

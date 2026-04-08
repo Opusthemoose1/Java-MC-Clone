@@ -16,4 +16,9 @@ public class Chicken extends Entity {
         return WEIGHT;
     }
 
+    @Override
+    public void takeFallDamage(float y) {
+        //nothing; chicken lands with wings
+    }
+
 }

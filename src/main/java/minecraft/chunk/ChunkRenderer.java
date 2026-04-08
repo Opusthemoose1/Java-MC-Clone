@@ -1,7 +1,10 @@
 package minecraft.chunk;
 
+import minecraft.Minecraft;
+import minecraft.WorldContext;
 import minecraft.block.Material;
 import minecraft.window.Camera;
+import minecraft.window.FrameRenderObserver;
 import minecraft.window.texture.Shader;
 import minecraft.window.texture.Texture;
 import minecraft.window.texture.TextureAtlas;
@@ -17,14 +20,15 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 // Draws the current actively rendered set of chunks
-public class ChunkRenderer {
-    private final TextureMap textures;
+public class ChunkRenderer implements FrameRenderObserver {
     private final TextureAtlas atlas;
     private final Shader chunkShader;
-    public ChunkRenderer(TextureMap map, Shader shader) {
-        textures = map;
+    private final Camera camera;
+
+    public ChunkRenderer(TextureAtlas atlas, Camera camera, Shader shader) {
+        this.camera = camera;
+        this.atlas = atlas;
         chunkShader = shader;
-        atlas = new TextureAtlas(map);
         chunkShader.bind();
         // TODO: MAGIC
         chunkShader.setInt(16, "uAtlasColumns");
@@ -37,10 +41,8 @@ public class ChunkRenderer {
         chunkShader.setIntArray(textureArray, "uTileMap");
     }
 
-    public void drawChunks(Map<Long, Chunk> chunks, Camera camera)
-    {
-        for (Chunk chunk : chunks.values())
-        {
+    public void render(WorldContext context) {
+        for (Chunk chunk : context.getChunkLoader().getRenderedChunks()) {
             this.chunkShader.bind();
             this.chunkShader.setMatrix4(camera.getViewMatrix(), "view");
             this.chunkShader.setMatrix4(camera.getProjectionMatrix(), "projection");

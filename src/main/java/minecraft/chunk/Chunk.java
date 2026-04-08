@@ -1,5 +1,6 @@
 package minecraft.chunk;
 
+import minecraft.Minecraft;
 import minecraft.block.Material;
 import minecraft.timer.Timer;
 import org.joml.Matrix4f;
@@ -33,20 +34,19 @@ public class Chunk {
     private int vertexCount;
 
     private int visibleBlocks;
-    Matrix4f modelMatrix;
+    private final Matrix4f modelMatrix;
 
-    static final int SIDE_LENGTH = 16;
+    public static final int CHUNK_SIZE = 16;
     final int STRIDE = 6;
 
-    ChunkBlock[][][] blocks = new ChunkBlock[SIDE_LENGTH][SIDE_LENGTH][SIDE_LENGTH];
+    ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
 
-    int offsetX, offsetZ;
+    short offsetX, offsetZ;
 
     float[] GPUVertexData;
     int[] GPUIndexData;
 
-    private void addVertex(float v)
-    {
+    private void addVertex(float v) {
         if (vertexCount >= GPUVertexData.length)
         {
             GPUVertexData = Arrays.copyOf(GPUVertexData, GPUVertexData.length * 2);
@@ -54,10 +54,8 @@ public class Chunk {
         GPUVertexData[vertexCount++] = v;
     }
 
-    private void addIndex(int i)
-    {
-        if (indexCount >= GPUIndexData.length)
-        {
+    private void addIndex(int i) {
+        if (indexCount >= GPUIndexData.length) {
             GPUIndexData = Arrays.copyOf(GPUIndexData, GPUIndexData.length * 2);
         }
         GPUIndexData[indexCount++] = i;
@@ -121,9 +119,9 @@ public class Chunk {
 
     public ChunkBlock getChunkBlock(int x, int y, int z) {
         if (x < 0 || y < 0 || z < 0 ||
-                x >= SIDE_LENGTH ||
-                y >= SIDE_LENGTH ||
-                z >= SIDE_LENGTH) return null;
+                x >= CHUNK_SIZE ||
+                y >= CHUNK_SIZE ||
+                z >= CHUNK_SIZE) return null;
 
         return blocks[z][y][x];
     }
@@ -158,7 +156,7 @@ public class Chunk {
                     addVertex(faceVertices[base + 3]);
                     addVertex(faceVertices[base + 4]);
 
-                    addVertex(faceVertices[base + 5] = blocks[x][y][z].materialId() - 1);
+                    addVertex(faceVertices[base + 5] = blocks[x][y][z].getMaterialId() - 1);
 
                 }
                 // Copy over the index data
@@ -182,32 +180,27 @@ public class Chunk {
 
         this.vertexCount = 0;
         this.indexCount = 0;
-        this.offsetX = xOffset;
-        this.offsetZ = zOffset;
+        this.offsetX = (short) xOffset;
+        this.offsetZ = (short) zOffset;
         final int SIDE_LENGTH = 16;
 
-        for (int i = 0; i < SIDE_LENGTH; i++)
-            for (int j = 0; j < SIDE_LENGTH; j++)
-                for (int k = 0; k < SIDE_LENGTH; k++)
-                {
-                    if (j == SIDE_LENGTH - 1) blocks[i][j][k] = new ChunkBlock((byte) Material.DIRT.getId());
-                    else blocks[i][j][k] = new ChunkBlock((byte) Material.COBBLESTONE.getId());
-
+        for (int i = 0; i < SIDE_LENGTH; i++) {
+            for (int j = 0; j < SIDE_LENGTH; j++) {
+                for (int k = 0; k < SIDE_LENGTH; k++) {
+                    if (j == SIDE_LENGTH - 1) blocks[i][j][k] = new ChunkBlock(Material.DIRT.getId());
+                    else blocks[i][j][k] = new ChunkBlock(Material.COBBLESTONE.getId());
                 }
-
-
+            }
+        }
 
         this.visibleBlocks = 0;
 
         GPUVertexData = new float[GPU_BUFFER_SIZE];
         GPUIndexData = new int[GPU_BUFFER_SIZE];
 
-        for (int x = 0; x < SIDE_LENGTH; x++)
-        {
-            for (int y = 0; y < SIDE_LENGTH; y++)
-            {
-                for (int z = 0; z < SIDE_LENGTH; z++)
-                {
+        for (int x = 0; x < SIDE_LENGTH; x++) {
+            for (int y = 0; y < SIDE_LENGTH; y++) {
+                for (int z = 0; z < SIDE_LENGTH; z++) {
                     addBlock(x, y, z);
                 }
             }
@@ -246,11 +239,20 @@ public class Chunk {
         modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
 
         timeToCreateChunk.endTimer();
-        System.out.println("Time to build chunk: " + timeToCreateChunk.getTimeInMilliseconds() + " ms");
+        Minecraft.getLogger().info("Time to build chunk: {} ms", timeToCreateChunk.getTimeInMilliseconds());
 
     }
     public int getVAO() {return this.VAO; }
     public int getIndexCount() {return this.indexCount; }
     public int getXPosition() {return this.offsetX; }
     public int getZPosition() {return this.offsetZ; }
+
+    @Override
+    public int hashCode() {
+        return getChunkHash(this.offsetX, this.offsetZ);
+    }
+
+    public static int getChunkHash(short x, short z) {
+        return (x << 16) | z; // [16-bit-x][16-bit-z]
+    }
 }

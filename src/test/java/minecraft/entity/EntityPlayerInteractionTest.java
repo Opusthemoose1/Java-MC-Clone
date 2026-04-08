@@ -1,13 +1,13 @@
 package minecraft.entity;
 
-import minecraft.TestChunkLoader;
+import minecraft.FlatWorldChunkLoader;
 import minecraft.WorldContext;
 import minecraft.chunk.Location;
 import org.junit.jupiter.api.Test;
 
 public class EntityPlayerInteractionTest {
 
-    private final WorldContext context = new WorldContext(new TestChunkLoader(), new EntityManager());
+    private final WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
     private final EntityFactory entityFactory = new EntityFactory(context);
 
     @Test

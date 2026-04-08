@@ -1,10 +1,10 @@
 package minecraft.entity;
 
 import minecraft.chunk.Location;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
 /*
@@ -15,7 +15,7 @@ This is more of a facade pattern on top of everything but it reduces parameter p
  */
 public class EntityManager implements IEntityManager {
 
-    static ArrayList<Entity> entities = new ArrayList<>();
+    static Set<Entity> entities = new HashSet<>();
 
     public EntityManager() {
     }
@@ -43,4 +43,9 @@ public class EntityManager implements IEntityManager {
         return nearby;
     }
 
+    @NotNull
+    @Override
+    public Iterator<Entity> iterator() {
+        return entities.iterator();
+    }
 }

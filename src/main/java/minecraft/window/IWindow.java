@@ -1,5 +1,6 @@
 package minecraft.window;
 
+import minecraft.WorldContext;
 import minecraft.chunk.IChunkLoader;
 import minecraft.window.input.IInput;
 
@@ -7,7 +8,7 @@ public interface IWindow {
 
     long getWindowHandle();
 
-    void loop();
+    void loop(WorldContext context);
 
     int getWidth();
 

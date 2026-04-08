@@ -57,7 +57,7 @@ public class Minecraft {
         // Tick all registered entities
         context.getEntityManager().tickAllEntities();
 
-        window.loop();
+        window.loop(context);
     }
 
     public Player getPlayer() {
