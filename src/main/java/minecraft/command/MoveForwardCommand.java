@@ -18,6 +18,7 @@ public class MoveForwardCommand implements ICommand {
                 .setY(0)
                 .normalize()
                 .multiply(Player.PLAYER_WALK_SPEED);
+        System.out.println("move forward" + direction.toString());
         player.setWalkingVelocity(direction);
     }
 }

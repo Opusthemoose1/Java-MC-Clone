@@ -1,12 +1,12 @@
 package minecraft.entity;
 
 import minecraft.WorldContext;
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
-import minecraft.window.CameraObserver;
+import minecraft.chunk.location.YawPitchObserver;
 
-public class Player extends AttackingEntity {
+public class Player extends AttackingEntity implements YawPitchObserver {
 
     public static final float INITIAL_HEALTH = 20f,
             ATTACK_DAMAGE = 4f,
@@ -57,5 +57,11 @@ public class Player extends AttackingEntity {
 
     public void jump() {
         addVelocity(0, JUMP_DELTA_Y, 0);
+    }
+
+    @Override
+    public void updateYawAndPitch(float yaw, float pitch) {
+        setYaw(yaw);
+        setPitch(pitch);
     }
 }

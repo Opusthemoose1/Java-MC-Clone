@@ -65,7 +65,7 @@ public class Minecraft {
         tickGame();
 
         window.loop(context);
-        window.getCamera().setPosition(player.getLocation().toVector().add(0, CAMERA_Y_OFFSET, 0));
+        window.getCamera().setLocation(player.getLocation());
     }
 
     private void tickGame() {

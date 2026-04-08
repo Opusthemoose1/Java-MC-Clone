@@ -1,6 +1,6 @@
 package minecraft.entity;
 
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 
 import java.util.Set;
 

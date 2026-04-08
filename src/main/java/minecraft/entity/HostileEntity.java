@@ -1,7 +1,7 @@
 package minecraft.entity;
 
 import minecraft.WorldContext;
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.timer.Timer;
 

@@ -2,7 +2,7 @@ package minecraft.entity;
 
 import minecraft.TestChunkLoader;
 import minecraft.WorldContext;
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import org.junit.jupiter.api.Test;

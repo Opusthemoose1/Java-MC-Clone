@@ -1,10 +1,10 @@
-package minecraft.chunk;
+package minecraft.chunk.location;
 
 import minecraft.math.IVector;
 import minecraft.math.Vector;
-import org.joml.Matrix3d;
-import org.joml.Matrix3f;
-import org.joml.Vector3f;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 public class Location {
 
@@ -92,10 +92,15 @@ public class Location {
     public IVector getDirection() {
         //Z rotation followed by Y rotation
         return new Vector(
-                (float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw))),
-                (float) Math.sin(Math.toRadians(pitch)),
-                (float) (-Math.cos(Math.toRadians(pitch)) * Math.sin(Math.toRadians(yaw)))
+                (float)(cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch))),
+                (float) sin(Math.toRadians(pitch)),
+                (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)))
         ).normalize();
+    }
+
+    public IVector getRightDirection() {
+        IVector up = new Vector(0, 1, 0);
+        return getDirection().cross(up).normalize();
     }
 
     public IVector toVector() {

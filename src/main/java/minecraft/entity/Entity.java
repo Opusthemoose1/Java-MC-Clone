@@ -3,7 +3,7 @@ package minecraft.entity;
 import minecraft.WorldContext;
 import minecraft.block.Material;
 import minecraft.chunk.ChunkBlock;
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 
@@ -136,6 +136,14 @@ abstract public class Entity {
 
     public void setPitch(float pitch) {
         location.setPitch(pitch);
+    }
+
+    public float getYaw() {
+        return location.getYaw();
+    }
+
+    public float getPitch() {
+        return location.getPitch();
     }
 
     public boolean isPlayer() {

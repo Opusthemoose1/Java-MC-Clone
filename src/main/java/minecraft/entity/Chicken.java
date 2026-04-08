@@ -1,7 +1,7 @@
 package minecraft.entity;
 
 import minecraft.WorldContext;
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 
 public class Chicken extends Entity {
 

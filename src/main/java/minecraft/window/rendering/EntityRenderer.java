@@ -1,4 +1,4 @@
-package minecraft.window.entity;
+package minecraft.window.rendering;
 
 import minecraft.WorldContext;
 import minecraft.entity.Entity;

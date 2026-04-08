@@ -1,16 +1,11 @@
-package minecraft.chunk;
+package minecraft.window.rendering;
 
-import minecraft.Minecraft;
 import minecraft.WorldContext;
-import minecraft.block.Material;
+import minecraft.chunk.Chunk;
 import minecraft.window.Camera;
 import minecraft.window.FrameRenderObserver;
 import minecraft.window.texture.Shader;
-import minecraft.window.texture.Texture;
 import minecraft.window.texture.TextureAtlas;
-import minecraft.window.texture.TextureMap;
-
-import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;

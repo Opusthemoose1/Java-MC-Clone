@@ -2,7 +2,6 @@ package minecraft.window;
 
 import minecraft.Minecraft;
 import minecraft.WorldContext;
-import minecraft.chunk.ChunkRenderer;
 import minecraft.window.text.ITextRenderer;
 import minecraft.window.input.IInput;
 

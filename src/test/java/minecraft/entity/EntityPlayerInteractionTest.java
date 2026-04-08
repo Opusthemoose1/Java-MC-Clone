@@ -2,7 +2,7 @@ package minecraft.entity;
 
 import minecraft.FlatWorldChunkLoader;
 import minecraft.WorldContext;
-import minecraft.chunk.Location;
+import minecraft.chunk.location.Location;
 import org.junit.jupiter.api.Test;
 
 public class EntityPlayerInteractionTest {

@@ -1,61 +1,60 @@
 package minecraft.window;
 
-import minecraft.entity.Player;
+import minecraft.chunk.location.Location;
+import minecraft.chunk.location.YawPitchObserver;
+import minecraft.chunk.location.YawPitchPublisher;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static org.lwjgl.opengl.GL11.glViewport;
 
-public class Camera implements CameraObserver {
+public class Camera implements CameraObserver, YawPitchPublisher {
 
 
-    public enum CameraDirection {
-        FORWARD,
-        BACKWARD,
-        LEFT,
-        RIGHT
-    }
-
-    public static final float VELOCITY = 10f, MAX_PITCH = 89f;
+    public static final float MAX_PITCH = 89f;
 
     private final Matrix4f perspective;
     private final Matrix4f ortho;
     private final Matrix4f view;
-    private  IVector position;
+    private Location location;
     private IVector front;
     private final IVector worldUp;
     private IVector up;
 
-    private float yaw, pitch, fov;
+    private float fov;
     private float screenWidth, screenHeight;
+
+    private final Set<YawPitchObserver> observers = new HashSet<>();
 
     private double lastX, lastY;
 
-    public Camera()  {
+    public Camera(Location location, int screenWidth, int screenHeight)  {
         this.perspective = new Matrix4f();
         this.ortho = new Matrix4f();
         this.view = new Matrix4f();
 
-        this.position = new Vector(0.0f, 0.0f, 0.0f);
+        this.location = location.clone();
         this.front = new Vector(0.0f, 0.0f, 1.0f);
         this.worldUp = new Vector(0.0f, 1.0f, 0.0f);
 
-        this.yaw = 0.0f;
-        this.pitch = 0.0f;
         this.fov = 90.0f;
 
-        this.lastX = 960;
-        this.lastY = 540;
+        this.lastX = screenWidth / 2.0;
+        this.lastY = screenHeight / 2.0;
 
-        screenWidth = 720;
-        screenHeight = 480;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
 
         updateCameraVectors();
+        updateProjectionMatrix();
     }
 
     public float getScreenWidth() {return screenWidth; }
@@ -71,9 +70,9 @@ public class Camera implements CameraObserver {
     }
 
     public Matrix4f getViewMatrix() {
-        IVector positionPlusFront = position.clone().add(front);
+        IVector positionPlusFront = location.toVector().add(front);
         return view.identity().lookAt(
-                new Vector3f(position.getX(), position.getY(), position.getZ()),
+                new Vector3f(location.getX(), location.getY(), location.getZ()),
                 new Vector3f(positionPlusFront.getX(), positionPlusFront.getY(), positionPlusFront.getZ()),
                 new Vector3f(up.getX(), up.getY(), up.getZ())
         );
@@ -95,29 +94,36 @@ public class Camera implements CameraObserver {
         xoffset *= sensitivity;
         yoffset *= sensitivity;
 
-        yaw   += (float) xoffset;
-        pitch += (float) yoffset;
+//        yaw   += (float) xoffset;
+//        pitch += (float) yoffset;
+//
+//        pitch = Math.clamp(pitch, -MAX_PITCH, MAX_PITCH);
+        location.setYaw(location.getYaw() + (float) xoffset);
+        location.setPitch(Math.clamp(location.getPitch() + (float) yoffset, -MAX_PITCH, MAX_PITCH));
 
-        pitch = Math.clamp(pitch, -MAX_PITCH, MAX_PITCH);
-
-        IVector direction = new Vector(
-                (float)(cos(Math.toRadians(yaw)) * cos(Math.toRadians(pitch))),
-                (float)sin(Math.toRadians(pitch)),
-                (float)(sin(Math.toRadians(yaw)) * cos(Math.toRadians(pitch)))
-        );
-        this.front = direction.normalize();
         updateCameraVectors();
+        notifyObservers();
+    }
+
+    private void notifyObservers() {
+        for (YawPitchObserver observer : observers) {
+            observer.updateYawAndPitch(location.getYaw(), location.getPitch());
+        }
+    }
+
+    public void attach(YawPitchObserver observer) {
+        observers.add(observer);
+    }
+
+    public void detach(YawPitchObserver observer) {
+        observers.remove(observer);
     }
 
     public void updateCameraVectors() {
-        front = new Vector(
-                (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))),
-                (float)(Math.sin(Math.toRadians(pitch))),
-                (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)))
-        ).normalize();
+        front = location.getDirection();
 
         // right = front × worldUp
-        IVector right = front.clone().cross(worldUp).normalize();
+        IVector right = location.getRightDirection();
 
         // up = right × front
         up = right.clone().cross(front).normalize();
@@ -131,12 +137,6 @@ public class Camera implements CameraObserver {
         return new Matrix4f(this.ortho);
     }
 
-    public IVector getPosition() {
-        return position.clone();
-    }
-
-    public void setPosition(IVector vec) { position = vec; }
-
     @Override
     public void onFramebufferResize(int width, int height) {
         glViewport(0, 0, width, height);
@@ -146,55 +146,7 @@ public class Camera implements CameraObserver {
 
     }
 
-    public static class Builder //TODO: not sure if we need a builder here, there's no internal logic and everything can be set directly in constructor
-    {
-        private IVector position; // World position
-        private float yaw, pitch, fov;
-        private float scrWidth, scrHeight;
-
-        public Builder position(IVector pos) {
-            this.position = pos;
-            return this;
-        }
-        public Builder yaw(float yaw)
-        {
-            this.yaw = yaw;
-            return this;
-        }
-        public Builder pitch(float pitch)
-        {
-            this.pitch = pitch;
-            return this;
-        }
-        public Builder fov(float fov)
-        {
-            this.fov = fov;
-            return this;
-        }
-        public Builder screenWidth(float width)
-        {
-            this.scrWidth = width;
-            return this;
-        }
-        public Builder screenHeight(float height)
-        {
-            this.scrHeight = height;
-            return this;
-        }
-        public Camera build()
-        {
-            Camera camera = new Camera();
-            camera.position = position;
-            camera.yaw = yaw;
-            camera.pitch = pitch;
-            camera.fov = fov;
-            camera.screenWidth = scrWidth;
-            camera.screenHeight = scrHeight;
-
-            camera.updateProjectionMatrix();
-
-            return camera;
-        }
-
+    public void setLocation(Location location) {
+        this.location = location.clone();
     }
 }
