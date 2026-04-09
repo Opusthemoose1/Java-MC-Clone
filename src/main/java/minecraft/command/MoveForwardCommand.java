@@ -1,18 +1,12 @@
 package minecraft.command;
 
-import minecraft.entity.Player;
+import minecraft.entity.Entity;
 import minecraft.math.IVector;
 
 public class MoveForwardCommand implements ICommand {
 
-    private final Player player;
-
-    public MoveForwardCommand(Player player) {
-        this.player = player;
-    }
-
     @Override
-    public void execute(float deltaTime) {
+    public void execute(Entity player) {
         IVector direction = player.getLocation()
                 .getDirection()
                 .setY(0)

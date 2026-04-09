@@ -5,17 +5,18 @@ import minecraft.WorldContext;
 import minecraft.block.Material;
 import minecraft.chunk.ChunkBlock;
 import minecraft.chunk.location.Location;
+import minecraft.chunk.location.YawPitchObserver;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 
-abstract public class Entity {
+abstract public class Entity implements YawPitchObserver {
 
     public static final float GRAVITY = -0.5f / Minecraft.TICKS_PER_SECOND,
             FRICTION_MULTIPLIER = 0.85f,
             MINIMUM_VELOCITY = 0.01f / Minecraft.TICKS_PER_SECOND,
             FREEFALL_VELOCITY_MULTIPLIER = 0.2f,
             FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f,
-            EPSILON = 0.001f,
+            EPSILON = 0.01f,
             DEFAULT_WALK_SPEED = 1.75f / Minecraft.TICKS_PER_SECOND;
 
     private Location location;
@@ -68,21 +69,25 @@ abstract public class Entity {
         velocity.add(vector);
     }
 
-    public void setVelocity(IVector velocity) {this.velocity = velocity; }
+    public void setVelocity(IVector velocity) {
+        this.velocity = velocity;
+    }
 
     abstract float getWeight();
 
     public boolean isOnSolidGround() {
-        return location.getY() <= 0 || blockIsAir(EPSILON);
+        return location.getY() <= 0 || !blockIsAir(-EPSILON);
     }
 
     protected boolean blockIsAir(float yOffset) {
         ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() + yOffset, location.getX());
-        return block != null && block.getMaterialId() != Material.AIR.getId();
+        return block == null || block.getMaterialId() == Material.AIR.getId();
     }
 
     public IVector getInstantaneousVelocity() {
-        return instantaneousVelocity.clone();
+        IVector velocity = instantaneousVelocity.clone().setY(0);
+        if (!velocity.isZero()) velocity.normalize().multiply(getWalkSpeed());
+        return velocity;
     }
 
     public void addInstantaneousVelocity(IVector vector) {
@@ -102,28 +107,34 @@ abstract public class Entity {
                 Math.max(velocity.getY(), walkVelocity.getY()),
                 Math.max(velocity.getZ(), walkVelocity.getZ()));
         velocity.add(walkVelocity);
-        if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
-        location.add(velocity);
 
-        if (!walkVelocity.isZero()) velocity = walkVelocity;
+        if (!velocity.isZero()) {
+            if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
+            location.add(velocity);
+            if (!walkVelocity.isZero()) velocity = walkVelocity;
+        }
+
         handleFallDamage();
     }
 
     protected void tickInAir() {
-        IVector walkVelocity = getInstantaneousVelocity();
         if (startingFreefallY < 0) startingFreefallY = location.getY();
-        walkVelocity.multiply(FREEFALL_VELOCITY_MULTIPLIER);
+        IVector walkVelocity = getInstantaneousVelocity();
+        walkVelocity.multiply(FREEFALL_VELOCITY_MULTIPLIER); //let entity still move a little bit while in the air
         velocity.add(0, GRAVITY, 0);
         location.add(velocity.clone().add(walkVelocity));
-        checkIfLandedOnBlock();
+        checkIfLandedInsideBlock();
     }
 
     /**
      * Round the y level to the nearest whole integer once the entity lands onto a block
      */
-    private void checkIfLandedOnBlock() {
-        if (location.getY() == (int) location.getY()) return; //no rounding needed
-        if (blockIsAir(0) && !blockIsAir(-1)) location.setY((int) location.getY() + 1);
+    private void checkIfLandedInsideBlock() {
+        if (!blockIsAir(0) && blockIsAir(1)) {
+            if (location.getY() != (int) location.getY()) {
+                location.setY((int) location.getY() + 1); //round to upper block
+            }
+        }
     }
 
     private void handleFallDamage() {
@@ -148,6 +159,20 @@ abstract public class Entity {
 
     public void setPitch(float pitch) {
         location.setPitch(pitch);
+    }
+
+    @Override
+    public void updateYawAndPitch(float yaw, float pitch) {
+        setYaw(yaw);
+        setPitch(pitch);
+    }
+
+    public void jump() {
+
+    }
+
+    public void setSprinting(boolean sprinting) {
+
     }
 
     public boolean isPlayer() {

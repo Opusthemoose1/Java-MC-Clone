@@ -1,5 +1,5 @@
 package minecraft.window;
 
-public interface CameraObserver {
+public interface WindowResizeObserver {
     void onFramebufferResize(int width, int height);
 }

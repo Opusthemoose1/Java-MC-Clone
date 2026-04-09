@@ -1,8 +1,7 @@
 package minecraft.window;
 
 import minecraft.WorldContext;
-import minecraft.chunk.IChunkLoader;
-import minecraft.window.input.IInput;
+import minecraft.window.input.IInputSource;
 
 public interface IWindow {
 
@@ -14,7 +13,7 @@ public interface IWindow {
 
     int getHeight();
 
-    void setInput(IInput input);
+    void setInput(IInputSource input);
 
     void free();
 

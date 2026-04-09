@@ -1,11 +1,10 @@
 package minecraft;
 
 import minecraft.command.*;
-import minecraft.entity.Player;
+import minecraft.entity.Entity;
 import minecraft.timer.Timer;
 import minecraft.window.*;
-import minecraft.window.input.Input;
-import minecraft.window.input.InputManager;
+import minecraft.window.input.IInputManager;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -19,29 +18,33 @@ public class Minecraft {
         return logger;
     }
 
-    private final InputManager inputManager;
+    private final IInputManager inputManager;
     private final IWindow window;
-    private final Input input;
-    private final Player player;
+    private final Entity player;
     private final WorldContext context;
     private final Timer tickTimer;
 
     public final static int TICKS_PER_SECOND = 20;
     public final static long SECONDS_PER_TICK = 1/TICKS_PER_SECOND;
 
-    public Minecraft(IWindow window, Input input, Player player) {
+    public Minecraft(IWindow window, IInputManager inputManager, Entity player) {
         this.window = window;
-        this.input = input;
         this.context = player.getContext();
         this.player = player;
-        this.inputManager = new InputManager(input);
-//        inputManager.bind(GLFW_KEY_W, new MoveCommand(player, window.getCamera(), Camera.CameraDirection.FORWARD  ));
-        inputManager.bind(GLFW_KEY_W, new MoveForwardCommand(player));
-        inputManager.bind(GLFW_KEY_S, new MoveBackwardsCommand(player));
-        inputManager.bind(GLFW_KEY_A, new MoveLeftCommand(player));
-        inputManager.bind(GLFW_KEY_D, new MoveRightCommand(player));
-        inputManager.bind(GLFW_KEY_SPACE, new JumpCommand(player));
+        this.inputManager = inputManager;
+
+        bindKeys();
         tickTimer = new Timer();
+    }
+
+    private void bindKeys() {
+        inputManager.bindDownKey(GLFW_KEY_W, new MoveForwardCommand());
+        inputManager.bindDownKey(GLFW_KEY_S, new MoveBackwardsCommand());
+        inputManager.bindDownKey(GLFW_KEY_A, new MoveLeftCommand());
+        inputManager.bindDownKey(GLFW_KEY_D, new MoveRightCommand());
+        inputManager.bindDownKey(GLFW_KEY_SPACE, new JumpCommand());
+        inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, new SprintingStartCommand());
+        inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, new SprintingStopCommand());
     }
 
     public void run() {
@@ -57,8 +60,8 @@ public class Minecraft {
         // Run the rendering loop until the user has attempted to close
         // the window or has pressed the ESCAPE key.
 
-        List<ICommand> commands = inputManager.pollInputs(input);
-        for (ICommand command : commands) command.execute((float) window.getDeltaTime());
+        List<ICommand> commands = inputManager.pollInputs();
+        for (ICommand command : commands) command.execute(player);
 
         tickGame();
 
@@ -75,7 +78,7 @@ public class Minecraft {
         tickTimer.reset();
     }
 
-    public Player getPlayer() {
+    public Entity getPlayer() {
         return player;
     }
 }

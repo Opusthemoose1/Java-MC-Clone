@@ -1,12 +1,13 @@
 package minecraft;
 
+import minecraft.window.input.InputManager;
 import minecraft.window.rendering.ChunkRenderer;
 import minecraft.chunk.location.Location;
 import minecraft.entity.EntityManager;
 import minecraft.entity.Player;
 import minecraft.window.Camera;
 import minecraft.window.Window;
-import minecraft.window.input.Input;
+import minecraft.window.input.InputSource;
 import minecraft.window.text.TextRenderer;
 import minecraft.window.texture.Shader;
 import minecraft.window.texture.TextureAtlas;
@@ -29,15 +30,6 @@ public class FullGameTest {
         //TODO: Initialize GL in a way so that the context can be preserved for making new TextRenderer, Shader, etc., so that these dependencies can be added to Window constructor
         //TODO: Turn window into a builder pattern
         Window window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
-//        Camera camera = new Camera.Builder()
-//                .position(INITIAL_CAMERA_POSITION)
-//                .yaw(0.0f)
-//                .pitch(0.0f)
-//                .fov(90.0f)
-//                .screenWidth(window.getWidth())
-//                .screenHeight(window.getHeight())
-//                .build();
 
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -68,11 +60,12 @@ public class FullGameTest {
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
 
-        Input input = new Input(window.getWindowHandle());
+        InputSource input = new InputSource(window.getWindowHandle());
         input.attach(camera);
         window.setInput(input);
+        InputManager inputManager = new InputManager(input);
 
-        Minecraft minecraft = new Minecraft(window, input, player);
+        Minecraft minecraft = new Minecraft(window, inputManager, player);
 
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         minecraft.run();

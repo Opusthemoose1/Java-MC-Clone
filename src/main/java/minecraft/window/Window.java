@@ -3,7 +3,7 @@ package minecraft.window;
 import minecraft.Minecraft;
 import minecraft.WorldContext;
 import minecraft.window.text.ITextRenderer;
-import minecraft.window.input.IInput;
+import minecraft.window.input.IInputSource;
 
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -29,7 +29,6 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 
-// TODO: Singleton class, as we only want one instance of this
 public class Window implements IWindow, FrameRenderPublisher {
 
     private int width, height;
@@ -43,7 +42,7 @@ public class Window implements IWindow, FrameRenderPublisher {
 
     private final Set<FrameRenderObserver> observers = new HashSet<>();
 
-    private IInput input;
+    private IInputSource input;
 
     public Window(int width, int height) {
         // Setup an error callback. The default implementation
@@ -75,7 +74,7 @@ public class Window implements IWindow, FrameRenderPublisher {
 
     public double getDeltaTime() {return deltaTime; }
 
-    public void setInput(IInput input) {
+    public void setInput(IInputSource input) {
         this.input = input;
     }
 

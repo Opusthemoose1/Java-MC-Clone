@@ -1,6 +1,6 @@
 package minecraft.window.input;
 
-import minecraft.window.CameraObserver;
+import minecraft.window.WindowResizeObserver;
 import org.joml.Vector2d;
 
 import java.util.ArrayList;
@@ -8,15 +8,15 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Input implements IInput {
+public class InputSource implements IInputSource {
 
     // A list of all possible keys
     private final boolean[] keys = new boolean[GLFW_KEY_LAST + 1];
     private final Vector2d mousePos;
 
-    List<CameraObserver> resizeObservers = new ArrayList<>();
+    List<WindowResizeObserver> resizeObservers = new ArrayList<>();
 
-    public Input(long windowHandle) {
+    public InputSource(long windowHandle) {
         glfwSetKeyCallback(windowHandle, (w, key, scancode, action, mods) -> {
             if (key >= 0) {
                 keys[key] = action != GLFW_RELEASE;
@@ -32,7 +32,7 @@ public class Input implements IInput {
         });
 
         glfwSetFramebufferSizeCallback(windowHandle, (w, width, height) -> {
-            for (CameraObserver observer : resizeObservers) {
+            for (WindowResizeObserver observer : resizeObservers) {
                 observer.onFramebufferResize(width, height);
             }
         });
@@ -53,12 +53,12 @@ public class Input implements IInput {
     }
 
     @Override
-    public void attach(CameraObserver observer) {
+    public void attach(WindowResizeObserver observer) {
         resizeObservers.add(observer);
     }
 
     @Override
-    public void detach(CameraObserver observer) {
+    public void detach(WindowResizeObserver observer) {
         if (!resizeObservers.contains(observer)) return;
         resizeObservers.remove(observer);
 

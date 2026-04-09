@@ -7,26 +7,34 @@ import java.util.Map;
 
 import minecraft.command.ICommand;
 
-public class InputManager {
-    private final Map<Integer, ICommand> keyBindings = new HashMap<>();
+public class InputManager implements IInputManager {
+    private final Map<Integer, ICommand> upKeyBindings = new HashMap<>(), downKeyBindings = new HashMap<>();
 
-    private final IInput inputSource;
+    private final IInputSource inputSource;
 
-    public InputManager(IInput input) {
+    public InputManager(IInputSource input) {
         inputSource = input;
     }
-    public void bind(int key, ICommand command)
-    {
-        keyBindings.put(key, command);
+
+    public void bindUpKey(int key, ICommand command) {
+        upKeyBindings.put(key, command);
     }
 
-    public List<ICommand> pollInputs(Input input) {
-        if (input == null) return List.of();
+    public void bindDownKey(int key, ICommand command) {
+        downKeyBindings.put(key, command);
+    }
+
+    public List<ICommand> pollInputs() {
+        if (inputSource == null) return List.of();
         List<ICommand> commands = new ArrayList<>();
 
-        input.poll();
-        keyBindings.forEach((key, command) -> {
-            if (inputSource.isKeyDown(key)) commands.add(command);
+        inputSource.poll();
+        upKeyBindings.forEach((key, command) -> {
+            if (!this.inputSource.isKeyDown(key)) commands.add(command);
+        });
+
+        downKeyBindings.forEach((key, command) -> {
+            if (this.inputSource.isKeyDown(key)) commands.add(command);
         });
 
         return commands;

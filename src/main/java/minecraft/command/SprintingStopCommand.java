@@ -2,10 +2,10 @@ package minecraft.command;
 
 import minecraft.entity.Entity;
 
-public class JumpCommand implements ICommand {
+public class SprintingStopCommand implements ICommand {
 
     @Override
     public void execute(Entity player) {
-        player.jump();
+        player.setSprinting(false);
     }
 }

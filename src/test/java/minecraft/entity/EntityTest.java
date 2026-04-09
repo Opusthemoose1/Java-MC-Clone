@@ -66,15 +66,19 @@ public class EntityTest {
         glob.setLocation(Location.createLocation(0, 10, 0));
         IVector initVelocity = new Vector(2, 0, 2);
         glob.setVelocity(initVelocity.clone());
+        Location initPosition = glob.getLocation();
 
         glob.tick();
 
         //make sure glob is moving
         assert glob.getVelocity().length() > 0;
+        System.out.println(glob.getVelocity().toString());
+        System.out.println(initVelocity.toString());
         assert glob.getVelocity().length() < initVelocity.length(); //friction is applied each tick
         assert glob.getVelocity().getX() > 0;
         assert glob.getVelocity().getY() == 0;
         assert glob.getVelocity().getZ() > 0;
+        assert glob.getLocation().getX() > initPosition.getX(); //moved along x axis, same as velocity vector
 
         for (int i = 0; i < 1000; i++) { //after some time, glob should come to a stop, since he is on ground
             glob.tick();

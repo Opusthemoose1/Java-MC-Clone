@@ -4,7 +4,6 @@ import minecraft.chunk.location.Location;
 import minecraft.chunk.location.YawPitchObserver;
 import minecraft.chunk.location.YawPitchPublisher;
 import minecraft.math.IVector;
-import minecraft.math.Vector;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
@@ -12,11 +11,9 @@ import org.joml.Vector3f;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 import static org.lwjgl.opengl.GL11.glViewport;
 
-public class Camera implements CameraObserver, YawPitchPublisher {
+public class Camera implements WindowResizeObserver, YawPitchPublisher {
 
 
     public static final float MAX_PITCH = 89f, CAMERA_Y_OFFSET = 1.75f;

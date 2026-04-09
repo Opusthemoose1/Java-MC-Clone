@@ -3,19 +3,18 @@ package minecraft.entity;
 import minecraft.Minecraft;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
-import minecraft.chunk.location.YawPitchObserver;
 import minecraft.window.Camera;
 
-public class Player extends AttackingEntity implements YawPitchObserver {
+public class Player extends AttackingEntity {
 
     public static final float INITIAL_HEALTH = 20f,
             ATTACK_DAMAGE = 4f,
             WEIGHT = 0.8f,
-            JUMP_DELTA_Y = 8f / Minecraft.TICKS_PER_SECOND;
+            JUMP_DELTA_Y = 7.5f / Minecraft.TICKS_PER_SECOND;
 
-    private static final float PLAYER_WALK_SPEED = 2f / Minecraft.TICKS_PER_SECOND;
+    private static final float WALK_SPEED = 1.5f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 2.5f / Minecraft.TICKS_PER_SECOND;
 
-    private boolean hasJumped = false;
+    private boolean hasJumped = false, sprinting = false;
 
     public Player(Location location, WorldContext context) {
         super(location, INITIAL_HEALTH, context);
@@ -38,24 +37,23 @@ public class Player extends AttackingEntity implements YawPitchObserver {
 
     @Override
     public float getWalkSpeed() {
-        return PLAYER_WALK_SPEED;
+        return sprinting ? SPRINT_SPEED : WALK_SPEED;
     }
 
     public void jump() {
-        if (hasJumped || blockIsAir(Camera.CAMERA_Y_OFFSET)) return;
+        if (hasJumped || !blockIsAir(Camera.CAMERA_Y_OFFSET)) return;
         addVelocity(0, JUMP_DELTA_Y, 0);
         hasJumped = true;
+    }
+
+    @Override
+    public void setSprinting(boolean sprinting) {
+        this.sprinting = sprinting;
     }
 
     @Override
     protected void tickOnGround() {
         super.tickOnGround();
         hasJumped = false;
-    }
-
-    @Override
-    public void updateYawAndPitch(float yaw, float pitch) {
-        setYaw(yaw);
-        setPitch(pitch);
     }
 }
