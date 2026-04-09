@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.Minecraft;
 import minecraft.WorldContext;
 import minecraft.block.Material;
 import minecraft.chunk.ChunkBlock;
@@ -9,13 +10,18 @@ import minecraft.math.Vector;
 
 abstract public class Entity {
 
-    public static final float GRAVITY = -0.2f, FRICTION_MULTIPLIER = 0.85f, MINIMUM_VELOCITY = 0.01f,
-            FREEFALL_VELOCITY_MULTIPLIER = 0.2f, FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, EPSILON = 0.001f;
+    public static final float GRAVITY = -0.5f / Minecraft.TICKS_PER_SECOND,
+            FRICTION_MULTIPLIER = 0.85f,
+            MINIMUM_VELOCITY = 0.01f / Minecraft.TICKS_PER_SECOND,
+            FREEFALL_VELOCITY_MULTIPLIER = 0.2f,
+            FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f,
+            EPSILON = 0.001f,
+            DEFAULT_WALK_SPEED = 1.75f / Minecraft.TICKS_PER_SECOND;
 
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousVelocity = Vector.newZeroVector();
     protected WorldContext context;
-    private float health, walkSpeed, startingFreefallY = -1;
+    private float health, startingFreefallY = -1;
 
     protected Entity(Location location, float initialHealth, WorldContext context) {
         this.location = location.clone();
@@ -38,6 +44,10 @@ abstract public class Entity {
     public void addHealth(float healthPoints) {
         if (isDead()) return;
         health += healthPoints;
+    }
+
+    public float getWalkSpeed() {
+        return DEFAULT_WALK_SPEED;
     }
 
     public Location getLocation() {
@@ -66,18 +76,9 @@ abstract public class Entity {
         return location.getY() <= 0 || blockIsAir(EPSILON);
     }
 
-    private boolean blockIsAir(float yOffset) {
-        ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() - yOffset, location.getX());
+    protected boolean blockIsAir(float yOffset) {
+        ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() + yOffset, location.getX());
         return block != null && block.getMaterialId() != Material.AIR.getId();
-    }
-
-    public void setWalkSpeed(float speed) {
-        walkSpeed = Math.abs(speed);
-    }
-
-    protected IVector getWalkingVelocity() {
-        if (walkSpeed > 0) return new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
-        else return new Vector();
     }
 
     public IVector getInstantaneousVelocity() {
@@ -89,31 +90,27 @@ abstract public class Entity {
     }
 
     public void tick() {
-        IVector walkVelocity = getInstantaneousVelocity();
-        if (isOnSolidGround()) tickOnGround(walkVelocity);
-        else tickInAir(walkVelocity);
+        if (isOnSolidGround()) tickOnGround();
+        else tickInAir();
         instantaneousVelocity = Vector.newZeroVector();
     }
 
-    private void tickOnGround(IVector walkVelocity) {
-        if (walkVelocity.isZero()) {
-            velocity.setY(0);
-            velocity.multiply(FRICTION_MULTIPLIER);
-            velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
-                    Math.max(velocity.getY(), walkVelocity.getY()),
-                    Math.max(velocity.getZ(), walkVelocity.getZ()));
-            if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
-            location.add(velocity);
-        } else {
-            location.add(walkVelocity);
-            velocity = walkVelocity;
-            walkSpeed = 0;
-        }
+    protected void tickOnGround() {
+        IVector walkVelocity = getInstantaneousVelocity();
+        velocity.multiply(FRICTION_MULTIPLIER);
+        velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
+                Math.max(velocity.getY(), walkVelocity.getY()),
+                Math.max(velocity.getZ(), walkVelocity.getZ()));
+        velocity.add(walkVelocity);
+        if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
+        location.add(velocity);
 
+        if (!walkVelocity.isZero()) velocity = walkVelocity;
         handleFallDamage();
     }
 
-    private void tickInAir(IVector walkVelocity) {
+    protected void tickInAir() {
+        IVector walkVelocity = getInstantaneousVelocity();
         if (startingFreefallY < 0) startingFreefallY = location.getY();
         walkVelocity.multiply(FREEFALL_VELOCITY_MULTIPLIER);
         velocity.add(0, GRAVITY, 0);
@@ -151,14 +148,6 @@ abstract public class Entity {
 
     public void setPitch(float pitch) {
         location.setPitch(pitch);
-    }
-
-    public float getYaw() {
-        return location.getYaw();
-    }
-
-    public float getPitch() {
-        return location.getPitch();
     }
 
     public boolean isPlayer() {

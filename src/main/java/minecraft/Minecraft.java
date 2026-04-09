@@ -2,7 +2,6 @@ package minecraft;
 
 import minecraft.command.*;
 import minecraft.entity.Player;
-import minecraft.math.Vector;
 import minecraft.timer.Timer;
 import minecraft.window.*;
 import minecraft.window.input.Input;
