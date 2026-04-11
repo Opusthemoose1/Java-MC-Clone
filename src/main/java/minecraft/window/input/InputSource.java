@@ -48,7 +48,7 @@ public class InputSource implements IInputSource {
         return keys[key];
     }
 
-    public Vector2d getMousePos() {
+    public Vector2d getMousePosition() {
         return new Vector2d(mousePos);
     }
 

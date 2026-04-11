@@ -4,6 +4,7 @@ import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
+import minecraft.timer.ITimer;
 import minecraft.timer.Timer;
 
 import java.util.Optional;
@@ -14,11 +15,12 @@ abstract public class HostileEntity extends AttackingEntity {
     private static final float CHASE_OUT_OF_RADIUS_SECONDS = 5.0f;
 
     private Entity target;
-    private Timer chaseTimer;
+    private final ITimer chaseTimer;
     private float walkSpeed = 0;
 
-    protected HostileEntity(Location location, float initialHealth, WorldContext context) {
+    protected HostileEntity(Location location, float initialHealth, WorldContext context, ITimer chaseTimer) {
         super(location, initialHealth, context);
+        this.chaseTimer = chaseTimer;
     }
 
     @Override
@@ -53,16 +55,18 @@ abstract public class HostileEntity extends AttackingEntity {
         super.tick();
     }
 
+    public void setTarget(Entity entity) {
+        target = entity;
+        chaseTimer.reset();
+    }
+
     private void findOrUpdateTarget() {
         if (target == null) {
             Optional<Entity> first = context.getEntityManager().getEntitiesNearby(getLocation(), CHASE_RADIUS).stream().filter(Entity::isPlayer).findFirst();
-            first.ifPresent(entity -> {
-                target = entity;
-
-            });
+            first.ifPresent(this::setTarget);
         } else { //check that the target is still in range and stop chasing after a certain amount of time otherwise
-            if (getLocation().getDistance(target.getLocation()) > CHASE_RADIUS && chaseTimer.getTimeInSeconds() > CHASE_OUT_OF_RADIUS_SECONDS) {
-                target = null; //stop chasing
+            if (getLocation().getDistance(target.getLocation()) > CHASE_RADIUS || chaseTimer.getTimeInSeconds() > CHASE_OUT_OF_RADIUS_SECONDS) {
+                setTarget(null);
             }
         }
     }

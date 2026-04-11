@@ -3,6 +3,7 @@ package minecraft;
 import minecraft.block.Material;
 import minecraft.chunk.Chunk;
 import minecraft.chunk.ChunkBlock;
+import minecraft.chunk.IChunk;
 import minecraft.chunk.IChunkLoader;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class TestChunkLoader implements IChunkLoader {
     }
 
     @Override
-    public List<Chunk> getRenderedChunks() {
+    public List<IChunk> getRenderedChunks() {
         return List.of();
     }
 }

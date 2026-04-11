@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL11.glViewport;
 public class Camera implements WindowResizeObserver, YawPitchPublisher {
 
 
-    public static final float MAX_PITCH = 89f, CAMERA_Y_OFFSET = 1.75f;
+    public static final float MAX_PITCH = 89f;
 
     private final Matrix4f perspective;
     private final Matrix4f ortho;
@@ -120,6 +120,6 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher {
     }
 
     public void setLocation(Location location) {
-        this.location = location.clone().add(0f, CAMERA_Y_OFFSET, 0f);
+        this.location = location.clone();
     }
 }

@@ -1,5 +1,8 @@
 package minecraft;
 
+import minecraft.command.*;
+import minecraft.timer.Timer;
+import minecraft.window.input.IInputManager;
 import minecraft.window.input.InputManager;
 import minecraft.window.rendering.ChunkRenderer;
 import minecraft.chunk.location.Location;
@@ -55,7 +58,7 @@ public class FullGameTest {
         TextureAtlas textureAtlas = new TextureAtlas(blockTextureMap);
 
         Shader shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
-        window.attach(new ChunkRenderer(textureAtlas, camera, shader));
+        window.attach(new ChunkRenderer(textureAtlas, shader));
 
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
@@ -64,10 +67,21 @@ public class FullGameTest {
         input.attach(camera);
         window.setInput(input);
         InputManager inputManager = new InputManager(input);
+        bindKeys(inputManager);
 
-        Minecraft minecraft = new Minecraft(window, inputManager, player);
+        Minecraft minecraft = new Minecraft(window, inputManager, player, new Timer());
 
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         minecraft.run();
+    }
+
+    private void bindKeys(IInputManager inputManager) {
+        inputManager.bindDownKey(GLFW_KEY_W, new MoveForwardCommand());
+        inputManager.bindDownKey(GLFW_KEY_S, new MoveBackwardsCommand());
+        inputManager.bindDownKey(GLFW_KEY_A, new MoveLeftCommand());
+        inputManager.bindDownKey(GLFW_KEY_D, new MoveRightCommand());
+        inputManager.bindDownKey(GLFW_KEY_SPACE, new JumpCommand());
+        inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, new SprintingStartCommand());
+        inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, new SprintingStopCommand());
     }
 }

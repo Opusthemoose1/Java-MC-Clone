@@ -135,8 +135,20 @@ public class Vector implements IVector {
         return getX() == 0 && getY() == 0 && getZ() == 0;
     }
 
+    public double dot(IVector vector) {
+        return jomlVector.dot(vector.getX(), vector.getY(), vector.getZ());
+    }
+
     @Override
     public String toString() {
         return "[" + getX() + ", " + getY() + ", " + getZ() + "]";
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) return true;
+        if (object == null || object.getClass() != this.getClass()) return false;
+        Vector other = (Vector) object;
+        return other.getX() == getX() && other.getY() == getY() && other.getZ() == getZ();
     }
 }

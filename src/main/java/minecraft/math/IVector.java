@@ -42,4 +42,6 @@ public interface IVector {
 
     Vector3f toJOML();
 
+    double dot(IVector vector);
+
 }

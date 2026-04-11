@@ -2,6 +2,7 @@ package minecraft;
 
 import minecraft.command.*;
 import minecraft.entity.Entity;
+import minecraft.timer.ITimer;
 import minecraft.timer.Timer;
 import minecraft.window.*;
 import minecraft.window.input.IInputManager;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Minecraft {
@@ -22,29 +22,18 @@ public class Minecraft {
     private final IWindow window;
     private final Entity player;
     private final WorldContext context;
-    private final Timer tickTimer;
+    private final ITimer tickTimer;
 
     public final static int TICKS_PER_SECOND = 20;
     public final static long SECONDS_PER_TICK = 1/TICKS_PER_SECOND;
 
-    public Minecraft(IWindow window, IInputManager inputManager, Entity player) {
+    public Minecraft(IWindow window, IInputManager inputManager, Entity player, ITimer tickTimer) {
         this.window = window;
         this.context = player.getContext();
         this.player = player;
         this.inputManager = inputManager;
-
-        bindKeys();
-        tickTimer = new Timer();
-    }
-
-    private void bindKeys() {
-        inputManager.bindDownKey(GLFW_KEY_W, new MoveForwardCommand());
-        inputManager.bindDownKey(GLFW_KEY_S, new MoveBackwardsCommand());
-        inputManager.bindDownKey(GLFW_KEY_A, new MoveLeftCommand());
-        inputManager.bindDownKey(GLFW_KEY_D, new MoveRightCommand());
-        inputManager.bindDownKey(GLFW_KEY_SPACE, new JumpCommand());
-        inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, new SprintingStartCommand());
-        inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, new SprintingStopCommand());
+        this.tickTimer = tickTimer;
+        this.tickTimer.reset();
     }
 
     public void run() {
@@ -66,7 +55,7 @@ public class Minecraft {
         tickGame();
 
         window.loop(context);
-        window.getCamera().setLocation(player.getLocation());
+        window.getCamera().setLocation(player.getEyeLocation());
     }
 
     private void tickGame() {

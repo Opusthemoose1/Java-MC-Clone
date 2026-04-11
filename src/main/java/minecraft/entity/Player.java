@@ -3,16 +3,16 @@ package minecraft.entity;
 import minecraft.Minecraft;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
-import minecraft.window.Camera;
 
 public class Player extends AttackingEntity {
 
     public static final float INITIAL_HEALTH = 20f,
             ATTACK_DAMAGE = 4f,
             WEIGHT = 0.8f,
-            JUMP_DELTA_Y = 7.5f / Minecraft.TICKS_PER_SECOND;
+            HEIGHT = 1.75F,
+            JUMP_DELTA_Y = 5.5f / Minecraft.TICKS_PER_SECOND;
 
-    private static final float WALK_SPEED = 1.5f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 2.5f / Minecraft.TICKS_PER_SECOND;
+    private static final float WALK_SPEED = 1.4f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 2.2f / Minecraft.TICKS_PER_SECOND;
 
     private boolean hasJumped = false, sprinting = false;
 
@@ -41,7 +41,7 @@ public class Player extends AttackingEntity {
     }
 
     public void jump() {
-        if (hasJumped || !blockIsAir(Camera.CAMERA_Y_OFFSET)) return;
+        if (hasJumped || !blockIsAir(getHeight() + 1)) return;
         addVelocity(0, JUMP_DELTA_Y, 0);
         hasJumped = true;
     }
@@ -55,5 +55,10 @@ public class Player extends AttackingEntity {
     protected void tickOnGround() {
         super.tickOnGround();
         hasJumped = false;
+    }
+
+    @Override
+    public float getHeight() {
+        return HEIGHT;
     }
 }

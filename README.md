@@ -2,6 +2,8 @@
 
 A simple Java reproduction of the classic block game
 
+**Note**: Prof. Wright told us that it wouldn't be necessary to have 100% test method coverage for graphics/UI classes, as these are difficult to write tests for. By running and interacting with the full game enough, 100% test coverage should still be possible.
+
 ### Notable Design Patterns
 1. Entities are created using the factory pattern (EntityFactory)
 2. ChunkRenderer and EntityRenderer are observers to Window, which pushes updates containing a WorldContext object

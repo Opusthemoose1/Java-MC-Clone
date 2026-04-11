@@ -1,15 +1,11 @@
 package minecraft.timer;
 
-public class Timer {
+public class Timer implements ITimer {
     private long start;
     private long end = -1;
 
     public Timer() {
         start = 0;
-    }
-
-    public long getStart() {
-        return start;
     }
 
     public long getEnd() {

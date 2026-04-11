@@ -2,6 +2,7 @@ package minecraft.entity;
 
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
+import minecraft.timer.ITimer;
 
 public class EntityFactory {
 
@@ -10,6 +11,7 @@ public class EntityFactory {
     private float nextPositionX = 0;
 
     private final WorldContext context;
+    private final ITimer timer;
 
     public enum EntityType {
         PLAYER,
@@ -17,8 +19,9 @@ public class EntityFactory {
         OGRE,
     }
 
-    public EntityFactory(WorldContext context) {
+    public EntityFactory(WorldContext context, ITimer timer) {
         this.context = context;
+        this.timer = timer;
     }
 
     public Entity createEntity(EntityType type) {
@@ -34,7 +37,7 @@ public class EntityFactory {
         return switch (type) {
             case PLAYER -> new Player(location, context);
             case CHICKEN -> new Chicken(location, context);
-            case OGRE -> new Ogre(location, context);
+            case OGRE -> new Ogre(location, context, timer);
         };
     }
 

@@ -1,10 +1,10 @@
-package minecraft.entity;
+package minecraft;
 
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import org.junit.jupiter.api.Test;
 
-public class JOMLAdapterTest {
+public class VectorTest {
 
     @Test
     public void testClone() {
@@ -40,6 +40,29 @@ public class JOMLAdapterTest {
         assert vector2.getX() == -1;
         assert vector2.getY() == 4;
         assert vector2.getZ() == 2;
+    }
+
+    @Test
+    public void testSubtract() {
+        IVector vector = new Vector(6, 4, 2);
+        IVector vector2 = new Vector(7, 1, -2);
+
+        vector.subtract(vector2);
+
+        assert vector.getX() == -1;
+        assert vector.getY() == 3;
+        assert vector.getZ() == 4;
+
+        //original vector unchanged
+        assert vector2.getX() == 7;
+        assert vector2.getY() == 1;
+        assert vector2.getZ() == -2;
+    }
+
+    @Test
+    public void testToString() {
+        IVector vector = new Vector(1, 2, 3);
+        assert vector.toString().equals("[1.0, 2.0, 3.0]");
     }
 
     @Test

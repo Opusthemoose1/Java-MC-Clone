@@ -1,6 +1,7 @@
 package minecraft.entity;
 
 import minecraft.TestChunkLoader;
+import minecraft.TestTimer;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
@@ -12,7 +13,7 @@ public class EntityTest {
     public static final int Y_LEVEL = 10;
 
     private final WorldContext context = new WorldContext(new TestChunkLoader(Y_LEVEL), new EntityManager());
-    private final EntityFactory entityFactory = new EntityFactory(context);
+    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimer());
 
     @Test
     public void testEntityDies() {
@@ -70,10 +71,8 @@ public class EntityTest {
 
         glob.tick();
 
-        //make sure glob is moving
+        //make sure entity is moving
         assert glob.getVelocity().length() > 0;
-        System.out.println(glob.getVelocity().toString());
-        System.out.println(initVelocity.toString());
         assert glob.getVelocity().length() < initVelocity.length(); //friction is applied each tick
         assert glob.getVelocity().getX() > 0;
         assert glob.getVelocity().getY() == 0;

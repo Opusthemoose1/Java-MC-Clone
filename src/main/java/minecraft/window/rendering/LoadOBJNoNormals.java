@@ -1,6 +1,8 @@
 package minecraft.window.rendering;
 
 
+import minecraft.Minecraft;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -60,7 +62,7 @@ public class LoadOBJNoNormals implements  IOBJLoader {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.out.println("File not found");
+            Minecraft.getLogger().error("File not found");
             return null;
         }
         return new MeshNoNormals(vertices, indices);

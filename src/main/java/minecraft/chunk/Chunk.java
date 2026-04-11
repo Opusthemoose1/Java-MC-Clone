@@ -24,7 +24,7 @@ Each block is specified as an offset from the subchunk origin. It's then multipl
 world space
 For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
-public class Chunk {
+public class Chunk implements IChunk {
 
     private static final int GPU_BUFFER_SIZE = 4096;
 
@@ -36,7 +36,6 @@ public class Chunk {
     private int visibleBlocks;
     private final Matrix4f modelMatrix;
 
-    public static final int CHUNK_SIZE = 16, CHUNK_HEIGHT = 64;
     final int STRIDE = 6;
 
     ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_HEIGHT][CHUNK_SIZE][CHUNK_SIZE];
@@ -112,23 +111,38 @@ public class Chunk {
     };
 
     // Returns true if the face is touching air
-    private Boolean isAir(int x, int y, int z)
-    {
-        return getChunkBlock(x, y, z) == null;
+    private Boolean isAir(int x, int y, int z) {
+        return getChunkBlock(x, y, z).isType(Material.AIR);
     }
 
-    public ChunkBlock getChunkBlock(int x, int y, int z) {
-        if (x < 0 || y < 0 || z < 0 ||
-                x >= CHUNK_SIZE ||
-                y >= CHUNK_HEIGHT ||
-                z >= CHUNK_SIZE) return null;
+    private void initializeBlockArray() {
+        for (int y = 0; y < CHUNK_HEIGHT; y++) {
+            for (int x = 0; x < CHUNK_SIZE; x++) {
+                for (int z = 0; z < CHUNK_SIZE; z++) {
+                    blocks[y][x][z] = new ChunkBlock(Material.AIR);
+                }
+            }
+        }
+    }
 
+    private static boolean validateChunkBlockCoordinates(int x, int y, int z) {
+        return (x < 0 || y < 0 || z < 0 ||
+                x >= CHUNK_SIZE || y >= CHUNK_HEIGHT || z >= CHUNK_SIZE);
+    }
+
+    @Override
+    public ChunkBlock getChunkBlock(int x, int y, int z) {
+        if (validateChunkBlockCoordinates(x, y, z)) return new ChunkBlock(Material.AIR);
         return blocks[y][x][z];
     }
 
-    private void addBlock(int x, int y, int z)
-    {
+    @Override
+    public void setChunkBlock(int x, int y, int z, Material type) {
+        if (!validateChunkBlockCoordinates(x, y, z)) return;
+        blocks[y][x][z] = new ChunkBlock(type);
+    }
 
+    private void addBlockVertices(int x, int y, int z) {
         final int[] faceIndices = {
                 0, 1, 3,
                 1, 2, 3
@@ -156,7 +170,7 @@ public class Chunk {
                     addVertex(faceVertices[base + 3]);
                     addVertex(faceVertices[base + 4]);
 
-                    addVertex(faceVertices[base + 5] = blocks[y][x][z].getMaterialId() - 1);
+                    addVertex(faceVertices[base + 5] = blocks[y][x][z].materialId() - 1);
 
                 }
                 // Copy over the index data
@@ -165,11 +179,8 @@ public class Chunk {
                     addIndex(faceIndex + baseVertex);
                 }
                 this.visibleBlocks++;
-
             }
-
         }
-
     }
 
     public Chunk(int xOffset, int zOffset) // x, z are the offsets from world origin
@@ -177,6 +188,8 @@ public class Chunk {
 
         Timer timeToCreateChunk = new Timer();
         timeToCreateChunk.startTimer();
+
+        initializeBlockArray();
 
         this.vertexCount = 0;
         this.indexCount = 0;
@@ -201,7 +214,7 @@ public class Chunk {
         for (int x = 0; x < SIDE_LENGTH; x++) {
             for (int y = 0; y < SIDE_LENGTH; y++) {
                 for (int z = 0; z < SIDE_LENGTH; z++) {
-                    addBlock(x, y, z);
+                    addBlockVertices(x, y, z);
                 }
             }
         }
@@ -244,15 +257,9 @@ public class Chunk {
     }
     public int getVAO() {return this.VAO; }
     public int getIndexCount() {return this.indexCount; }
-    public int getXPosition() {return this.offsetX; }
-    public int getZPosition() {return this.offsetZ; }
 
     @Override
     public int hashCode() {
-        return getChunkHash(this.offsetX, this.offsetZ);
-    }
-
-    public static int getChunkHash(short x, short z) {
-        return (x << 16) | z; // [16-bit-x][16-bit-z]
+        return IChunk.getChunkHash(this.offsetX, this.offsetZ);
     }
 }

@@ -24,7 +24,11 @@ public class Location {
         return (float) Math.toDegrees(Math.atan2(vector.getZ(), vector.getX()));
     }
 
-    private Location(float x, float y, float z, float yaw, float pitch) {
+    public Location (float x, float y, float z) {
+        this(x, y, z, 0f, 0f);
+    }
+
+    public Location(float x, float y, float z, float yaw, float pitch) {
         this.x = x;
         this.y = y;
         this.z = z;

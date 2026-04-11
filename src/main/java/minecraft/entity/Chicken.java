@@ -5,7 +5,7 @@ import minecraft.chunk.location.Location;
 
 public class Chicken extends Entity {
 
-    static final float INITIAL_HEALTH = 3.5f, WEIGHT = 0.2f;
+    static final float INITIAL_HEALTH = 3.5f, WEIGHT = 0.2f, HEIGHT = 0.8f;
 
     public Chicken(Location location, WorldContext context) {
         super(location, INITIAL_HEALTH, context);
@@ -19,6 +19,11 @@ public class Chicken extends Entity {
     @Override
     public void takeFallDamage(float y) {
         //nothing; chicken lands with wings
+    }
+
+    @Override
+    public float getHeight() {
+        return HEIGHT;
     }
 
 }

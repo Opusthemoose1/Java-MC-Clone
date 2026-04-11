@@ -34,7 +34,6 @@ public class Window implements IWindow, FrameRenderPublisher {
     private int width, height;
     private long windowHandle; // Window handle for the GLFW context
     private double lastFrameTime = 0;
-    private double deltaTime;
 
     private Camera camera;
     private ITextRenderer textRenderer;
@@ -71,8 +70,6 @@ public class Window implements IWindow, FrameRenderPublisher {
     public int getHeight() {
         return height;
     }
-
-    public double getDeltaTime() {return deltaTime; }
 
     public void setInput(IInputSource input) {
         this.input = input;
@@ -126,7 +123,7 @@ public class Window implements IWindow, FrameRenderPublisher {
     public void loop(WorldContext context){
 
         double currentFrameTime = glfwGetTime();
-        deltaTime = currentFrameTime - lastFrameTime;
+        double deltaTime = currentFrameTime - lastFrameTime;
         double framesPerSecond = Math.round( 1.0f / deltaTime);
         lastFrameTime = currentFrameTime;
 
@@ -134,7 +131,7 @@ public class Window implements IWindow, FrameRenderPublisher {
 
         // Draw the chunks, entities, etc.
         for (FrameRenderObserver observer : observers) {
-            observer.render(context);
+            observer.render(context, camera);
         }
 
         final String fpsCounter = String.valueOf(framesPerSecond);
@@ -170,6 +167,6 @@ public class Window implements IWindow, FrameRenderPublisher {
     private void pollInputs(float deltaTime) {
         if (input == null) return;
         if (input.isKeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(getWindowHandle(), true);
-        camera.mouseControl(input.getMousePos());
+        camera.mouseControl(input.getMousePosition());
     }
 }

@@ -11,7 +11,7 @@ import minecraft.math.Vector;
 
 abstract public class Entity implements YawPitchObserver {
 
-    public static final float GRAVITY = -0.5f / Minecraft.TICKS_PER_SECOND,
+    public static final float GRAVITY = -0.4f / Minecraft.TICKS_PER_SECOND,
             FRICTION_MULTIPLIER = 0.85f,
             MINIMUM_VELOCITY = 0.01f / Minecraft.TICKS_PER_SECOND,
             FREEFALL_VELOCITY_MULTIPLIER = 0.2f,
@@ -75,13 +75,19 @@ abstract public class Entity implements YawPitchObserver {
 
     abstract float getWeight();
 
+    abstract float getHeight();
+
+    public Location getEyeLocation() {
+        return location.clone().add(0, getHeight(), 0);
+    }
+
     public boolean isOnSolidGround() {
         return location.getY() <= 0 || !blockIsAir(-EPSILON);
     }
 
     protected boolean blockIsAir(float yOffset) {
         ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() + yOffset, location.getX());
-        return block == null || block.getMaterialId() == Material.AIR.getId();
+        return block == null || block.materialId() == Material.AIR.getId();
     }
 
     public IVector getInstantaneousVelocity() {

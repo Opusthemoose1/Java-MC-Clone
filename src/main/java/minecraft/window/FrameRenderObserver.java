@@ -4,6 +4,6 @@ import minecraft.WorldContext;
 
 public interface FrameRenderObserver {
 
-    public void render(WorldContext context);
+    public void render(WorldContext context, Camera camera);
 
 }
