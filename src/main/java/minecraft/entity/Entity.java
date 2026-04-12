@@ -22,7 +22,7 @@ abstract public class Entity implements YawPitchObserver {
             BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.75f;
 
     private Location location;
-    private IVector velocity = Vector.newZeroVector(), instantaneousVelocity = Vector.newZeroVector();
+    private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
     protected WorldContext context;
     private float health, startingFreefallY = -1;
 
@@ -92,34 +92,34 @@ abstract public class Entity implements YawPitchObserver {
         return block == null || !block.getMaterial().isSolid();
     }
 
-    public IVector getInstantaneousVelocity() {
-        IVector velocity = instantaneousVelocity.clone().setY(0);
+    public IVector getInstantaneousForce() {
+        IVector velocity = instantaneousForce.clone().setY(0);
         if (!velocity.isZero()) velocity.normalize().multiply(getWalkSpeed());
         return velocity;
     }
 
-    public void addInstantaneousVelocity(IVector vector) {
-        instantaneousVelocity.add(vector.getX(), vector.getY(), vector.getZ());
+    public void addInstantaneousForce(IVector vector) {
+        instantaneousForce.add(vector.getX(), vector.getY(), vector.getZ());
     }
 
     public void tick() {
         if (isOnSolidGround()) tickOnGround();
         else tickInAir();
-        instantaneousVelocity = Vector.newZeroVector();
+        instantaneousForce = Vector.newZeroVector();
     }
 
     protected void tickOnGround() {
-        IVector walkVelocity = getInstantaneousVelocity();
+        IVector walkingForce = getInstantaneousForce();
         velocity.multiply(FRICTION_MULTIPLIER);
-        velocity = new Vector(Math.max(velocity.getX(), walkVelocity.getX()), //maintain walking speed or exponentially decay with friction if stopped
-                Math.max(velocity.getY(), walkVelocity.getY()),
-                Math.max(velocity.getZ(), walkVelocity.getZ()));
-        velocity.add(walkVelocity);
+        velocity = new Vector(Math.max(velocity.getX(), walkingForce.getX()), //maintain walking speed or exponentially decay with friction if stopped
+                Math.max(velocity.getY(), walkingForce.getY()),
+                Math.max(velocity.getZ(), walkingForce.getZ()));
+        velocity.add(walkingForce);
 
         if (!velocity.isZero()) {
             if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
             location.add(velocity);
-            if (!walkVelocity.isZero()) velocity = walkVelocity;
+            if (!walkingForce.isZero()) velocity = walkingForce;
         }
 
         handleFallDamage();
@@ -127,10 +127,10 @@ abstract public class Entity implements YawPitchObserver {
 
     protected void tickInAir() {
         if (startingFreefallY < 0) startingFreefallY = location.getY();
-        IVector walkVelocity = getInstantaneousVelocity();
-        walkVelocity.multiply(FREEFALL_VELOCITY_MULTIPLIER); //let entity still move a little bit while in the air
+        IVector walkForce = getInstantaneousForce();
+        walkForce.multiply(FREEFALL_VELOCITY_MULTIPLIER); //let entity still move a little bit while in the air
         velocity.add(0, GRAVITY, 0);
-        location.add(velocity.clone().add(walkVelocity));
+        location.add(velocity.clone().add(walkForce));
         checkIfLandedInsideBlock();
     }
 

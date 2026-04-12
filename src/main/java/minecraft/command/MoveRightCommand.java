@@ -12,6 +12,6 @@ public class MoveRightCommand implements ICommand {
                 .setY(0)
                 .normalize()
                 .multiply(player.getWalkSpeed());
-        player.addInstantaneousVelocity(direction);
+        player.addInstantaneousForce(direction);
     }
 }

@@ -5,7 +5,6 @@ import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import minecraft.timer.ITimer;
-import minecraft.timer.Timer;
 
 import java.util.Optional;
 
@@ -36,7 +35,7 @@ abstract public class HostileEntity extends AttackingEntity {
         walkSpeed = Math.abs(speed);
     }
 
-    protected IVector getWalkingVelocity() {
+    protected IVector getWalkingForce() {
         if (walkSpeed > 0) return new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
         else return new Vector();
     }
@@ -50,7 +49,7 @@ abstract public class HostileEntity extends AttackingEntity {
             IVector direction = target.getLocation().toVector().subtract(getLocation().toVector());
             setYaw(Location.getYaw(direction));
             setWalkSpeed(getWalkSpeed());
-            addInstantaneousVelocity(getWalkingVelocity());
+            addInstantaneousForce(getWalkingForce());
         }
         super.tick();
     }

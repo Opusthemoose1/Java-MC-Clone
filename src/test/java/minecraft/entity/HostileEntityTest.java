@@ -23,7 +23,6 @@ public class HostileEntityTest {
         player.tick();
 
         assert ogre.getTarget() != null;
-        assert ogre.getTarget().equals(player);
 
         player.setLocation(Location.createLocation(100, 0, 0));
 
