@@ -9,7 +9,6 @@ public enum ChunkDirction {
     POSITIVE_Z(4, (byte) 0, (byte) 0, (byte) 1),
     NEGATIVE_Z(5, (byte) 0, (byte) 0, (byte) -1);
 
-
     private final byte x, y, z;
     private final int index;
 

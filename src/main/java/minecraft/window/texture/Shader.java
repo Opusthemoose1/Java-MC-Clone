@@ -1,6 +1,7 @@
 package minecraft.window.texture;
 
 import minecraft.Minecraft;
+import minecraft.chunk.IChunk;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -44,7 +45,6 @@ public class Shader implements IShader {
         compileShader(v, vertSource);
         compileShader(f, fragSource);
 
-
         this.shaderProgramId = glCreateProgram();
         glAttachShader(this.shaderProgramId, v);
         glAttachShader(this.shaderProgramId, f);
@@ -68,7 +68,7 @@ public class Shader implements IShader {
         if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
         try (MemoryStack stack = MemoryStack.stackPush())
         {
-            glUniformMatrix4fv(location, false, matrix.get(stack.mallocFloat(16)));
+            glUniformMatrix4fv(location, false, matrix.get(stack.mallocFloat(IChunk.CHUNK_SIZE)));
         }
 
     }
@@ -79,9 +79,15 @@ public class Shader implements IShader {
         glUniform1i(location, integer);
     }
 
-    public void setIntArray(int[] array, String uniformName) {
+    public int[] createTextureArray(String uniformName) {
+        int[] textureArray = new int[IChunk.CHUNK_SIZE];
+        for (int i = 0; i < IChunk.CHUNK_SIZE; i++) {
+            textureArray[i] = i;
+        }
+
         int location = glGetUniformLocation(shaderProgramId, uniformName);
         if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
-        glUniform1iv(location, array);
+        glUniform1iv(location, textureArray);
+        return textureArray;
     }
 }

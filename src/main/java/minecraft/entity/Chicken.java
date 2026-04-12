@@ -17,7 +17,7 @@ public class Chicken extends Entity {
     }
 
     @Override
-    public void takeFallDamage(float y) {
+    protected void takeFallDamage(float y) {
         //nothing; chicken lands with wings
     }
 

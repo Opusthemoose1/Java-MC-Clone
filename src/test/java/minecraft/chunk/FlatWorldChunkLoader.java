@@ -1,10 +1,8 @@
-package minecraft;
+package minecraft.chunk;
 
-import minecraft.block.Material;
-import minecraft.chunk.Chunk;
-import minecraft.chunk.ChunkBlock;
-import minecraft.chunk.IChunk;
-import minecraft.chunk.IChunkLoader;
+import minecraft.Material;
+import minecraft.Minecraft;
+import minecraft.math.IVector;
 
 import java.util.*;
 
@@ -19,17 +17,22 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         int halfRender = RENDER_DISTANCE/2;
         for (int i = -halfRender; i < halfRender; i++) {
             for (int j = -halfRender; j < halfRender; j++) {
-                registerChunk(new Chunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE));
+                IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
+                registerChunk(chunk);
             }
         }
     };
 
-    public int roundToNearest16(int n) {
-        return (int) (Math.round((double) n / 16) * 16);
+    public int getChunkOffset(int n) { //get the coordinates of a chunk in chunk map
+        return (int) (Math.round((double) n / IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE);
+    }
+
+    public int getChunkRelativeCoordinates(double n) { //get the coordinates of a block within a chunk
+        return (int) n % IChunk.CHUNK_SIZE;
     }
 
     // Registers the chunk based on the X and Z position. X and Z are indexed by 16 (0, 16), (-16, 16)
-    protected void registerChunk(Chunk chunk) {
+    protected void registerChunk(IChunk chunk) {
         renderedChunks.put(chunk.hashCode(), chunk); //hash code is directly the x and z offset, using this for lookup, which is why it is not a Set.
     }
 
@@ -46,15 +49,25 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         return chunks;
     }
 
-    // Get the block at the specified position. THIS ROUNDS IT DOWN TO THE NEAREST WHOLE NUMBER!
+    // Get the block at the specified position
+    @Override
     public ChunkBlock getBlock(double x, double y, double z) {
-        final int chunkOffsetX = roundToNearest16((int)x);
-        final int chunkOffsetZ = roundToNearest16((int)z);
-        final IChunk chunkToSearch = getChunk(chunkOffsetX, chunkOffsetZ);
+        int chunkOffsetX = getChunkOffset((int) x);
+        int chunkOffsetZ = getChunkOffset((int) z);
+        IChunk chunkToSearch = getChunk(chunkOffsetX, chunkOffsetZ);
+
         if (chunkToSearch == null) {
             Minecraft.getLogger().error("Chunk at ({}, {}) does not exist", chunkOffsetX, chunkOffsetZ);
             return new ChunkBlock(Material.AIR.getId());
         }
-        return chunkToSearch.getChunkBlock(chunkOffsetX % Chunk.CHUNK_SIZE, (int)y, chunkOffsetZ % Chunk.CHUNK_SIZE);
+        return chunkToSearch.getChunkBlock((int) x % Chunk.CHUNK_SIZE, (int) y, (int) z % Chunk.CHUNK_SIZE);
+    }
+
+    @Override
+    public void setBlock(double x, double y, double z, Material type) {
+        int chunkOffsetX = getChunkOffset((int) x);
+        int chunkOffsetZ = getChunkOffset((int) z);
+        IChunk chunk = getChunk(chunkOffsetX, chunkOffsetZ);
+        chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y, (int) z % IChunk.CHUNK_SIZE, type);
     }
 }

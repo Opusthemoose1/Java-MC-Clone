@@ -1,6 +1,6 @@
 package minecraft.input;
 
-import minecraft.TestChunkLoader;
+import minecraft.chunk.TestChunkLoader;
 import minecraft.TestTimer;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;

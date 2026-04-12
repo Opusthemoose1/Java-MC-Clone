@@ -1,8 +1,14 @@
 package minecraft.chunk;
 
-import minecraft.block.Material;
+import minecraft.Material;
 
-public record ChunkBlock (
+/**
+ * Rather than simply storing a Material for each block, it is possible that there are future additions to blocks that
+ * require them to be able to store more data than this. However, we do not need to store a Block, as that object
+ * also requires a Location, which would be redundant to store in the chunk's array.
+ * @param materialId
+ */
+public record ChunkBlock(
         byte materialId
 ){
 
@@ -12,5 +18,9 @@ public record ChunkBlock (
 
     public boolean isType(Material material) {
         return material.getId() == materialId;
+    }
+
+    public Material getMaterial() {
+        return Material.fromId(materialId);
     }
 }

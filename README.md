@@ -2,6 +2,11 @@
 
 A simple Java reproduction of the classic block game
 
+```
+Ryen Johnston, Alex McDonald
+Java Version: 25
+```
+
 **Note**: Prof. Wright told us that it wouldn't be necessary to have 100% test method coverage for graphics/UI classes, as these are difficult to write tests for. By running and interacting with the full game enough, 100% test coverage should still be possible.
 
 ### Notable Design Patterns
@@ -10,6 +15,7 @@ A simple Java reproduction of the classic block game
 3. Vector uses the facade pattern: JOML Vector3f implements 3 interfaces, Vector only implements IVector
 4. EntityManager uses the Iterator pattern to iterate over all entities
 5. InputManager returns a list of commands based on the player's inputs
+6. Commands are created with the factory pattern (CommandFactory), bound to an IInputManager
 
 **Polymorphism Example**: Entities are polymorphic, with methods such as `Entity#getWeight()` and `AttackingEntity#getAttackDamage()` implemented by each concrete class.
 AttackingEntity is a subclass of Entity.

@@ -1,6 +1,6 @@
 package minecraft.chunk;
 
-import minecraft.block.Material;
+import minecraft.Material;
 
 public interface IChunk {
 
@@ -17,4 +17,9 @@ public interface IChunk {
     int getVAO();
 
     int getIndexCount();
+
+    static boolean isInvalidChunkCoordinates(int x, int y, int z) {
+        return (x < 0 || y < 0 || z < 0 ||
+                x >= CHUNK_SIZE || y >= CHUNK_HEIGHT || z >= CHUNK_SIZE);
+    }
 }

@@ -1,6 +1,6 @@
 package minecraft.entity;
 
-import minecraft.FlatWorldChunkLoader;
+import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.TestTimer;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;

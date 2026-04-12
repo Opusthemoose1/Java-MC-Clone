@@ -41,7 +41,7 @@ public class Player extends AttackingEntity {
     }
 
     public void jump() {
-        if (hasJumped || !blockIsAir(getHeight() + 1)) return;
+        if (hasJumped || !blockIsSolid(getHeight() + 1)) return;
         addVelocity(0, JUMP_DELTA_Y, 0);
         hasJumped = true;
     }

@@ -1,8 +1,6 @@
 package minecraft.chunk;
 
-import minecraft.Minecraft;
-import minecraft.block.Material;
-import minecraft.timer.Timer;
+import minecraft.Material;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -24,26 +22,46 @@ Each block is specified as an offset from the subchunk origin. It's then multipl
 world space
 For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
-public class Chunk implements IChunk {
+abstract public class Chunk implements IChunk {
 
     private static final int GPU_BUFFER_SIZE = 4096;
 
-    private final int VAO;
-    private final int EBO;
+    private int VAO;
+    private int EBO;
     private int indexCount;
     private int vertexCount;
 
     private int visibleBlocks;
-    private final Matrix4f modelMatrix;
+    private Matrix4f modelMatrix;
 
     final int STRIDE = 6;
 
-    ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_HEIGHT][CHUNK_SIZE][CHUNK_SIZE];
+    protected ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_HEIGHT][CHUNK_SIZE][CHUNK_SIZE];
 
     short offsetX, offsetZ;
 
     float[] GPUVertexData;
     int[] GPUIndexData;
+
+    // x, z are the offsets from world origin
+    public Chunk(int xOffset, int zOffset) {
+        this.vertexCount = 0;
+        this.indexCount = 0;
+        this.offsetX = (short) xOffset;
+        this.offsetZ = (short) zOffset;
+
+        setInitialBlocks();
+
+        this.visibleBlocks = 0;
+
+        GPUVertexData = new float[GPU_BUFFER_SIZE];
+        GPUIndexData = new int[GPU_BUFFER_SIZE];
+
+        addBlockVertices();
+        renderChunk();
+    }
+
+    abstract protected void setInitialBlocks();
 
     private void addVertex(float v) {
         if (vertexCount >= GPUVertexData.length)
@@ -115,31 +133,18 @@ public class Chunk implements IChunk {
         return getChunkBlock(x, y, z).isType(Material.AIR);
     }
 
-    private void initializeBlockArray() {
-        for (int y = 0; y < CHUNK_HEIGHT; y++) {
-            for (int x = 0; x < CHUNK_SIZE; x++) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    blocks[y][x][z] = new ChunkBlock(Material.AIR);
-                }
-            }
-        }
-    }
-
-    private static boolean validateChunkBlockCoordinates(int x, int y, int z) {
-        return (x < 0 || y < 0 || z < 0 ||
-                x >= CHUNK_SIZE || y >= CHUNK_HEIGHT || z >= CHUNK_SIZE);
-    }
-
     @Override
     public ChunkBlock getChunkBlock(int x, int y, int z) {
-        if (validateChunkBlockCoordinates(x, y, z)) return new ChunkBlock(Material.AIR);
-        return blocks[y][x][z];
+        if (IChunk.isInvalidChunkCoordinates(x, y, z)) return new ChunkBlock(Material.AIR);
+        ChunkBlock block = blocks[y][x][z];
+        return block == null ? new ChunkBlock(Material.AIR) : block;
     }
 
     @Override
     public void setChunkBlock(int x, int y, int z, Material type) {
-        if (!validateChunkBlockCoordinates(x, y, z)) return;
+        if (IChunk.isInvalidChunkCoordinates(x, y, z)) return;
         blocks[y][x][z] = new ChunkBlock(type);
+        //TODO: re-render chunk block vertices
     }
 
     private void addBlockVertices(int x, int y, int z) {
@@ -162,7 +167,7 @@ public class Chunk implements IChunk {
                     int base = i * STRIDE;
 
                     // First three are xyz
-                    addVertex(faceVertices[base]    + x + offsetX);
+                    addVertex(faceVertices[base]     + x + offsetX);
                     addVertex(faceVertices[base + 1] + y);
                     addVertex(faceVertices[base + 2] + z + offsetZ);
 
@@ -183,42 +188,17 @@ public class Chunk implements IChunk {
         }
     }
 
-    public Chunk(int xOffset, int zOffset) // x, z are the offsets from world origin
-    {
-
-        Timer timeToCreateChunk = new Timer();
-        timeToCreateChunk.startTimer();
-
-        initializeBlockArray();
-
-        this.vertexCount = 0;
-        this.indexCount = 0;
-        this.offsetX = (short) xOffset;
-        this.offsetZ = (short) zOffset;
-        final int SIDE_LENGTH = 16;
-
-        for (int i = 0; i < SIDE_LENGTH; i++) {
-            for (int j = 0; j < SIDE_LENGTH; j++) {
-                for (int k = 0; k < SIDE_LENGTH; k++) {
-                    if (i == SIDE_LENGTH - 1) blocks[i][j][k] = new ChunkBlock(Material.DIRT.getId());
-                    else blocks[i][j][k] = new ChunkBlock(Material.COBBLESTONE.getId());
-                }
-            }
-        }
-
-        this.visibleBlocks = 0;
-
-        GPUVertexData = new float[GPU_BUFFER_SIZE];
-        GPUIndexData = new int[GPU_BUFFER_SIZE];
-
-        for (int x = 0; x < SIDE_LENGTH; x++) {
-            for (int y = 0; y < SIDE_LENGTH; y++) {
-                for (int z = 0; z < SIDE_LENGTH; z++) {
+    private void addBlockVertices() {
+        for (int x = 0; x < IChunk.CHUNK_SIZE; x++) {
+            for (int y = 0; y < IChunk.CHUNK_SIZE; y++) {
+                for (int z = 0; z < IChunk.CHUNK_SIZE; z++) {
                     addBlockVertices(x, y, z);
                 }
             }
         }
+    }
 
+    protected void renderChunk() {
         // Some changes relative to C/C++ OpenGL. glGenBuffers doesn't take any parameters, and will just return some buffer to write too
         int VBO = glGenBuffers();
         this.VAO = glGenVertexArrays();
@@ -250,11 +230,8 @@ public class Chunk implements IChunk {
         // Initialize the model matrix to identity
         this.modelMatrix = new Matrix4f();
         modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
-
-        timeToCreateChunk.endTimer();
-        Minecraft.getLogger().info("Time to build chunk: {} ms", timeToCreateChunk.getTimeInMilliseconds());
-
     }
+
     public int getVAO() {return this.VAO; }
     public int getIndexCount() {return this.indexCount; }
 

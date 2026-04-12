@@ -1,6 +1,6 @@
 package minecraft.window.texture;
 
-import minecraft.block.Material;
+import minecraft.Material;
 
 import java.util.Collection;
 

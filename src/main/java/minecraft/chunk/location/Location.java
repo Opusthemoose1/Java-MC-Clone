@@ -20,6 +20,10 @@ public class Location {
         return new Location(x, y, z, yaw, pitch);
     }
 
+    public static Location createLocation(IVector vector) {
+        return new Location(vector.getX(), vector.getY(), vector.getZ());
+    }
+
     public static float getYaw(IVector vector) {
         return (float) Math.toDegrees(Math.atan2(vector.getZ(), vector.getX()));
     }

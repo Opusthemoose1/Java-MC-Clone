@@ -1,14 +1,11 @@
 package minecraft.window.texture;
 
 import minecraft.Minecraft;
-import minecraft.block.Material;
+import minecraft.Material;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY;
 import static org.lwjgl.opengles.GLES20.glGenTextures;
 
 public class TextureMap implements ITextureMap {

@@ -1,5 +1,6 @@
 package minecraft;
 
+import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.command.*;
 import minecraft.timer.Timer;
 import minecraft.window.input.IInputManager;
@@ -76,12 +77,14 @@ public class FullGameTest {
     }
 
     private void bindKeys(IInputManager inputManager) {
-        inputManager.bindDownKey(GLFW_KEY_W, new MoveForwardCommand());
-        inputManager.bindDownKey(GLFW_KEY_S, new MoveBackwardsCommand());
-        inputManager.bindDownKey(GLFW_KEY_A, new MoveLeftCommand());
-        inputManager.bindDownKey(GLFW_KEY_D, new MoveRightCommand());
-        inputManager.bindDownKey(GLFW_KEY_SPACE, new JumpCommand());
-        inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, new SprintingStartCommand());
-        inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, new SprintingStopCommand());
+        CommandFactory factory = new CommandFactory();
+        inputManager.bindDownKey(GLFW_KEY_W, factory.newMoveForwardsCommand());
+        inputManager.bindDownKey(GLFW_KEY_S, factory.newMoveBackwardsCommand());
+        inputManager.bindDownKey(GLFW_KEY_A, factory.newMoveLeftCommand());
+        inputManager.bindDownKey(GLFW_KEY_D, factory.newMoveRightCommand());
+        inputManager.bindDownKey(GLFW_KEY_SPACE, factory.newJumpCommand());
+        inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, factory.newSprintStartCommand());
+        inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, factory.newSprintStopCommand());
+        inputManager.bindDownKey(GLFW_KEY_R, factory.newBreakBlockCommand());
     }
 }

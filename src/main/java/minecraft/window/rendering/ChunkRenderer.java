@@ -25,13 +25,9 @@ public class ChunkRenderer implements FrameRenderObserver {
         chunkShader = shader;
         chunkShader.bind();
         // TODO: MAGIC
-        chunkShader.setInt(16, "uAtlasColumns");
+        chunkShader.setInt(IChunk.CHUNK_SIZE, "uAtlasColumns");
         chunkShader.setInt(1, "uAtlasRows");
-        int[] textureArray = new int[16];
-        for (int i = 0; i < 16; i++) {
-            textureArray[i] = i;
-        }
-        chunkShader.setIntArray(textureArray, "uTileMap");
+        chunkShader.createTextureArray("uTileMap");
     }
 
     public void render(WorldContext context, Camera camera) {

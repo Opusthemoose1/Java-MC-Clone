@@ -2,7 +2,8 @@ package minecraft.entity;
 
 import minecraft.Minecraft;
 import minecraft.WorldContext;
-import minecraft.block.Material;
+import minecraft.Material;
+import minecraft.chunk.Block;
 import minecraft.chunk.ChunkBlock;
 import minecraft.chunk.location.Location;
 import minecraft.chunk.location.YawPitchObserver;
@@ -15,9 +16,10 @@ abstract public class Entity implements YawPitchObserver {
             FRICTION_MULTIPLIER = 0.85f,
             MINIMUM_VELOCITY = 0.01f / Minecraft.TICKS_PER_SECOND,
             FREEFALL_VELOCITY_MULTIPLIER = 0.2f,
-            FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f,
+            FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, FALL_DAMAGE_MINIMUM_HEIGHT = 3.5f,
             EPSILON = 0.01f,
-            DEFAULT_WALK_SPEED = 1.75f / Minecraft.TICKS_PER_SECOND;
+            DEFAULT_WALK_SPEED = 1.75f / Minecraft.TICKS_PER_SECOND,
+            BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.75f;
 
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousVelocity = Vector.newZeroVector();
@@ -82,12 +84,12 @@ abstract public class Entity implements YawPitchObserver {
     }
 
     public boolean isOnSolidGround() {
-        return location.getY() <= 0 || !blockIsAir(-EPSILON);
+        return location.getY() <= 0 || !blockIsSolid(-EPSILON);
     }
 
-    protected boolean blockIsAir(float yOffset) {
+    protected boolean blockIsSolid(float yOffset) {
         ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() + yOffset, location.getX());
-        return block == null || block.materialId() == Material.AIR.getId();
+        return block == null || !block.getMaterial().isSolid();
     }
 
     public IVector getInstantaneousVelocity() {
@@ -136,7 +138,7 @@ abstract public class Entity implements YawPitchObserver {
      * Round the y level to the nearest whole integer once the entity lands onto a block
      */
     private void checkIfLandedInsideBlock() {
-        if (!blockIsAir(0) && blockIsAir(1)) {
+        if (!blockIsSolid(0) && blockIsSolid(1)) {
             if (location.getY() != (int) location.getY()) {
                 location.setY((int) location.getY() + 1); //round to upper block
             }
@@ -150,7 +152,8 @@ abstract public class Entity implements YawPitchObserver {
         if (deltaY > 0) takeFallDamage(deltaY);
     }
 
-    public void takeFallDamage(float deltaY) {
+    protected void takeFallDamage(float deltaY) {
+        if (deltaY < FALL_DAMAGE_MINIMUM_HEIGHT) return;
         loseHealth(FALL_DAMAGE_DEFAULT_MULTIPLIER * deltaY);
     }
 
@@ -187,5 +190,19 @@ abstract public class Entity implements YawPitchObserver {
 
     public boolean isHostile() {
         return false;
+    }
+
+    public Block getBlockLookingAt() {
+        IVector direction = location.getDirection().multiply(BLOCK_LOOKING_AT_STRIDE);
+        IVector eye = getEyeLocation().toVector();
+
+        float distanceChecked = 0f;
+        while (distanceChecked < BLOCK_LOOKING_AT_MAX_DISTANCE - BLOCK_LOOKING_AT_STRIDE) {
+            ChunkBlock block = context.getChunkLoader().getBlock(eye.getX(), eye.getY(), eye.getZ());
+            if (!block.isType(Material.AIR)) return new Block(Location.createLocation(eye), block, context.getChunkLoader());
+            distanceChecked += BLOCK_LOOKING_AT_STRIDE;
+            eye.add(direction);
+        }
+        return null;
     }
 }

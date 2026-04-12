@@ -1,5 +1,8 @@
 package minecraft.chunk;
 
+import minecraft.Material;
+import minecraft.math.IVector;
+
 import java.util.List;
 
 public interface IChunkLoader {
@@ -8,7 +11,7 @@ public interface IChunkLoader {
 
     ChunkBlock getBlock(double x, double y, double z);
 
+    void setBlock(double x, double y, double z, Material type);
+
     List<IChunk> getRenderedChunks();
-
-
 }
