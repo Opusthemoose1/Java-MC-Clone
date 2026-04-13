@@ -144,7 +144,31 @@ abstract public class Chunk implements IChunk {
     public void setChunkBlock(int x, int y, int z, Material type) {
         if (IChunk.isInvalidChunkCoordinates(x, y, z)) return;
         blocks[y][x][z] = new ChunkBlock(type);
+
+        // Re-initalize the GPU and index buffer data
+        // TODO: This is not DRY at all, Chunk needs (yet another) refactor
+        // Either split the GPU and CPU logic into different files or just write better functions
+        GPUVertexData = new float[GPU_BUFFER_SIZE];
+        GPUIndexData = new int[GPU_BUFFER_SIZE];
+
+        this.vertexCount = 0;
+        this.indexCount = 0;
+        this.visibleBlocks = 0;
+
         //TODO: re-render chunk block vertices
+        for (int x1 = 0; x1 < IChunk.CHUNK_SIZE; x1++) {
+            for (int y1 = 0; y1 < IChunk.CHUNK_SIZE; y1++) {
+                for (int z1 = 0; z1 < IChunk.CHUNK_SIZE; z1++) {
+                    if (!getChunkBlock(x1, y1, z1).isType(Material.AIR))
+                    {
+                        addBlockVertices(x1, y1, z1);
+                    }
+
+                }
+            }
+        }
+        renderChunk();
+
     }
 
     private void addBlockVertices(int x, int y, int z) {
