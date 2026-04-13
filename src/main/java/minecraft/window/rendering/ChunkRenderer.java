@@ -42,6 +42,7 @@ public class ChunkRenderer implements FrameRenderObserver {
             glBindTexture(GL_TEXTURE_2D, atlas.getTextureID());
 
             chunkShader.setInt(0, "uAtlas");
+            chunk.render();
 
         }
     }

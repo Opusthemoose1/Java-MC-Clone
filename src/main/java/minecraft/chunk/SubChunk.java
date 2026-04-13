@@ -52,7 +52,7 @@ public class SubChunk implements IChunk{
         GPUVertexData = new float[GPU_BUFFER_SIZE];
         GPUIndexData = new int[GPU_BUFFER_SIZE];
 
-        generateFilledSubChunk();
+        uploadChunkData();
     }
     private static final float[][] FACE_VERTICES = {
             // Positive X. X Y Z | U V | blockType
@@ -119,10 +119,6 @@ public class SubChunk implements IChunk{
         GPUIndexData[indexCount++] = i;
     }
 
-    public void generateFilledSubChunk()
-    {
-
-    }
     @Override
     public ChunkBlock getChunkBlock(int x, int y, int z) {
         if (IChunk.isInvalidChunkCoordinates(x, y, z)) return new ChunkBlock(Material.AIR);
@@ -177,7 +173,6 @@ public class SubChunk implements IChunk{
         blocks[y][x][z] = new ChunkBlock(type);
 
         // Re-initalize the GPU and index buffer data
-        // TODO: This is not DRY at all, Chunk needs (yet another) refactor
         // Either split the GPU and CPU logic into different files or just write better functions
         GPUVertexData = new float[GPU_BUFFER_SIZE];
         GPUIndexData = new int[GPU_BUFFER_SIZE];

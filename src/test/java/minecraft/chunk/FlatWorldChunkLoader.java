@@ -60,7 +60,7 @@ public class FlatWorldChunkLoader implements IChunkLoader {
             Minecraft.getLogger().error("Chunk at ({}, {}) does not exist", chunkOffsetX, chunkOffsetZ);
             return new ChunkBlock(Material.AIR.getId());
         }
-        return chunkToSearch.getChunkBlock((int) x % Chunk.CHUNK_SIZE, (int) y, (int) z % Chunk.CHUNK_SIZE);
+        return chunkToSearch.getChunkBlock((int) x % Chunk.CHUNK_SIZE, (int) y % Chunk.SUBCHUNK_HEIGHT, (int) z % Chunk.CHUNK_SIZE);
     }
 
     @Override
@@ -68,6 +68,6 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         int chunkOffsetX = getChunkOffset((int) x);
         int chunkOffsetZ = getChunkOffset((int) z);
         IChunk chunk = getChunk(chunkOffsetX, chunkOffsetZ);
-        chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y, (int) z % IChunk.CHUNK_SIZE, type);
+        chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y % Chunk.CHUNK_SIZE, (int) z % IChunk.CHUNK_SIZE, type);
     }
 }
