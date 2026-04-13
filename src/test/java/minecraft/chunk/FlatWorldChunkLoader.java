@@ -18,7 +18,6 @@ public class FlatWorldChunkLoader implements IChunkLoader {
 //        for (int i = -halfRender; i < halfRender + 1; i++) {
 //            for (int j = -halfRender; j < halfRender + 1; j++) {
 //                IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
-//                System.out.println("Chunk " + i + " " + j + " " + chunk);
 //                chunk.setInitialBlocks();
 //                registerChunk(chunk);
 //                chunk.uploadGPUData();
@@ -32,7 +31,7 @@ public class FlatWorldChunkLoader implements IChunkLoader {
     };
 
     public int getChunkOffset(int n) { //get the coordinates of a chunk in chunk map
-        return (int) (Math.round((double) n / IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE);
+        return (int) Math.floor((double) n / IChunk.CHUNK_SIZE);
     }
 
     public int getChunkRelativeCoordinates(double n) { //get the coordinates of a block within a chunk
