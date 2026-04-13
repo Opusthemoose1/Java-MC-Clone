@@ -150,7 +150,7 @@ public class SubChunk{
                     addVertex(faceVertices[base + 3]);
                     addVertex(faceVertices[base + 4]);
 
-                    addVertex(faceVertices[base + 5] = parentChunk.blocks[y][x][z].materialId() - 1);
+                    addVertex(parentChunk.blocks[y][x][z].materialId() - 1);
 
                 }
                 // Copy over the index data
@@ -177,8 +177,8 @@ public class SubChunk{
                 for (int z1 = 0; z1 < IChunk.CHUNK_SIZE; z1++) {
                     if (!parentChunk.getChunkBlock(x1, y1, z1).isType(Material.AIR)) {
                         addBlockVertices(x1, y1, z1);
+                      }
                     }
-
                 }
             }
             // Some changes relative to C/C++ OpenGL. glGenBuffers doesn't take any parameters, and will just return some buffer to write too
@@ -213,7 +213,7 @@ public class SubChunk{
             this.modelMatrix = new Matrix4f();
             modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
         }
-    }
+
 
     protected void render()
     {

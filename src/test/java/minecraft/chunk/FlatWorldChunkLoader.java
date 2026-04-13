@@ -10,19 +10,25 @@ public class FlatWorldChunkLoader implements IChunkLoader {
 
     private final HashMap<Integer, IChunk> renderedChunks = new HashMap<>();
 
-    private static final int RENDER_DISTANCE = 4;
+    private static final int RENDER_DISTANCE = 8;
 
     public FlatWorldChunkLoader() {
         // Render it from the center of the player. Divide render distance by 2, go from -renderDistance/2 to renderDistance/2
-        int halfRender = RENDER_DISTANCE/2;
-        for (int i = -halfRender; i < halfRender; i++) {
-            for (int j = -halfRender; j < halfRender; j++) {
-                IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
-                chunk.setInitialBlocks();
-                registerChunk(chunk);
-                chunk.uploadGPUData();
-            }
-        }
+//        int halfRender = RENDER_DISTANCE/2;
+//        for (int i = -halfRender; i < halfRender + 1; i++) {
+//            for (int j = -halfRender; j < halfRender + 1; j++) {
+//                IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
+//                System.out.println("Chunk " + i + " " + j + " " + chunk);
+//                chunk.setInitialBlocks();
+//                registerChunk(chunk);
+//                chunk.uploadGPUData();
+//            }
+//        }
+        IChunk chunk = new FlatWorldChunk(0, 0);
+        chunk.setInitialBlocks();
+        registerChunk(chunk);
+        chunk.uploadGPUData();
+
     };
 
     public int getChunkOffset(int n) { //get the coordinates of a chunk in chunk map
@@ -71,5 +77,6 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         int chunkOffsetZ = getChunkOffset((int) z);
         IChunk chunk = getChunk(chunkOffsetX, chunkOffsetZ);
         chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y % Chunk.CHUNK_SIZE, (int) z % IChunk.CHUNK_SIZE, type);
+        chunk.uploadGPUData();
     }
 }

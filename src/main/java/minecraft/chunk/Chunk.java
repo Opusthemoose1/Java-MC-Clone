@@ -26,7 +26,7 @@ For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
 abstract public class Chunk implements IChunk {
 
-    short offsetX, offsetZ;
+    int offsetX, offsetZ;
     protected ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_HEIGHT][CHUNK_SIZE][CHUNK_SIZE];
 
 
@@ -37,8 +37,8 @@ abstract public class Chunk implements IChunk {
     // x, z are the offsets from world origin
     public Chunk(int xOffset, int zOffset) {
 
-        this.offsetX = (short) xOffset;
-        this.offsetZ = (short) zOffset;
+        this.offsetX = xOffset;
+        this.offsetZ = zOffset;
 
        // setInitialBlocks();
         final int SUBCHUNK_COUNT = CHUNK_HEIGHT / SUBCHUNK_HEIGHT;
@@ -96,7 +96,7 @@ abstract public class Chunk implements IChunk {
 
     @Override
     public int hashCode() {
-        return IChunk.getChunkHash(this.offsetX, this.offsetZ);
+        return IChunk.getChunkHash((short)this.offsetX, (short)this.offsetZ);
     }
 
     // Push CPU block data to the GPU. Do this after every time you place / destroy a block
