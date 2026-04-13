@@ -75,7 +75,7 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         int chunkOffsetX = getChunkOffset((int) x);
         int chunkOffsetZ = getChunkOffset((int) z);
         IChunk chunk = getChunk(chunkOffsetX, chunkOffsetZ);
-        chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y % Chunk.CHUNK_SIZE, (int) z % IChunk.CHUNK_SIZE, type);
+        chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y, (int) z % IChunk.CHUNK_SIZE, type);
         chunk.uploadGPUData();
     }
 }
