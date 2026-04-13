@@ -173,7 +173,7 @@ public class SubChunk{
         this.visibleBlocks = 0;
 
         for (int x1 = 0; x1 < IChunk.CHUNK_SIZE; x1++) {
-            for (int y1 = 0; y1 < IChunk.CHUNK_SIZE; y1++) {
+            for (int y1 = yOffset; y1 < yOffset + IChunk.SUBCHUNK_HEIGHT; y1++) {
                 for (int z1 = 0; z1 < IChunk.CHUNK_SIZE; z1++) {
                     if (!parentChunk.getChunkBlock(x1, y1, z1).isType(Material.AIR)) {
                         addBlockVertices(x1, y1, z1);
