@@ -18,7 +18,9 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         for (int i = -halfRender; i < halfRender; i++) {
             for (int j = -halfRender; j < halfRender; j++) {
                 IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
+                chunk.setInitialBlocks();
                 registerChunk(chunk);
+                chunk.uploadGPUData();
             }
         }
     };

@@ -25,4 +25,6 @@ public interface IChunk {
     }
 
     void setInitialBlocks();
+
+    void uploadGPUData();
 }

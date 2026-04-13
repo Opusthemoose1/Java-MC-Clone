@@ -42,4 +42,8 @@ public class TestChunk implements IChunk {
 
     }
 
+    @Override
+    public void uploadGPUData() {
+    }
+
 }
