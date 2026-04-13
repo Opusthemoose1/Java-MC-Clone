@@ -58,7 +58,7 @@ public class EntityTest {
         }
 
         assert chicken.isOnSolidGround();
-        assert chicken.getLocation().getY() == 10; //standing on ground
+        assert chicken.getLocation().getY() == 10; //standing on ground. Must be exactly y=10, not 9.8999
     }
 
     @Test

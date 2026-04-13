@@ -43,7 +43,7 @@ public class FullGameTest {
         GL.createCapabilities();
 
         WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
-        Player player = new Player(Location.createLocation(0f, 20f, 0f), context);
+        Player player = new Player(Location.createLocation(0f, 40f, 0f), context);
         context.getEntityManager().addEntity(player);
 
         Camera camera = new Camera(INITIAL_CAMERA_POSITION, window.getWidth(), window.getHeight());

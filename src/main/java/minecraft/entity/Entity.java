@@ -84,12 +84,12 @@ abstract public class Entity implements YawPitchObserver {
     }
 
     public boolean isOnSolidGround() {
-        return location.getY() <= 0 || !blockIsSolid(-EPSILON);
+        return location.getY() <= 0 || blockIsSolid(-EPSILON);
     }
 
     protected boolean blockIsSolid(float yOffset) {
         ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() + yOffset, location.getX());
-        return block == null || !block.getMaterial().isSolid();
+        return block.getMaterial().isSolid();
     }
 
     public IVector getInstantaneousForce() {
@@ -138,7 +138,7 @@ abstract public class Entity implements YawPitchObserver {
      * Round the y level to the nearest whole integer once the entity lands onto a block
      */
     private void checkIfLandedInsideBlock() {
-        if (!blockIsSolid(0) && blockIsSolid(1)) {
+        if (blockIsSolid(0) && !blockIsSolid(1)) {
             if (location.getY() != (int) location.getY()) {
                 location.setY((int) location.getY() + 1); //round to upper block
             }
