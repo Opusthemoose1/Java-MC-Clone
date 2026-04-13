@@ -28,12 +28,18 @@ public class TestChunk implements IChunk {
     }
 
     @Override
-    public int getVAO() {
-        return 0;
+    public boolean isAir(int x, int y, int z) {
+        return false;
     }
 
     @Override
-    public int getIndexCount() {
-        return 0;
+    public void render() {
+
     }
+
+    @Override
+    public void setInitialBlocks() {
+
+    }
+
 }

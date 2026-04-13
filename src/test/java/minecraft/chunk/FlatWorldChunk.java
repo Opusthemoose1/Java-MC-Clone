@@ -12,13 +12,14 @@ public class FlatWorldChunk extends Chunk {
 
     @Override
     public void setInitialBlocks() {
+        // Note that if you decide to update height, you also need to update subchunks
+        SubChunk subChunk = new SubChunk(offsetX, 0, offsetZ);
         for (int x = 0; x < IChunk.CHUNK_SIZE; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 for (int z = 0; z < IChunk.CHUNK_SIZE; z++) {
-//                    if (y >= DIRT_LEVEL) setChunkBlock(x, y, z, Material.DIRT);
-//                    else setChunkBlock(x, y, z, Material.COBBLESTONE);
-                    if (y == IChunk.CHUNK_SIZE - 1) blocks[y][x][z] = new ChunkBlock(Material.DIRT.getId());
-                    else blocks[y][x][z] = new ChunkBlock(Material.COBBLESTONE.getId());
+
+                    if (y == IChunk.CHUNK_SIZE - 1) subChunk.setChunkBlock(x, y, z, Material.DIRT);
+                    else subChunk.setChunkBlock(x, y, z, Material.COBBLESTONE);
                 }
             }
         }
