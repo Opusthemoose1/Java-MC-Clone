@@ -14,19 +14,19 @@ public class FlatWorldChunkLoader implements IChunkLoader {
 
     public FlatWorldChunkLoader() {
         // Render it from the center of the player. Divide render distance by 2, go from -renderDistance/2 to renderDistance/2
-//        int halfRender = RENDER_DISTANCE/2;
-//        for (int i = -halfRender; i < halfRender + 1; i++) {
-//            for (int j = -halfRender; j < halfRender + 1; j++) {
-//                IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
-//                chunk.setInitialBlocks();
-//                registerChunk(chunk);
-//                chunk.uploadGPUData();
-//            }
-//        }
-        IChunk chunk = new FlatWorldChunk(0, 0);
-        chunk.setInitialBlocks();
-        registerChunk(chunk);
-        chunk.uploadGPUData();
+        int halfRender = RENDER_DISTANCE/2;
+        for (int i = -halfRender; i < halfRender + 1; i++) {
+            for (int j = -halfRender; j < halfRender + 1; j++) {
+                IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
+                chunk.setInitialBlocks();
+                registerChunk(chunk);
+                chunk.uploadGPUData();
+            }
+        }
+//        IChunk chunk = new FlatWorldChunk(0, 0);
+//        chunk.setInitialBlocks();
+//        registerChunk(chunk);
+//        chunk.uploadGPUData();
 
     };
 
@@ -59,9 +59,10 @@ public class FlatWorldChunkLoader implements IChunkLoader {
     // Get the block at the specified position
     @Override
     public ChunkBlock getBlock(double x, double y, double z) {
-        int chunkOffsetX = getChunkOffset((int) x);
-        int chunkOffsetZ = getChunkOffset((int) z);
+        int chunkOffsetX = getChunkOffset((int) x) * IChunk.CHUNK_SIZE;
+        int chunkOffsetZ = getChunkOffset((int) z) * IChunk.CHUNK_SIZE;
         IChunk chunkToSearch = getChunk(chunkOffsetX, chunkOffsetZ);
+
 
         if (chunkToSearch == null) {
             Minecraft.getLogger().error("Chunk at ({}, {}) does not exist", chunkOffsetX, chunkOffsetZ);
@@ -72,8 +73,8 @@ public class FlatWorldChunkLoader implements IChunkLoader {
 
     @Override
     public void setBlock(double x, double y, double z, Material type) {
-        int chunkOffsetX = getChunkOffset((int) x);
-        int chunkOffsetZ = getChunkOffset((int) z);
+        int chunkOffsetX = getChunkOffset((int) x) * IChunk.CHUNK_SIZE;
+        int chunkOffsetZ = getChunkOffset((int) z) * IChunk.CHUNK_SIZE;
         IChunk chunk = getChunk(chunkOffsetX, chunkOffsetZ);
         chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y, (int) z % IChunk.CHUNK_SIZE, type);
         chunk.uploadGPUData();

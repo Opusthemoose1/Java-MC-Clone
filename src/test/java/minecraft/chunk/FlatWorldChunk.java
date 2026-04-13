@@ -14,7 +14,7 @@ public class FlatWorldChunk extends Chunk {
     public void setInitialBlocks() {
         // Note that if you decide to update height, you also need to update subchunks
         for (int x = 0; x < IChunk.CHUNK_SIZE; x++) {
-            for (int y = 0; y < IChunk.CHUNK_HEIGHT; y++) {
+            for (int y = 0; y < IChunk.CHUNK_SIZE; y++) {
                 for (int z = 0; z < IChunk.CHUNK_SIZE; z++) {
 
                     if (y == IChunk.CHUNK_SIZE - 1) blocks[y][x][z] = new ChunkBlock(Material.DIRT);
