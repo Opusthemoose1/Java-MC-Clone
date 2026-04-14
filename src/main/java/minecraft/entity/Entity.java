@@ -199,6 +199,8 @@ abstract public class Entity implements YawPitchObserver {
         float distanceChecked = 0f;
         while (distanceChecked < BLOCK_LOOKING_AT_MAX_DISTANCE - BLOCK_LOOKING_AT_STRIDE) {
             ChunkBlock block = context.getChunkLoader().getBlock(eye.getX(), eye.getY(), eye.getZ());
+            // System.out.println("Block at: " + (int)eye.getX() + " " + (int)eye.getY() + " " + (int)eye.getZ());
+           // System.out.println("Chunk at: " + chunkOffsetX + " " + chunkOffsetZ);
             if (!block.isType(Material.AIR)) return new Block(Location.createLocation(eye), block, context.getChunkLoader());
             distanceChecked += BLOCK_LOOKING_AT_STRIDE;
             eye.add(direction);

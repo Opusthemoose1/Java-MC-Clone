@@ -150,7 +150,7 @@ public class SubChunk{
                     addVertex(faceVertices[base + 3]);
                     addVertex(faceVertices[base + 4]);
 
-                    addVertex(parentChunk.blocks[y][x][z].materialId() - 1);
+                   addVertex(parentChunk.blocks[y][x][z].materialId() - 1);
 
                 }
                 // Copy over the index data
@@ -171,6 +171,7 @@ public class SubChunk{
         this.vertexCount = 0;
         this.indexCount = 0;
         this.visibleBlocks = 0;
+        // System.out.println("z: " + zOffset + " x: " + xOffset);
 
         for (int x1 = 0; x1 < IChunk.CHUNK_SIZE; x1++) {
             for (int y1 = yOffset; y1 < yOffset + IChunk.SUBCHUNK_HEIGHT; y1++) {

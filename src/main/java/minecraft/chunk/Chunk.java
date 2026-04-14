@@ -76,7 +76,7 @@ abstract public class Chunk implements IChunk {
     public boolean isAir(int x, int y, int z) {
         if (x < 0 || y < 0 || z < 0 || x >= CHUNK_SIZE || y >= CHUNK_HEIGHT || z >= CHUNK_SIZE) return true;
         ChunkBlock block = blocks[y][x][z];
-        return block != null && block.getMaterial().equals(Material.AIR);
+        return block == null || block.getMaterial().equals(Material.AIR);
 
     }
 
@@ -103,6 +103,7 @@ abstract public class Chunk implements IChunk {
     // Note this is bad and slow rn but im just trying to get it working
     public void uploadGPUData()
     {
+        // System.out.println("Offset X: +" + offsetX + "Offset Z: " + offsetZ);
         for (SubChunk subChunk : subChunks)
         {
            subChunk.uploadChunkData();

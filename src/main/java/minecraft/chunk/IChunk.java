@@ -12,7 +12,7 @@ public interface IChunk {
     void setChunkBlock(int x, int y, int z, Material type);
 
     static int getChunkHash(short x, short z) {
-        return (x << 16) | z; // [16-bit-x][16-bit-z]
+        return (x << 16) | (z & 0xFFFF);  // mask z to 16 bits
     }
 
     boolean isAir(int x, int y, int z);
