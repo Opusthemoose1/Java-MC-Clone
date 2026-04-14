@@ -6,6 +6,8 @@ import minecraft.math.IVector;
 
 import java.util.*;
 
+import static java.lang.Math.abs;
+
 public class FlatWorldChunkLoader implements IChunkLoader {
 
     private final HashMap<Integer, IChunk> renderedChunks = new HashMap<>();
@@ -59,23 +61,39 @@ public class FlatWorldChunkLoader implements IChunkLoader {
     // Get the block at the specified position
     @Override
     public ChunkBlock getBlock(double x, double y, double z) {
-        int chunkOffsetX =((int)x / 16) * 16;
-        int chunkOffsetZ = ((int)z/ 16) * 16;
+        int blockX = (int) x;
+        int blockZ = (int) z;
+
+        int chunkOffsetX = Math.floorDiv(blockX, IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE;
+        int chunkOffsetZ = Math.floorDiv(blockZ, IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE;
+
         IChunk chunkToSearch = getChunk(chunkOffsetX, chunkOffsetZ);
         if (chunkToSearch == null) {
             Minecraft.getLogger().error("Chunk at ({}, {}) does not exist", chunkOffsetX, chunkOffsetZ);
-            System.out.println("Chunk at + " + chunkOffsetX + ", " + chunkOffsetZ + " does not exist");
             return new ChunkBlock(Material.AIR.getId());
         }
-        return chunkToSearch.getChunkBlock((int) x % Chunk.CHUNK_SIZE, (int) y, (int) z % Chunk.CHUNK_SIZE);
+
+        int localX = blockX - chunkOffsetX;
+        int localZ = blockZ - chunkOffsetZ;
+
+        return chunkToSearch.getChunkBlock(localX, (int) y, localZ);
     }
 
     @Override
     public void setBlock(double x, double y, double z, Material type) {
-        int chunkOffsetX =((int) x / 16) * 16;
-        int chunkOffsetZ = ((int)z/ 16) * 16;
+        int blockX = (int) x;
+        int blockZ = (int) z;
+
+        int chunkOffsetX = Math.floorDiv(blockX, IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE;
+        int chunkOffsetZ = Math.floorDiv(blockZ, IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE;
+
         IChunk chunk = getChunk(chunkOffsetX, chunkOffsetZ);
-        chunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y, (int) z % IChunk.CHUNK_SIZE, type);
+        if (chunk == null) return;
+
+        int localX = blockX - chunkOffsetX;
+        int localZ = blockZ - chunkOffsetZ;
+
+        chunk.setChunkBlock(localX, (int) y, localZ, type);
         chunk.uploadGPUData();
     }
 }

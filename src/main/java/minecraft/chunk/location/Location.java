@@ -127,4 +127,9 @@ public class Location {
         return new Vector(x, y, z);
     }
 
+    @Override
+    public String toString(){
+        return "X: " + x + " Y: " + y + "  Z: " + z + " Yaw: " + yaw + " Pitch: " + pitch;
+    }
+
 }
