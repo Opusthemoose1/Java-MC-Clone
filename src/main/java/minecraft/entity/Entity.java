@@ -19,14 +19,14 @@ abstract public class Entity implements YawPitchObserver {
             FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, FALL_DAMAGE_MINIMUM_HEIGHT = 3.5f,
             EPSILON = 0.01f,
             DEFAULT_WALK_SPEED = 1.75f / Minecraft.TICKS_PER_SECOND,
-            BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.75f;
+            BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.05f;
 
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
     protected WorldContext context;
     private float health, startingFreefallY = -1;
 
-    protected Entity(Location location, float initialHealth, WorldContext context) {
+    Entity(Location location, float initialHealth, WorldContext context) {
         this.location = location.clone();
         this.health = initialHealth;
         this.context = context;
@@ -197,13 +197,15 @@ abstract public class Entity implements YawPitchObserver {
         IVector eye = getEyeLocation().toVector();
 
         float distanceChecked = 0f;
+        IVector alreadyChecked = new Vector(-1, -1, -1);
         while (distanceChecked < BLOCK_LOOKING_AT_MAX_DISTANCE - BLOCK_LOOKING_AT_STRIDE) {
-            ChunkBlock block = context.getChunkLoader().getBlock(eye.getX(), eye.getY(), eye.getZ());
-            // System.out.println("Block at: " + (int)eye.getX() + " " + (int)eye.getY() + " " + (int)eye.getZ());
-           // System.out.println("Chunk at: " + chunkOffsetX + " " + chunkOffsetZ);
-            if (!block.isType(Material.AIR)) return new Block(Location.createLocation(eye), block, context.getChunkLoader());
-            distanceChecked += BLOCK_LOOKING_AT_STRIDE;
             eye.add(direction);
+            distanceChecked += BLOCK_LOOKING_AT_STRIDE;
+            if ((int) eye.getX() == alreadyChecked.getX() && (int) eye.getY() == alreadyChecked.getY() && (int) eye.getZ() == alreadyChecked.getZ()) continue; //same block coords
+
+            ChunkBlock block = context.getChunkLoader().getBlock(eye.getX(), eye.getY(), eye.getZ());
+            if (!block.isType(Material.AIR)) return new Block(Location.createLocation(eye), block, context.getChunkLoader());
+            alreadyChecked = new Vector((int) eye.getX(), (int) eye.getY(), (int) eye.getZ());
         }
         return null;
     }
