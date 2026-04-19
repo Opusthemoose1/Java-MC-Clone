@@ -88,7 +88,7 @@ abstract public class Entity implements YawPitchObserver {
     }
 
     protected boolean blockIsSolid(float yOffset) {
-        ChunkBlock block = context.getChunkLoader().getBlock(location.getZ(), location.getY() + yOffset, location.getX());
+        ChunkBlock block = context.getChunkLoader().getBlock(location.getX(), location.getY() + yOffset, location.getZ());
         return block.getMaterial().isSolid();
     }
 

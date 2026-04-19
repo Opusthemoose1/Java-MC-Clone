@@ -2,6 +2,8 @@ package minecraft.window;
 
 import minecraft.Minecraft;
 import minecraft.WorldContext;
+import minecraft.chunk.location.Location;
+import minecraft.entity.Player;
 import minecraft.window.text.ITextRenderer;
 import minecraft.window.input.IInputSource;
 
@@ -135,7 +137,12 @@ public class Window implements IWindow, FrameRenderPublisher {
         }
 
         final String fpsCounter = String.valueOf(framesPerSecond);
+        Location cameraLocation = camera.getLocation();
         textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter); //TODO remove line or remove magic numbers
+        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 50), 0.3f, "Location: "
+                        + String.format("%.2f", cameraLocation.getX()) + ", "
+                        + String.format("%.2f", cameraLocation.getY() - Player.HEIGHT) + ", "
+                        + String.format("%.2f", cameraLocation.getZ()));
 
         glfwSwapBuffers(getWindowHandle()); // swap the color buffers
 
@@ -167,6 +174,6 @@ public class Window implements IWindow, FrameRenderPublisher {
     private void pollInputs(float deltaTime) {
         if (input == null) return;
         if (input.isKeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(getWindowHandle(), true);
-        camera.mouseControl(input.getMousePosition());
+        camera.mouseControl(input.getMouseX(), input.getMouseY());
     }
 }

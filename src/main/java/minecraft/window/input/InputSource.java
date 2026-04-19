@@ -12,7 +12,7 @@ public class InputSource implements IInputSource {
 
     // A list of all possible keys
     private final boolean[] keys = new boolean[GLFW_KEY_LAST + 1];
-    private final Vector2d mousePos;
+    private double mouseX = 0, mouseY = 0;
 
     List<WindowResizeObserver> resizeObservers = new ArrayList<>();
 
@@ -25,10 +25,9 @@ public class InputSource implements IInputSource {
                 glfwSetWindowShouldClose(windowHandle, true); // We will detect this in the rendering loop
 
         });
-        mousePos = new Vector2d(0, 0);
         glfwSetCursorPosCallback(windowHandle, (w, xpos, ypos) -> {
-            mousePos.x = xpos;
-            mousePos.y = ypos;
+            mouseX = xpos;
+            mouseY = ypos;
         });
 
         glfwSetFramebufferSizeCallback(windowHandle, (w, width, height) -> {
@@ -48,8 +47,12 @@ public class InputSource implements IInputSource {
         return keys[key];
     }
 
-    public Vector2d getMousePosition() {
-        return new Vector2d(mousePos);
+    public double getMouseX() {
+        return mouseX;
+    }
+
+    public double getMouseY() {
+        return mouseY;
     }
 
     @Override

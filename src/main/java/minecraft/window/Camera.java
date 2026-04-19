@@ -67,11 +67,11 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher {
         );
     }
 
-    public void mouseControl(Vector2d mousePos) {
-        double xOffset = mousePos.x - lastX;
-        double yOffset = lastY - mousePos.y;
-        lastX = mousePos.x;
-        lastY = mousePos.y;
+    public void mouseControl(double mouseX, double mouseY) {
+        double xOffset = mouseX - lastX;
+        double yOffset = lastY - mouseY;
+        lastX = mouseX;
+        lastY = mouseY;
 
         float sensitivity = 0.1f;
         xOffset *= sensitivity;
@@ -121,5 +121,9 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher {
 
     public void setLocation(Location location) {
         this.location = location.clone();
+    }
+
+    public Location getLocation() {
+        return location.clone();
     }
 }

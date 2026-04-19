@@ -33,9 +33,12 @@ public class TestInputSource implements IInputSource {
         mousePosition.y = y;
     }
 
-    @Override
-    public Vector2d getMousePosition() {
-        return new Vector2d(0, 0);
+    public double getMouseX() {
+        return 0;
+    }
+
+    public double getMouseY() {
+        return 0;
     }
 
     @Override

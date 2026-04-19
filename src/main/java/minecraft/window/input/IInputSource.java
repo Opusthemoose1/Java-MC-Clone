@@ -9,7 +9,9 @@ public interface IInputSource {
 
     boolean isKeyDown(int key);
 
-    Vector2d getMousePosition();
+    double getMouseX();
+
+    double getMouseY();
 
     void attach(WindowResizeObserver observer);
 

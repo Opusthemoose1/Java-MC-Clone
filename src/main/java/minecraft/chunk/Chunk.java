@@ -1,11 +1,8 @@
 package minecraft.chunk;
 
 import minecraft.Material;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -74,7 +71,7 @@ abstract public class Chunk implements IChunk {
 
     // Returns true if the face is touching air
     public boolean isAir(int x, int y, int z) {
-        if (x < 0 || y < 0 || z < 0 || x >= CHUNK_SIZE || y >= CHUNK_HEIGHT || z >= CHUNK_SIZE) return true;
+        if (IChunk.isInvalidChunkCoordinates(x, y, z)) return true;
         ChunkBlock block = blocks[y][x][z];
         return block == null || block.getMaterial().equals(Material.AIR);
 
@@ -82,7 +79,7 @@ abstract public class Chunk implements IChunk {
 
     @Override
     public ChunkBlock getChunkBlock(int x, int y, int z) {
-        if (x < 0 || y < 0 || z < 0 || x >= CHUNK_SIZE || y >= CHUNK_HEIGHT || z >= CHUNK_SIZE) return new ChunkBlock(Material.AIR);
+        if (IChunk.isInvalidChunkCoordinates(x, y, z)) return new ChunkBlock(Material.AIR);
         ChunkBlock block = blocks[y][x][z];
         return block == null ? new ChunkBlock(Material.AIR) : block;
     }
@@ -91,7 +88,6 @@ abstract public class Chunk implements IChunk {
     public void setChunkBlock(int x, int y, int z, Material type) {
         if (IChunk.isInvalidChunkCoordinates(x, y, z)) return;
         blocks[y][x][z] = new ChunkBlock(type);
-
     }
 
     @Override
