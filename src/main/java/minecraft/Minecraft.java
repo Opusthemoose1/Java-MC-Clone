@@ -34,6 +34,8 @@ public class Minecraft {
         this.inputManager = inputManager;
         this.tickTimer = tickTimer;
         this.tickTimer.reset();
+
+        this.player.attachLocationObserver(window.getCamera());
     }
 
     public void run() {
@@ -55,7 +57,6 @@ public class Minecraft {
         tickGame();
 
         window.loop(context);
-        window.getCamera().setLocation(player.getEyeLocation());
     }
 
     private void tickGame() {

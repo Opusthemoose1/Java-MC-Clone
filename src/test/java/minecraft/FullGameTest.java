@@ -48,7 +48,7 @@ public class FullGameTest {
 
         Camera camera = new Camera(INITIAL_CAMERA_POSITION, window.getWidth(), window.getHeight());
         window.setCamera(camera);
-        camera.attach(player);
+        camera.attachYawPitchObserver(player);
 
         Shader textShader = new Shader("src/resources/shaders/text.vert", "src/resources/shaders/text.frag");
         TextRenderer text = new TextRenderer("src/resources/textures/ascii.png", textShader );

@@ -1,11 +1,12 @@
 package minecraft.window;
 
 import minecraft.chunk.location.Location;
+import minecraft.chunk.location.LocationObserver;
 import minecraft.chunk.location.YawPitchObserver;
 import minecraft.chunk.location.YawPitchPublisher;
+import minecraft.entity.Player;
 import minecraft.math.IVector;
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector3f;
 
 import java.util.HashSet;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 
-public class Camera implements WindowResizeObserver, YawPitchPublisher {
+public class Camera implements WindowResizeObserver, YawPitchPublisher, LocationObserver {
 
 
     public static final float MAX_PITCH = 89f;
@@ -90,11 +91,13 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher {
         }
     }
 
-    public void attach(YawPitchObserver observer) {
+    @Override
+    public void attachYawPitchObserver(YawPitchObserver observer) {
         observers.add(observer);
     }
 
-    public void detach(YawPitchObserver observer) {
+    @Override
+    public void detachYawPitchObserver(YawPitchObserver observer) {
         observers.remove(observer);
     }
 
@@ -119,8 +122,9 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher {
         updateProjectionMatrix();
     }
 
-    public void setLocation(Location location) {
-        this.location = location.clone();
+    @Override
+    public void updateLocation(Location location) {
+        this.location = location.clone().add(0, Player.HEIGHT, 0);
     }
 
     public Location getLocation() {

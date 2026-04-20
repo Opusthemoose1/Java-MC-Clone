@@ -11,8 +11,8 @@ import java.util.Set;
 
 public class TestInputSource implements IInputSource {
 
-    private Set<Integer> downKeys = new HashSet<>();
-    private Vector2d mousePosition = new Vector2d();
+    private final Set<Integer> downKeys = new HashSet<>();
+    private final Vector2d mousePosition = new Vector2d();
 
     public TestInputSource(Integer... keysDown) {
         downKeys.addAll(Arrays.asList(keysDown));

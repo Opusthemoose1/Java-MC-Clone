@@ -2,8 +2,8 @@ package minecraft.chunk.location;
 
 public interface YawPitchPublisher {
 
-    void attach(YawPitchObserver observer);
+    void attachYawPitchObserver(YawPitchObserver observer);
 
-    void detach(YawPitchObserver observer);
+    void detachYawPitchObserver(YawPitchObserver observer);
 
 }

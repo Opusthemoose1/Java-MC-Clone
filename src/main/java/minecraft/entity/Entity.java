@@ -6,11 +6,16 @@ import minecraft.Material;
 import minecraft.chunk.Block;
 import minecraft.chunk.ChunkBlock;
 import minecraft.chunk.location.Location;
+import minecraft.chunk.location.LocationObserver;
+import minecraft.chunk.location.LocationPublisher;
 import minecraft.chunk.location.YawPitchObserver;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 
-abstract public class Entity implements YawPitchObserver {
+import java.util.HashSet;
+import java.util.Set;
+
+abstract public class Entity implements YawPitchObserver, LocationPublisher {
 
     public static final float GRAVITY = -0.4f / Minecraft.TICKS_PER_SECOND,
             FRICTION_MULTIPLIER = 0.85f,
@@ -25,6 +30,8 @@ abstract public class Entity implements YawPitchObserver {
     private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
     protected WorldContext context;
     private float health, startingFreefallY = -1;
+
+    private Set<LocationObserver> locationObservers = new HashSet<>();
 
     Entity(Location location, float initialHealth, WorldContext context) {
         this.location = location.clone();
@@ -106,6 +113,7 @@ abstract public class Entity implements YawPitchObserver {
         if (isOnSolidGround()) tickOnGround();
         else tickInAir();
         instantaneousForce = Vector.newZeroVector();
+        notifyLocationObservers();
     }
 
     protected void tickOnGround() {
@@ -208,5 +216,21 @@ abstract public class Entity implements YawPitchObserver {
             alreadyChecked = new Vector((int) eye.getX(), (int) eye.getY(), (int) eye.getZ());
         }
         return null;
+    }
+
+    @Override
+    public void attachLocationObserver(LocationObserver observer) {
+        locationObservers.add(observer);
+    }
+
+    @Override
+    public void detachLocationObserver(LocationObserver observer) {
+        locationObservers.remove(observer);
+    }
+
+    private void notifyLocationObservers() {
+        for (LocationObserver observer : locationObservers) {
+            observer.updateLocation(location.clone());
+        }
     }
 }
