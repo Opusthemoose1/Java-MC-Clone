@@ -27,4 +27,9 @@ public class Ogre extends HostileEntity {
         return HEIGHT;
     }
 
+    @Override
+    public EntityType getType() {
+        return EntityType.OGRE;
+    }
+
 }

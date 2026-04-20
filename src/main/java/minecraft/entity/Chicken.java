@@ -26,4 +26,9 @@ public class Chicken extends Entity {
         return HEIGHT;
     }
 
+    @Override
+    public EntityType getType() {
+        return EntityType.CHICKEN;
+    }
+
 }

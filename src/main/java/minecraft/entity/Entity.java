@@ -233,4 +233,6 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
             observer.updateLocation(location.clone());
         }
     }
+
+    public abstract EntityType getType();
 }

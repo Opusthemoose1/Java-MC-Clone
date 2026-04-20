@@ -13,12 +13,6 @@ public class EntityFactory {
     private final WorldContext context;
     private final ITimer timer;
 
-    public enum EntityType {
-        PLAYER,
-        CHICKEN,
-        OGRE,
-    }
-
     public EntityFactory(WorldContext context, ITimer timer) {
         this.context = context;
         this.timer = timer;
