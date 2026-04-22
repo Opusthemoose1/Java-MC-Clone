@@ -1,6 +1,7 @@
 package minecraft.window.rendering;
 
 import minecraft.entity.Entity;
+import minecraft.math.Vector;
 import minecraft.window.Camera;
 import minecraft.window.texture.Shader;
 
@@ -12,5 +13,6 @@ public interface IMesh {
         int getStride();
         void draw(Entity entity, Camera camera);
         void setShader(Shader shader);
+        void setColor(Vector color);
 
 }

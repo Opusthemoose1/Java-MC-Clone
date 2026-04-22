@@ -4,6 +4,7 @@ import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.command.*;
 import minecraft.entity.AttackingEntity;
 import minecraft.entity.Ogre;
+import minecraft.math.Vector;
 import minecraft.timer.Timer;
 import minecraft.window.input.IInputManager;
 import minecraft.window.input.InputManager;
@@ -74,6 +75,7 @@ public class FullGameTest {
         IMesh mesh = objLoader.loadFile("src/resources/models/sphere.obj");
         Shader entityShader = new Shader("src/resources/shaders/entity.vert", "src/resources/shaders/entity.frag");
         mesh.setShader(entityShader);
+        mesh.setColor(new Vector(0.2f, 0.8f, 0.1f));
 
 
         EntityRenderer entityRenderer = new EntityRenderer();

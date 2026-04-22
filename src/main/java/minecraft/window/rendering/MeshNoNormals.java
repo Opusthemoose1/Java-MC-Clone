@@ -1,6 +1,7 @@
 package minecraft.window.rendering;
 
 import minecraft.entity.Entity;
+import minecraft.math.Vector;
 import minecraft.window.Camera;
 import minecraft.window.texture.Shader;
 import org.joml.Matrix4f;
@@ -21,18 +22,20 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
 public class MeshNoNormals implements IMesh{
-    List<Vertex> vertices;
+    List<Vertex> vertices; // These technically aren't needed once the data is put onto the GPU
     List<Integer> indices;
     Shader shader;
-    int VAO, EBO;
+    int VAO, EBO; // OpenGL stuff
     final int STRIDE; // Stride is the number of elements until the next set of vertices. 3 for position, 2 for uv
     Matrix4f modelMatrix;
+    Vector color;
 
     public MeshNoNormals(List<Vertex> vertices, List<Integer> indices) {
         this.vertices = vertices;
         this.indices = indices;
         this.STRIDE = 5;
         this.modelMatrix = new Matrix4f();
+        this.color = new Vector(1.0f, 1.0f, 1.0f);
 
         initializeGLData();
     }
@@ -43,12 +46,17 @@ public class MeshNoNormals implements IMesh{
         this.indices = indices;
         this.STRIDE = 5;
         this.modelMatrix = new Matrix4f();
+        this.color = new Vector(1.0f, 1.0f, 1.0f);
 
         initializeGLData();
     }
 
     public void setShader(Shader shader) {
         this.shader = shader;
+    }
+    public void setColor(Vector color)
+    {
+        this.color = color;
     }
     private void initializeGLData()
     {
@@ -60,14 +68,14 @@ public class MeshNoNormals implements IMesh{
         glBindVertexArray(this.VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-        float[] floatArray = new float[vertices.size() * 5];
+        float[] floatArray = new float[vertices.size() * STRIDE];
         for (int i = 0; i < vertices.size(); i++) {
             Vertex v = vertices.get(i);
-            floatArray[i * 5 + 0] = v.x();
-            floatArray[i * 5 + 1] = v.y();
-            floatArray[i * 5 + 2] = v.z();
-            floatArray[i * 5 + 3] = v.u();
-            floatArray[i * 5 + 4] = v.v();
+            floatArray[i * STRIDE] = v.x();
+            floatArray[i * STRIDE + 1] = v.y();
+            floatArray[i * STRIDE + 2] = v.z();
+            floatArray[i * STRIDE + 3] = v.u();
+            floatArray[i * STRIDE + 4] = v.v();
         }
         int[] indexArray = new int[indices.size()];
         for (int i = 0; i < indices.size(); i++) {
@@ -103,6 +111,7 @@ public class MeshNoNormals implements IMesh{
         modelMatrix.identity();
         modelMatrix.translate(entity.getLocation().toVector().toJOML());
         shader.setMatrix4(modelMatrix, "model");
+        shader.setVec3(color.toJOML(), "color");
 
         glBindVertexArray(VAO);
 

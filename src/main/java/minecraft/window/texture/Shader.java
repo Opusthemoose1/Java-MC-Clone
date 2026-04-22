@@ -3,6 +3,7 @@ package minecraft.window.texture;
 import minecraft.Minecraft;
 import minecraft.chunk.IChunk;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
@@ -77,6 +78,16 @@ public class Shader implements IShader {
         int location = glGetUniformLocation(shaderProgramId, uniformName);
         if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
         glUniform1i(location, integer);
+    }
+
+    public void setVec3(Vector3f vector, String uniformName) {
+        int location = glGetUniformLocation(shaderProgramId, uniformName);
+        if (location == -1) Minecraft.getLogger().info("Failed to locate uniform " + uniformName);
+        try (MemoryStack stack = MemoryStack.stackPush())
+        {
+            glUniform3fv(location, vector.get(stack.mallocFloat(3)));
+        }
+
     }
 
     public int[] createTextureArray(String uniformName) {
