@@ -61,4 +61,8 @@ public class Player extends AttackingEntity {
     public float getHeight() {
         return HEIGHT;
     }
+
+    public EntityType getType() {
+        return EntityType.PLAYER;
+    }
 }
