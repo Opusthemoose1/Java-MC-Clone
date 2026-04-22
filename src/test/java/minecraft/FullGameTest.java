@@ -2,6 +2,8 @@ package minecraft;
 
 import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.command.*;
+import minecraft.entity.AttackingEntity;
+import minecraft.entity.Ogre;
 import minecraft.timer.Timer;
 import minecraft.window.input.IInputManager;
 import minecraft.window.input.InputManager;
@@ -12,6 +14,9 @@ import minecraft.entity.Player;
 import minecraft.window.Camera;
 import minecraft.window.Window;
 import minecraft.window.input.InputSource;
+import minecraft.window.rendering.EntityRenderer;
+import minecraft.window.rendering.IMesh;
+import minecraft.window.rendering.LoadOBJNoNormals;
 import minecraft.window.text.TextRenderer;
 import minecraft.window.texture.Shader;
 import minecraft.window.texture.TextureAtlas;
@@ -44,7 +49,11 @@ public class FullGameTest {
 
         WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
         Player player = new Player(Location.createLocation(0f, 40f, 0f), context);
+        Ogre ogre = new Ogre(Location.createLocation(0f, 30f, 0f), context, new Timer());
         context.getEntityManager().addEntity(player);
+        context.getEntityManager().addEntity(ogre);
+
+
 
         Camera camera = new Camera(INITIAL_CAMERA_POSITION, window.getWidth(), window.getHeight());
         window.setCamera(camera);
@@ -60,6 +69,17 @@ public class FullGameTest {
 
         Shader shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
         window.attach(new ChunkRenderer(textureAtlas, shader));
+
+        LoadOBJNoNormals objLoader = new LoadOBJNoNormals();
+        IMesh mesh = objLoader.loadFile("src/resources/models/sphere.obj");
+        Shader entityShader = new Shader("src/resources/shaders/entity.vert", "src/resources/shaders/entity.frag");
+        mesh.setShader(entityShader);
+
+
+        EntityRenderer entityRenderer = new EntityRenderer();
+        entityRenderer.addEntityMesh(ogre, mesh);
+        window.attach(entityRenderer);
+
 
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
