@@ -29,7 +29,7 @@ public class EntityRenderer implements FrameRenderObserver {
         for (Entity entity : context.getEntityManager()) {
             if (entityMeshes.containsKey(entity)) {
                 IMesh mesh = entityMeshes.get(entity);
-                mesh.draw(camera);
+                mesh.draw(entity, camera);
             }
 
 

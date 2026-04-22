@@ -1,5 +1,6 @@
 package minecraft.window.rendering;
 
+import minecraft.entity.Entity;
 import minecraft.window.Camera;
 import minecraft.window.texture.Shader;
 import org.joml.Matrix4f;
@@ -88,10 +89,10 @@ public class MeshNoNormals implements IMesh{
         glBindVertexArray(0);
         // Initialize the model matrix to identity
         modelMatrix = new Matrix4f();
-        modelMatrix.translate(new Vector3f(0.0f, 20.0f, 0.0f));
+        modelMatrix.translate(new Vector3f(0.0f, 0.0f, 0.0f));
     }
 
-    public void draw(Camera camera){
+    public void draw(Entity entity, Camera camera){
         if (shader == null) {
             System.err.println("Shader is null! Can't draw entity");
             return;
@@ -99,6 +100,8 @@ public class MeshNoNormals implements IMesh{
         shader.bind();
         shader.setMatrix4(camera.getProjectionMatrix(), "projection");
         shader.setMatrix4(camera.getViewMatrix(), "view");
+        modelMatrix.identity();
+        modelMatrix.translate(entity.getLocation().toVector().toJOML());
         shader.setMatrix4(modelMatrix, "model");
 
         glBindVertexArray(VAO);
