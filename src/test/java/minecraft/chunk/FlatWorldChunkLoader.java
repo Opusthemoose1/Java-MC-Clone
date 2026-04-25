@@ -2,11 +2,11 @@ package minecraft.chunk;
 
 import minecraft.Material;
 import minecraft.Minecraft;
-import minecraft.math.IVector;
+
 
 import java.util.*;
 
-import static java.lang.Math.abs;
+
 
 public class FlatWorldChunkLoader implements IChunkLoader {
 
@@ -20,16 +20,12 @@ public class FlatWorldChunkLoader implements IChunkLoader {
         for (int i = -halfRender; i <= halfRender; i++) {
             for (int j = -halfRender; j <= halfRender; j++) {
                 IChunk chunk = new FlatWorldChunk(i * Chunk.CHUNK_SIZE, j * IChunk.CHUNK_SIZE);
-               // if (i == 0 && j == -1) System.out.println("Generated");
                 chunk.setInitialBlocks();
                 registerChunk(chunk);
                 chunk.uploadGPUData();
             }
         }
-//        IChunk chunk = new FlatWorldChunk(0 * Chunk.CHUNK_SIZE, -1 * IChunk.CHUNK_SIZE);
-//               chunk.setInitialBlocks();
-//               registerChunk(chunk);
-//               chunk.uploadGPUData();
+
     }
 
     public int getChunkOffset(int n) { //get the coordinates of a chunk in chunk map

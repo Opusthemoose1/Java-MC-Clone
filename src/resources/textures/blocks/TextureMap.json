@@ -1,0 +1,6 @@
+{
+  "textures": [
+    {"fileName": "dirt.png", "material": "DIRT"},
+    {"fileName": "cobblestone.png", "material": "COBBLESTONE"}
+  ]
+}

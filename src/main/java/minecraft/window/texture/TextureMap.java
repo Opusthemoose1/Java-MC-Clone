@@ -3,10 +3,11 @@ package minecraft.window.texture;
 import minecraft.Minecraft;
 import minecraft.Material;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-
-import static org.lwjgl.opengles.GLES20.glGenTextures;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TextureMap implements ITextureMap {
 
@@ -21,9 +22,15 @@ public class TextureMap implements ITextureMap {
             loadBlockTextures();
         }
     }
-
+    private static JsonNode loadTextureConfig(String path) {
+        try {
+            return new ObjectMapper().readTree(new File(path));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load texture config: " + path, e);
+        }
+    }
     public void loadBlockTextures() {
-        String texturePath = "src/resources/textures/blocks";
+        final String texturePath = "src/resources/textures/blocks/";
         File textureDir = new File(texturePath);
 
         if (!textureDir.exists() || !textureDir.isDirectory()) {
@@ -39,18 +46,21 @@ public class TextureMap implements ITextureMap {
             throw new RuntimeException("No texture files found in: " + texturePath);
         }
 
-        for (File file : textureFiles) {
-            String name = file.getName();           // "grass.png"
-            String key  = name.substring(0, name.lastIndexOf('.')); // "grass"
+        JsonNode root = loadTextureConfig(texturePath + "TextureMap.json");
+        JsonNode entries = root.get("textures");
+
+        for (JsonNode entry : entries) {
+            String name = entry.get("material").asText();           // "grass"
+            String fileName = entry.get("fileName").asText();
 
             Material material;
             try {
-                material = Material.valueOf(key.toUpperCase());
+                material = Material.valueOf(name);
             } catch (Exception ex) {
                 throw new RuntimeException("Invalid material: " + name);
             }
 
-            textureMap.put(material, new Texture(file.getPath()));
+            textureMap.put(material, new Texture(texturePath + fileName));
         }
 
         Minecraft.getLogger().info("Loaded {} block textures.", textureMap.size());

@@ -18,8 +18,8 @@ public class FlatWorldChunk extends Chunk {
             for (int y = 0; y < IChunk.CHUNK_SIZE; y++) {
                 for (int z = 0; z < IChunk.CHUNK_SIZE; z++) {
 
-                    // if (y == IChunk.CHUNK_SIZE - 1) blocks[y][x][z] = new ChunkBlock(Material.DIRT);
-                    blocks[y][x][z] = new ChunkBlock(Material.COBBLESTONE);
+                    if (y == IChunk.CHUNK_SIZE - 1) blocks[y][x][z] = new ChunkBlock(Material.DIRT);
+                    else blocks[y][x][z] = new ChunkBlock(Material.COBBLESTONE);
                 }
             }
         }

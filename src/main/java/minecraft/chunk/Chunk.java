@@ -99,7 +99,6 @@ abstract public class Chunk implements IChunk {
     // Note this is bad and slow rn but im just trying to get it working
     public void uploadGPUData()
     {
-        // System.out.println("Offset X: +" + offsetX + "Offset Z: " + offsetZ);
         for (SubChunk subChunk : subChunks)
         {
            subChunk.uploadChunkData();

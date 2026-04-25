@@ -3,7 +3,7 @@ package minecraft.chunk;
 import minecraft.Material;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL30;
+
 
 import java.util.Arrays;
 
@@ -24,7 +24,6 @@ public class SubChunk{
     private static final int GPU_BUFFER_SIZE = 1028;
 
     private int VAO;
-    private int EBO;
     private int indexCount;
     private int vertexCount;
 
@@ -171,7 +170,6 @@ public class SubChunk{
         this.vertexCount = 0;
         this.indexCount = 0;
         this.visibleBlocks = 0;
-        // System.out.println("z: " + zOffset + " x: " + xOffset);
 
         for (int x1 = 0; x1 < IChunk.CHUNK_SIZE; x1++) {
             for (int y1 = yOffset; y1 < yOffset + IChunk.SUBCHUNK_HEIGHT; y1++) {
@@ -185,7 +183,7 @@ public class SubChunk{
             // Some changes relative to C/C++ OpenGL. glGenBuffers doesn't take any parameters, and will just return some buffer to write too
             int VBO = glGenBuffers();
             this.VAO = glGenVertexArrays();
-            this.EBO = glGenBuffers();
+        int EBO = glGenBuffers();
 
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBindVertexArray(this.VAO);
@@ -193,7 +191,7 @@ public class SubChunk{
             GPUVertexData = Arrays.copyOf(GPUVertexData, vertexCount);
             GPUIndexData = Arrays.copyOf(GPUIndexData, indexCount);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.EBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, GPUIndexData, GL_STATIC_DRAW);
             // The vertices size in bytes no longer needs to be passed in
             glBufferData(GL_ARRAY_BUFFER, GPUVertexData, GL_STATIC_DRAW);
