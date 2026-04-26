@@ -3,16 +3,18 @@ package minecraft.window.texture;
 import minecraft.Minecraft;
 import minecraft.Material;
 import java.io.File;
-import java.io.IOException;
+
 import java.util.Collection;
-import java.util.HashMap;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
+
+
 
 public class TextureMap implements ITextureMap {
 
     private final String texturePath;
-    private final HashMap<Material, Texture> textureMap = new HashMap<>();
+    private final LinkedHashMap<Material, Texture> textureMap = new LinkedHashMap<>();
 
     public TextureMap(String texturePath) {
         if (!texturePath.endsWith("/")) throw new IllegalArgumentException("Texture path must end with a slash (/).");
@@ -22,13 +24,7 @@ public class TextureMap implements ITextureMap {
             loadBlockTextures();
         }
     }
-    private static JsonNode loadTextureConfig(String path) {
-        try {
-            return new ObjectMapper().readTree(new File(path));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load texture config: " + path, e);
-        }
-    }
+
     public void loadBlockTextures() {
         final String texturePath = "src/resources/textures/blocks/";
         File textureDir = new File(texturePath);
@@ -45,20 +41,9 @@ public class TextureMap implements ITextureMap {
         if (textureFiles == null || textureFiles.length == 0) {
             throw new RuntimeException("No texture files found in: " + texturePath);
         }
-
-        JsonNode root = loadTextureConfig(texturePath + "TextureMap.json");
-        JsonNode entries = root.get("textures");
-
-        for (JsonNode entry : entries) {
-            String name = entry.get("material").asText();           // "grass"
-            String fileName = entry.get("fileName").asText();
-
-            Material material;
-            try {
-                material = Material.valueOf(name);
-            } catch (Exception ex) {
-                throw new RuntimeException("Invalid material: " + name);
-            }
+        for (Material material : Material.getIdMap().values()) {
+            if (material.getTextureFileName() == null) continue; // Air doesn't have a texture but its a material
+            String fileName = material.getTextureFileName() + ".png";
 
             textureMap.put(material, new Texture(texturePath + fileName));
         }

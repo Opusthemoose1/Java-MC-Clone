@@ -1,6 +1,7 @@
 package minecraft;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public enum Material {
 
@@ -12,7 +13,7 @@ public enum Material {
     private final String textureName;
     private final boolean solid;
 
-    private static HashMap<Byte, Material> idMap = new HashMap<>();
+    private static final TreeMap<Byte, Material> idMap = new TreeMap<>();
 
     static {
         for (Material material : Material.values()) {
@@ -40,6 +41,10 @@ public enum Material {
 
     public static Material fromId(byte id) {
         return idMap.get(id);
+    }
+
+    public static TreeMap<Byte, Material> getIdMap() {
+        return idMap;
     }
 
 }

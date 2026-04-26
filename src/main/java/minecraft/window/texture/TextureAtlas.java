@@ -53,11 +53,12 @@ public class TextureAtlas {
 
         final int COLUMNS = 16;
         final int ROWS = (tiles.size() + COLUMNS - 1) / COLUMNS;
+        final int NUM_RGBA_CHANNELS = 4;
 
         atlasWidth  = COLUMNS * tileW;
         atlasHeight = ROWS    * tileH;
 
-        atlas = BufferUtils.createByteBuffer(atlasWidth * atlasHeight * 4);
+        atlas = BufferUtils.createByteBuffer(atlasWidth * atlasHeight * NUM_RGBA_CHANNELS);
 
         for (int i = 0; i < tiles.size(); i++) {
             TileImage tile = tiles.get(i);
@@ -65,17 +66,17 @@ public class TextureAtlas {
             int destY = (i / COLUMNS) * tileH;
 
             for (int y = 0; y < tileH; y++) {
-                int srcPos  = y * tileW * 4;
-                int destPos = ((destY + y) * atlasWidth + destX) * 4;
+                int srcPos  = y * tileW * NUM_RGBA_CHANNELS;
+                int destPos = ((destY + y) * atlasWidth + destX) * NUM_RGBA_CHANNELS;
 
                 ByteBuffer srcSlice = tile.data().duplicate();
-                srcSlice.position(srcPos).limit(srcPos + tileW * 4);
+                srcSlice.position(srcPos).limit(srcPos + tileW * NUM_RGBA_CHANNELS);
 
                 atlas.position(destPos);
                 atlas.put(srcSlice);
             }
         }
-
+         // Uncomment to see
         saveAtlasPng(atlas, atlasWidth, atlasHeight, "src/resources/textures/atlas.png");
         atlas.flip(); // reset position to 0 before passing to OpenGL
         uploadAtlas(); // Create the OpenGL texture
@@ -83,7 +84,6 @@ public class TextureAtlas {
         for (TileImage tile : tiles) STBImage.stbi_image_free(tile.data());
 
     }
-
     void saveAtlasPng(ByteBuffer atlas, int atlasWidth, int atlasHeight, String path) {
         // duplicate so we don't disturb the buffer's position
         ByteBuffer slice = atlas.duplicate();
