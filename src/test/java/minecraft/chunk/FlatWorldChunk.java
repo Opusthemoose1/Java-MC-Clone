@@ -4,8 +4,6 @@ import minecraft.Material;
 
 public class FlatWorldChunk extends Chunk {
 
-    public static final int DIRT_LEVEL = 15, HEIGHT = 16;
-
     public FlatWorldChunk(int xOffset, int zOffset) {
         super(xOffset, zOffset);
 

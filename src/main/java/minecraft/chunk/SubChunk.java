@@ -27,7 +27,7 @@ public class SubChunk{
     private int indexCount;
     private int vertexCount;
 
-    private int visibleBlocks;
+    private int visibleFaces;
     private Matrix4f modelMatrix;
 
     float[] GPUVertexData;
@@ -47,7 +47,7 @@ public class SubChunk{
         this.vertexCount = 0;
         this.indexCount = 0;
 
-        this.visibleBlocks = 0;
+        this.visibleFaces = 0;
         GPUVertexData = new float[GPU_BUFFER_SIZE];
         GPUIndexData = new int[GPU_BUFFER_SIZE];
 
@@ -56,52 +56,52 @@ public class SubChunk{
         uploadChunkData();
     }
     private static final float[][] FACE_VERTICES = {
-            // Positive X. X Y Z | U V | blockType
+            // Positive X
             {
-                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
-                    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+                    1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                    1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f
             },
 
             // Negative X
             {
-                    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
-                    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+                    0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f
             },
 
             // Positive Y
             {
-                    0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
-                    -0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+                    1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f
             },
 
             // Negative Y
             {
-                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
-                    0.5f, -0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+                    1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f
             },
 
             // Positive Z
             {
-                    0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 0.0f,
-                    -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-                    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+                    1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f
             },
 
             // Negative Z
             {
-                    0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 0.0f,
-                    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-                    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+                    1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f
             }
     };
 
@@ -131,12 +131,12 @@ public class SubChunk{
             int nx = x + direction.getX();
             int ny = y + direction.getY();
             int nz = z + direction.getZ();
-
+            final int VERTICES_PER_FACE= 4;
             if (parentChunk.isAir(nx, ny, nz))
             {
                 float[] faceVertices = FACE_VERTICES[direction.getIndex()];
                 // Update the position of each vertex in the face
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < VERTICES_PER_FACE; i++)
                 {
                     int base = i * STRIDE;
 
@@ -153,11 +153,11 @@ public class SubChunk{
 
                 }
                 // Copy over the index data
-                int baseVertex = this.visibleBlocks * 4;
+                int baseVertex = this.visibleFaces * VERTICES_PER_FACE;
                 for (int faceIndex : faceIndices) {
                     addIndex(faceIndex + baseVertex);
                 }
-                this.visibleBlocks++;
+                this.visibleFaces++;
             }
         }
     }
@@ -169,7 +169,7 @@ public class SubChunk{
 
         this.vertexCount = 0;
         this.indexCount = 0;
-        this.visibleBlocks = 0;
+        this.visibleFaces = 0;
 
         for (int x1 = 0; x1 < IChunk.CHUNK_SIZE; x1++) {
             for (int y1 = yOffset; y1 < yOffset + IChunk.SUBCHUNK_HEIGHT; y1++) {
