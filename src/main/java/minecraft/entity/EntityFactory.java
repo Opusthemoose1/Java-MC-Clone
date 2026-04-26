@@ -28,11 +28,14 @@ public class EntityFactory {
             nextPositionX++;
         }
 
-        return switch (type) {
+        Entity entity = switch (type) {
             case PLAYER -> new Player(location, context);
             case CHICKEN -> new Chicken(location, context);
             case OGRE -> new Ogre(location, context, timer);
+            case DEMON -> new Demon(location, context, timer);
         };
+        context.getEntityManager().addEntity(entity);
+        return entity;
     }
 
     public Entity createChicken() {
@@ -41,6 +44,10 @@ public class EntityFactory {
 
     public Entity createOgre() {
         return createEntity(EntityType.OGRE);
+    }
+
+    public Entity createDemon() {
+        return createEntity(EntityType.DEMON);
     }
 
     public Entity createPlayer() {
@@ -53,6 +60,10 @@ public class EntityFactory {
 
     public Entity createOgre(Location location) {
         return createEntity(EntityType.OGRE, location);
+    }
+
+    public Entity createDemon(Location location) {
+        return createEntity(EntityType.DEMON, location);
     }
 
     public Entity createPlayer(Location location) {

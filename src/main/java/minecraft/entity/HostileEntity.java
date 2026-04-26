@@ -10,7 +10,7 @@ import java.util.Optional;
 
 abstract public class HostileEntity extends AttackingEntity {
 
-    private static final float CHASE_RADIUS = 10.0f;
+    private static final float DEFAULT_CHASE_RADIUS = 10.0f;
     private static final float CHASE_OUT_OF_RADIUS_SECONDS = 5.0f;
 
     private Entity target;
@@ -59,12 +59,16 @@ abstract public class HostileEntity extends AttackingEntity {
         chaseTimer.reset();
     }
 
+    public float getChaseRadius() {
+        return DEFAULT_CHASE_RADIUS;
+    }
+
     private void findOrUpdateTarget() {
         if (target == null) {
-            Optional<Entity> first = context.getEntityManager().getEntitiesNearby(getLocation(), CHASE_RADIUS).stream().filter(Entity::isPlayer).findFirst();
+            Optional<Entity> first = context.getEntityManager().getEntitiesNearby(getLocation(), getChaseRadius()).stream().filter(Entity::isPlayer).findFirst();
             first.ifPresent(this::setTarget);
         } else { //check that the target is still in range and stop chasing after a certain amount of time otherwise
-            if (getLocation().getDistance(target.getLocation()) > CHASE_RADIUS || chaseTimer.getTimeInSeconds() > CHASE_OUT_OF_RADIUS_SECONDS) {
+            if (getLocation().getDistance(target.getLocation()) > getChaseRadius() || chaseTimer.getTimeInSeconds() > CHASE_OUT_OF_RADIUS_SECONDS) {
                 setTarget(null);
             }
         }

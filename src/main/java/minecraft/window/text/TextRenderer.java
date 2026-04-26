@@ -1,6 +1,6 @@
 package minecraft.window.text;
 
-import minecraft.window.texture.Shader;
+import minecraft.window.texture.IShader;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
@@ -29,12 +29,12 @@ public class TextRenderer implements ITextRenderer {
     private final int VAO;
     private final int VBO;
     private final int textureID;
-    private final Shader text_shader;
+    private final IShader textShader;
     FloatBuffer vertexData;
     private final Glyph[] glyphs;
 
     // Inject shader
-    public TextRenderer(String filePath, Shader shader) {
+    public TextRenderer(String filePath, IShader shader) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
@@ -76,7 +76,7 @@ public class TextRenderer implements ITextRenderer {
                 this.glyphs[i] = new Glyph(letter, sizeX, sizeY, u0, u1, v0, v1, 0, 0);
             }
         }
-        this.text_shader = shader;
+        this.textShader = shader;
         this.VAO = glGenVertexArrays();
         this.VBO = glGenBuffers();
 
@@ -106,8 +106,8 @@ public class TextRenderer implements ITextRenderer {
 
     public void renderText(Matrix4f projection, Vector2f screenPos, float scale, String text)
     {
-        this.text_shader.bind();
-        this.text_shader.setMatrix4(projection, "projection");
+        this.textShader.bind();
+        this.textShader.setMatrix4(projection, "projection");
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this.textureID);
         glBindVertexArray(this.VAO);

@@ -1,6 +1,7 @@
 package minecraft.chunk;
 
 import minecraft.Material;
+import minecraft.entity.EntityFactory;
 import minecraft.math.IVector;
 
 import java.util.List;

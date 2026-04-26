@@ -1,6 +1,7 @@
 package minecraft.chunk;
 
 import minecraft.Material;
+import minecraft.entity.EntityFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,6 @@ abstract public class Chunk implements IChunk {
     int offsetX, offsetZ;
     protected ChunkBlock[][][] blocks = new ChunkBlock[CHUNK_HEIGHT][CHUNK_SIZE][CHUNK_SIZE];
 
-
     // A list of subChunks that get managed by the chunk
     List<SubChunk> subChunks = new ArrayList<>();
 
@@ -29,14 +29,13 @@ abstract public class Chunk implements IChunk {
         this.offsetX = xOffset;
         this.offsetZ = zOffset;
 
-       // setInitialBlocks();
         final int SUBCHUNK_COUNT = CHUNK_HEIGHT / SUBCHUNK_HEIGHT;
-        for (int i = 0; i < SUBCHUNK_COUNT; i++)
-        {
+        for (int i = 0; i < SUBCHUNK_COUNT; i++) {
            addSubChunk(new SubChunk(this, xOffset, i * IChunk.SUBCHUNK_HEIGHT, zOffset));
         }
 
     }
+
     private void addSubChunk(SubChunk subChunk)
     {
         subChunks.add(subChunk);
@@ -96,6 +95,14 @@ abstract public class Chunk implements IChunk {
            subChunk.uploadChunkData();
         }
 
+    }
+
+    public int getBlockX() {
+        return offsetX * IChunk.CHUNK_SIZE;
+    }
+
+    public int getBlockZ() {
+        return offsetZ * IChunk.CHUNK_SIZE;
     }
 
 

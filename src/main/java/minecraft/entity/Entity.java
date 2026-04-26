@@ -13,6 +13,7 @@ import minecraft.math.IVector;
 import minecraft.math.Vector;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 abstract public class Entity implements YawPitchObserver, LocationPublisher {
@@ -26,7 +27,9 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
             DEFAULT_WALK_SPEED = 1f / Minecraft.TICKS_PER_SECOND,
             BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.05f,
             JUMP_DELTA_Y = 7f / Minecraft.TICKS_PER_SECOND;
-    public static final int JUMP_DELAY_TICKS = 20;
+    public static final int JUMP_DELAY_TICKS = (int) (1.1 * Minecraft.TICKS_PER_SECOND);
+
+    protected static final Random random = new Random();
 
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
@@ -211,7 +214,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         ticksAfterJump = 0;
     }
 
-    private boolean hasJumped() {
+    boolean hasJumped() {
         return ticksAfterJump >= 0;
     }
 

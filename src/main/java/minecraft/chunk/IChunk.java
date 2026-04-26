@@ -1,11 +1,12 @@
 package minecraft.chunk;
 
 import minecraft.Material;
+import minecraft.entity.EntityFactory;
 
 public interface IChunk {
 
-    static final int CHUNK_SIZE = 16, CHUNK_HEIGHT = 64;
-    static final int SUBCHUNK_HEIGHT = 16;
+    int CHUNK_SIZE = 16, CHUNK_HEIGHT = 64;
+    int SUBCHUNK_HEIGHT = 16;
 
     ChunkBlock getChunkBlock(int x, int y, int z);
 

@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL11.glViewport;
 
 public class Camera implements WindowResizeObserver, YawPitchPublisher, LocationObserver {
 
-    public static final float MAX_PITCH = 89f, SENSITIVITY = 0.1F, FOV = 90f;
+    public static final float MAX_PITCH = 89f, SENSITIVITY = 0.1F, FOV = 80f;
 
     private final Matrix4f perspective;
     private final Matrix4f ortho;

@@ -1,7 +1,6 @@
 package minecraft.chunk;
 
 import minecraft.Material;
-import minecraft.Minecraft;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,10 +43,7 @@ abstract public class ChunkLoader implements IChunkLoader {
         int chunkOffsetZ = Math.floorDiv(blockZ, IChunk.CHUNK_SIZE) * IChunk.CHUNK_SIZE;
 
         IChunk chunkToSearch = getChunk(chunkOffsetX, chunkOffsetZ);
-        if (chunkToSearch == null) {
-            Minecraft.getLogger().error("Chunk at ({}, {}) does not exist", chunkOffsetX, chunkOffsetZ);
-            return new ChunkBlock(Material.AIR.getId());
-        }
+        if (chunkToSearch == null) return new ChunkBlock(Material.AIR.getId()); //out of bounds
 
         int localX = blockX - chunkOffsetX;
         int localZ = blockZ - chunkOffsetZ;

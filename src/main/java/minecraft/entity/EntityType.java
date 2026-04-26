@@ -4,6 +4,7 @@ public enum EntityType {
 
     PLAYER,
     CHICKEN,
-    OGRE;
+    OGRE,
+    DEMON;
 
 }

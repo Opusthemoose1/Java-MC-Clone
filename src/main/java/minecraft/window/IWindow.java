@@ -2,8 +2,9 @@ package minecraft.window;
 
 import minecraft.WorldContext;
 import minecraft.window.input.IInputSource;
+import minecraft.window.text.ITextRenderer;
 
-public interface IWindow {
+public interface IWindow extends FrameRenderPublisher {
 
     long getWindowHandle();
 
@@ -20,5 +21,9 @@ public interface IWindow {
     boolean canContinueLoop();
 
     Camera getCamera();
+
+    void setCamera(Camera camera);
+
+    void setTextRenderer(ITextRenderer textRenderer);
 
 }
