@@ -10,7 +10,7 @@ import java.util.Optional;
 
 abstract public class HostileEntity extends AttackingEntity {
 
-    private static final float CHASE_RADIUS = 5.0f;
+    private static final float CHASE_RADIUS = 10.0f;
     private static final float CHASE_OUT_OF_RADIUS_SECONDS = 5.0f;
 
     private Entity target;

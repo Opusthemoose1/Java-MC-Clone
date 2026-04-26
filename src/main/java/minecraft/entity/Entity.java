@@ -19,19 +19,22 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
 
     public static final float GRAVITY = -0.4f / Minecraft.TICKS_PER_SECOND,
             FRICTION_MULTIPLIER = 0.85f,
-            MINIMUM_VELOCITY = 0.01f / Minecraft.TICKS_PER_SECOND,
-            FREEFALL_VELOCITY_MULTIPLIER = 0.2f,
+            MINIMUM_VELOCITY = 0.005f / Minecraft.TICKS_PER_SECOND,
+            FREEFALL_VELOCITY_MULTIPLIER = 0.1f,
             FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, FALL_DAMAGE_MINIMUM_HEIGHT = 3.5f,
-            EPSILON = 0.01f,
-            DEFAULT_WALK_SPEED = 1.75f / Minecraft.TICKS_PER_SECOND,
-            BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.05f;
+            EPSILON = 0.0001f,
+            DEFAULT_WALK_SPEED = 1f / Minecraft.TICKS_PER_SECOND,
+            BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.05f,
+            JUMP_DELTA_Y = 7f / Minecraft.TICKS_PER_SECOND;
 
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
     protected WorldContext context;
     private float health, startingFreefallY = -1;
 
-    private Set<LocationObserver> locationObservers = new HashSet<>();
+    private int ticksInAir = 0;
+
+    private final Set<LocationObserver> locationObservers = new HashSet<>();
 
     Entity(Location location, float initialHealth, WorldContext context) {
         this.location = location.clone();
@@ -119,16 +122,18 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     protected void tickOnGround() {
         IVector walkingForce = getInstantaneousForce();
         velocity.multiply(FRICTION_MULTIPLIER);
-        velocity = new Vector(Math.max(velocity.getX(), walkingForce.getX()), //maintain walking speed or exponentially decay with friction if stopped
-                Math.max(velocity.getY(), walkingForce.getY()),
-                Math.max(velocity.getZ(), walkingForce.getZ()));
-        velocity.add(walkingForce);
+//        velocity = new Vector(Math.max(velocity.getX(), walkingForce.getX()), //maintain walking speed or exponentially decay with friction if stopped
+//                Math.max(velocity.getY(), walkingForce.getY()),
+//                Math.max(velocity.getZ(), walkingForce.getZ()));
+        if (Math.abs(walkingForce.getX()) > Math.abs(velocity.getX())) velocity.setX(walkingForce.getX());
+        if (Math.abs(walkingForce.getZ()) > Math.abs(velocity.getZ())) velocity.setZ(walkingForce.getZ());
 
         if (!velocity.isZero()) {
             if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
             location.add(velocity);
-            if (!walkingForce.isZero()) velocity = walkingForce;
+//            if (!walkingForce.isZero()) velocity = walkingForce;
         }
+        ticksInAir = 0;
 
         handleFallDamage();
     }
@@ -140,6 +145,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         velocity.add(0, GRAVITY, 0);
         location.add(velocity.clone().add(walkForce));
         checkIfLandedInsideBlock();
+        ticksInAir++;
     }
 
     /**
@@ -148,6 +154,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     private void checkIfLandedInsideBlock() {
         if (blockIsSolid(0) && !blockIsSolid(1)) {
             if (location.getY() != (int) location.getY()) {
+                velocity.setY(0);
                 location.setY((int) location.getY() + 1); //round to upper block
             }
         }
@@ -185,7 +192,10 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     }
 
     public void jump() {
+    }
 
+    public int getTicksInAir() {
+        return ticksInAir;
     }
 
     public void setSprinting(boolean sprinting) {

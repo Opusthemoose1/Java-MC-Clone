@@ -21,7 +21,6 @@ public class Minecraft {
     private final IInputManager inputManager;
     private final IWindow window;
     private final Entity player;
-    private final WorldContext context;
     private final ITimer tickTimer;
 
     public final static int TICKS_PER_SECOND = 20;
@@ -29,7 +28,6 @@ public class Minecraft {
 
     public Minecraft(IWindow window, IInputManager inputManager, Entity player, ITimer tickTimer) {
         this.window = window;
-        this.context = player.getContext();
         this.player = player;
         this.inputManager = inputManager;
         this.tickTimer = tickTimer;
@@ -56,14 +54,14 @@ public class Minecraft {
 
         tickGame();
 
-        window.loop(context);
+        window.loop(player.getContext());
     }
 
     private void tickGame() {
         if (tickTimer.getTimeInSeconds() < SECONDS_PER_TICK) return;
 
         // Tick all registered entities
-        context.getEntityManager().tickAllEntities();
+        player.getContext().getEntityManager().tickAllEntities();
 
         tickTimer.reset();
     }

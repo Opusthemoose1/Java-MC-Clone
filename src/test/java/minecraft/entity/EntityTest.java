@@ -58,7 +58,8 @@ public class EntityTest {
         }
 
         assert chicken.isOnSolidGround();
-        assert chicken.getLocation().getY() == 10; //standing on ground. Must be exactly y=10, not 9.8999
+        // must standing on ground. Must be exactly y=10, not 9.8999
+        if (chicken.getLocation().getY() != 10) throw new RuntimeException("Location y level must be exactly 10, was " + chicken.getLocation().getY());
     }
 
     @Test

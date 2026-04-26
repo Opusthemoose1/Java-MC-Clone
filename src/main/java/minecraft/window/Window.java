@@ -136,17 +136,26 @@ public class Window implements IWindow, FrameRenderPublisher {
             observer.render(context, camera);
         }
 
-        final String fpsCounter = String.valueOf(framesPerSecond);
-        Location cameraLocation = camera.getLocation();
-        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 100), 0.3f,"FPS: " + fpsCounter); //TODO remove line or remove magic numbers
-        textRenderer.renderText(camera.getOrtho(), new Vector2f(10, 50), 0.3f, "Location: "
-                        + String.format("%.2f", cameraLocation.getX()) + ", "
-                        + String.format("%.2f", cameraLocation.getY() - Player.HEIGHT) + ", "
-                        + String.format("%.2f", cameraLocation.getZ()));
+        renderText(framesPerSecond);
 
         glfwSwapBuffers(getWindowHandle()); // swap the color buffers
 
         pollInputs((float) deltaTime);
+    }
+
+    private void renderText(double framesPerSecond) {
+        int textXOffset = 10;
+        int fpsYOffset = 100;
+        int locationYOffset = 50;
+        float textScale = 0.3f;
+        Location cameraLocation = camera.getLocation();
+        String fpsCounter = String.valueOf(framesPerSecond);
+
+        textRenderer.renderText(camera.getOrtho(), new Vector2f(textXOffset, locationYOffset), textScale, "Location: "
+                + String.format("%.2f", cameraLocation.getX()) + ", "
+                + String.format("%.2f", cameraLocation.getY() - Player.HEIGHT) + ", "
+                + String.format("%.2f", cameraLocation.getZ()));
+        textRenderer.renderText(camera.getOrtho(), new Vector2f(textXOffset, fpsYOffset), textScale,"FPS: " + fpsCounter);
     }
 
     @Override

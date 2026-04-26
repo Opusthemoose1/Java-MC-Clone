@@ -25,7 +25,7 @@ public class Location {
     }
 
     public static float getYaw(IVector vector) {
-        return (float) Math.toDegrees(Math.atan2(vector.getZ(), vector.getX()));
+        return (float) -Math.toDegrees(Math.atan2(vector.getZ(), vector.getX()));
     }
 
     public Location (float x, float y, float z) {
