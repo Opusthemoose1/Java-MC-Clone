@@ -16,8 +16,7 @@ import static org.lwjgl.opengl.GL11.glViewport;
 
 public class Camera implements WindowResizeObserver, YawPitchPublisher, LocationObserver {
 
-
-    public static final float MAX_PITCH = 89f;
+    public static final float MAX_PITCH = 89f, SENSITIVITY = 0.1F, FOV = 90f;
 
     private final Matrix4f perspective;
     private final Matrix4f ortho;
@@ -26,7 +25,6 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher, Location
     private IVector front;
     private IVector up;
 
-    private float fov = 90f;
     private float screenWidth, screenHeight;
 
     private final Set<YawPitchObserver> observers = new HashSet<>();
@@ -51,7 +49,7 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher, Location
 
     public void updateProjectionMatrix() {
         this.perspective.identity().perspective(
-                (float) Math.toRadians(fov),
+                (float) Math.toRadians(FOV),
                 screenWidth / screenHeight,
                 0.1f,
                 100.0f
@@ -71,12 +69,12 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher, Location
     public void mouseControl(double mouseX, double mouseY) {
         double xOffset = mouseX - lastX;
         double yOffset = lastY - mouseY;
+        if (xOffset == 0 && yOffset == 0) return;
         lastX = mouseX;
         lastY = mouseY;
 
-        float sensitivity = 0.1f;
-        xOffset *= sensitivity;
-        yOffset *= sensitivity;
+        xOffset *= SENSITIVITY;
+        yOffset *= SENSITIVITY;
 
         location.setYaw(location.getYaw() + (float) xOffset);
         location.setPitch(Math.clamp(location.getPitch() + (float) yOffset, -MAX_PITCH, MAX_PITCH));

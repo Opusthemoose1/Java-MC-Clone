@@ -12,7 +12,7 @@ Java Version: 25
 ### Notable Design Patterns
 1. Entities are created using the factory pattern (EntityFactory)
 2. ChunkRenderer and EntityRenderer are observers to Window, which pushes updates containing a WorldContext object
-3. Vector uses the facade pattern: JOML Vector3f implements 3 interfaces, Vector only implements IVector
+3. Vector uses the adapter pattern: JOML Vector3f implements 3 interfaces, Vector only implements IVector
 4. EntityManager uses the Iterator pattern to iterate over all entities
 5. InputManager returns a list of commands based on the player's inputs
 6. Commands are created with the factory pattern (CommandFactory), bound to an IInputManager

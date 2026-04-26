@@ -13,6 +13,7 @@ import minecraft.math.IVector;
 import minecraft.math.Vector;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 abstract public class Entity implements YawPitchObserver, LocationPublisher {
@@ -26,13 +27,13 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
             DEFAULT_WALK_SPEED = 1f / Minecraft.TICKS_PER_SECOND,
             BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.05f,
             JUMP_DELTA_Y = 7f / Minecraft.TICKS_PER_SECOND;
+    public static final int JUMP_DELAY_TICKS = 20;
 
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
     protected WorldContext context;
     private float health, startingFreefallY = -1;
-
-    private int ticksInAir = 0;
+    private int ticksAfterJump = -1;
 
     private final Set<LocationObserver> locationObservers = new HashSet<>();
 
@@ -94,17 +95,29 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     }
 
     public boolean isOnSolidGround() {
-        return location.getY() <= 0 || blockIsSolid(-EPSILON);
+        return location.getY() <= 0 || blockIsSolidYOffset(-EPSILON);
     }
 
-    protected boolean blockIsSolid(float yOffset) {
+    private boolean blockIsSolidYOffset(float yOffset) {
         ChunkBlock block = context.getChunkLoader().getBlock(location.getX(), location.getY() + yOffset, location.getZ());
         return block.getMaterial().isSolid();
+    }
+
+    private boolean blockIsSolidRadially(float xOffset, float zOffset) {
+        xOffset -= 0.5f;
+        zOffset += 0.5f; //TODO: remove this once rendering issue is fixed
+        int heightInBlocks = (int) Math.ceil(getHeight());
+        for (int i = 0; i < heightInBlocks; i++) {
+            ChunkBlock block = context.getChunkLoader().getBlock(location.getX() + xOffset, location.getY() + i + EPSILON, location.getZ() + zOffset);
+            if (block.getMaterial().isSolid()) return true;
+        }
+        return false;
     }
 
     public IVector getInstantaneousForce() {
         IVector velocity = instantaneousForce.clone().setY(0);
         if (!velocity.isZero()) velocity.normalize().multiply(getWalkSpeed());
+
         return velocity;
     }
 
@@ -117,23 +130,21 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         else tickInAir();
         instantaneousForce = Vector.newZeroVector();
         notifyLocationObservers();
+        if (hasJumped()) ticksAfterJump++;
     }
 
     protected void tickOnGround() {
+        if (ticksAfterJump >= JUMP_DELAY_TICKS) ticksAfterJump = -1;
         IVector walkingForce = getInstantaneousForce();
         velocity.multiply(FRICTION_MULTIPLIER);
-//        velocity = new Vector(Math.max(velocity.getX(), walkingForce.getX()), //maintain walking speed or exponentially decay with friction if stopped
-//                Math.max(velocity.getY(), walkingForce.getY()),
-//                Math.max(velocity.getZ(), walkingForce.getZ()));
         if (Math.abs(walkingForce.getX()) > Math.abs(velocity.getX())) velocity.setX(walkingForce.getX());
         if (Math.abs(walkingForce.getZ()) > Math.abs(velocity.getZ())) velocity.setZ(walkingForce.getZ());
 
         if (!velocity.isZero()) {
             if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
+            checkSideCollisions();
             location.add(velocity);
-//            if (!walkingForce.isZero()) velocity = walkingForce;
         }
-        ticksInAir = 0;
 
         handleFallDamage();
     }
@@ -143,16 +154,24 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         IVector walkForce = getInstantaneousForce();
         walkForce.multiply(FREEFALL_VELOCITY_MULTIPLIER); //let entity still move a little bit while in the air
         velocity.add(0, GRAVITY, 0);
+        checkSideCollisions();
         location.add(velocity.clone().add(walkForce));
         checkIfLandedInsideBlock();
-        ticksInAir++;
+    }
+
+    private void checkSideCollisions() {
+        if (velocity.getX() != 0 && blockIsSolidRadially(velocity.getX(), 0)) velocity.setX(0);
+        if (velocity.getZ() != 0 && blockIsSolidRadially(0, velocity.getZ())) velocity.setZ(0);
+
+//        if (velocity.getZ() > 0 && blockIsSolidRadially(0f, epsilon)) velocity.setZ(0);
+//        else if (velocity.getZ() < 0 && blockIsSolidRadially(0f, -epsilon)) velocity.setZ(0);
     }
 
     /**
      * Round the y level to the nearest whole integer once the entity lands onto a block
      */
     private void checkIfLandedInsideBlock() {
-        if (blockIsSolid(0) && !blockIsSolid(1)) {
+        if (blockIsSolidYOffset(0) && !blockIsSolidYOffset(1)) {
             if (location.getY() != (int) location.getY()) {
                 velocity.setY(0);
                 location.setY((int) location.getY() + 1); //round to upper block
@@ -192,10 +211,13 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     }
 
     public void jump() {
+        if (hasJumped() || blockIsSolidYOffset(getHeight() + 1)) return;
+        addVelocity(0, JUMP_DELTA_Y, 0);
+        ticksAfterJump = 0;
     }
 
-    public int getTicksInAir() {
-        return ticksInAir;
+    private boolean hasJumped() {
+        return ticksAfterJump >= 0;
     }
 
     public void setSprinting(boolean sprinting) {

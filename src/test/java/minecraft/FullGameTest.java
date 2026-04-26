@@ -2,16 +2,13 @@ package minecraft;
 
 import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.command.*;
-import minecraft.entity.AttackingEntity;
-import minecraft.entity.Ogre;
+import minecraft.entity.*;
 import minecraft.math.Vector;
 import minecraft.timer.Timer;
 import minecraft.window.input.IInputManager;
 import minecraft.window.input.InputManager;
 import minecraft.window.rendering.ChunkRenderer;
 import minecraft.chunk.location.Location;
-import minecraft.entity.EntityManager;
-import minecraft.entity.Player;
 import minecraft.window.Camera;
 import minecraft.window.Window;
 import minecraft.window.input.InputSource;
@@ -50,11 +47,9 @@ public class FullGameTest {
 
         WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
         Player player = new Player(Location.createLocation(0f, 40f, 0f), context);
-        Ogre ogre = new Ogre(Location.createLocation(0f, 30f, 0f), context, new Timer());
+//        Ogre ogre = new Ogre(Location.createLocation(0f, 30f, 0f), context, new Timer());
         context.getEntityManager().addEntity(player);
-        context.getEntityManager().addEntity(ogre);
-
-
+//        context.getEntityManager().addEntity(ogre);
 
         Camera camera = new Camera(INITIAL_CAMERA_POSITION, window.getWidth(), window.getHeight());
         window.setCamera(camera);
@@ -65,23 +60,8 @@ public class FullGameTest {
 
         window.setTextRenderer(text);
 
-        TextureMap blockTextureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/blocks/");
-        TextureAtlas textureAtlas = new TextureAtlas(blockTextureMap);
-
-        Shader shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
-        window.attach(new ChunkRenderer(textureAtlas, shader));
-
-        LoadOBJNoNormals objLoader = new LoadOBJNoNormals();
-        IMesh mesh = objLoader.loadFile("src/resources/models/sphere.obj");
-        Shader entityShader = new Shader("src/resources/shaders/entity.vert", "src/resources/shaders/entity.frag");
-        mesh.setShader(entityShader);
-        mesh.setColor(new Vector(0.2f, 0.8f, 0.1f));
-
-
-        EntityRenderer entityRenderer = new EntityRenderer();
-        entityRenderer.addEntityMesh(ogre, mesh);
-        window.attach(entityRenderer);
-
+        window.attach(loadChunkRenderer());
+        window.attach(loadEntityRenderer());
 
         // Turn on depth buffer
         glEnable(GL_DEPTH_TEST);
@@ -96,6 +76,31 @@ public class FullGameTest {
 
         glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11); //might need for XWayland to solve an exception on init
         minecraft.run();
+    }
+
+    private ChunkRenderer loadChunkRenderer() {
+        TextureMap blockTextureMap = new TextureMap(DEFAULT_RESOURCE_PATH + "/textures/blocks/");
+        TextureAtlas textureAtlas = new TextureAtlas(blockTextureMap);
+        Shader shader = new Shader("src/resources/shaders/basic.vert", "src/resources/shaders/basic.frag");
+        return new ChunkRenderer(textureAtlas, shader);
+    }
+
+    private EntityRenderer loadEntityRenderer() {
+        LoadOBJNoNormals objLoader = new LoadOBJNoNormals();
+
+        IMesh ogreMesh = objLoader.loadFile("src/resources/models/sphere.obj");
+        Shader entityShader = new Shader("src/resources/shaders/entity.vert", "src/resources/shaders/entity.frag");
+        ogreMesh.setShader(entityShader);
+        ogreMesh.setColor(new Vector(0.2f, 0.8f, 0.1f));
+
+        IMesh chickenMesh = objLoader.loadFile("src/resources/models/sphere.obj");
+        chickenMesh.setShader(entityShader);
+        chickenMesh.setColor(new Vector(0.8f, 0.8f, 0.8f));
+
+        EntityRenderer entityRenderer = new EntityRenderer();
+        entityRenderer.setEntityMesh(EntityType.OGRE, ogreMesh);
+        entityRenderer.setEntityMesh(EntityType.CHICKEN, chickenMesh);
+        return entityRenderer;
     }
 
     private void bindKeys(IInputManager inputManager) {
