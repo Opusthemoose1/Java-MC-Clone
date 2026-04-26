@@ -10,13 +10,9 @@ public class Block {
     private final IChunkLoader chunkLoader;
 
     public Block(Location location, ChunkBlock chunkBlock, IChunkLoader chunkLoader) {
-        this.location = location.clone();
         this.chunkBlock = chunkBlock;
         this.chunkLoader = chunkLoader;
-
-        this.location.setX((int) this.location.getX());
-        this.location.setY((int) this.location.getY());
-        this.location.setZ((int) this.location.getZ());
+        this.location = location.getBlockLocation();
     }
 
     public Material getMaterial() {

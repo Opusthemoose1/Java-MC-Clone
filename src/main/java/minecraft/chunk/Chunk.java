@@ -5,14 +5,6 @@ import minecraft.Material;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30C.glBindVertexArray;
-import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
-
 /*
 Chunks are specified by their offset from world origin.
 Each chunk is made from subchunks, where each subchunk is 16x16x16
@@ -50,22 +42,22 @@ abstract public class Chunk implements IChunk {
         subChunks.add(subChunk);
     }
 
-    public List<SubChunk> getSubChunks()
-    {
-        return subChunks;
-    }
+//    public List<SubChunk> getSubChunks()
+//    {
+//        return subChunks;
+//    }
 
-    private SubChunk getSubChunk(int x, int y, int z)
-    {
-        for (SubChunk subChunk : subChunks)
-        {
-            if (subChunk.getXOffset() == x && subChunk.getYOffset() == y && subChunk.getZOffset() == z)
-            {
-                return subChunk;
-            }
-        }
-        return null;
-    }
+//    private SubChunk getSubChunk(int x, int y, int z)
+//    {
+//        for (SubChunk subChunk : subChunks)
+//        {
+//            if (subChunk.getXOffset() == x && subChunk.getYOffset() == y && subChunk.getZOffset() == z)
+//            {
+//                return subChunk;
+//            }
+//        }
+//        return null;
+//    }
 
     //abstract protected void setInitialBlocks();
 
@@ -73,7 +65,7 @@ abstract public class Chunk implements IChunk {
     public boolean isAir(int x, int y, int z) {
         if (IChunk.isInvalidChunkCoordinates(x, y, z)) return true;
         ChunkBlock block = blocks[y][x][z];
-        return block == null || block.getMaterial().equals(Material.AIR);
+        return block == null || block.materialId() == Material.AIR.getId();
 
     }
 

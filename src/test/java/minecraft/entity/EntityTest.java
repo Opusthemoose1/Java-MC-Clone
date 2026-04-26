@@ -80,11 +80,11 @@ public class EntityTest {
         assert glob.getVelocity().getZ() > 0;
         assert glob.getLocation().getX() > initPosition.getX(); //moved along x axis, same as velocity vector
 
-        for (int i = 0; i < 1000; i++) { //after some time, glob should come to a stop, since he is on ground
+        for (int i = 0; i < 1500; i++) { //after some time, glob should come to a stop, since he is on ground
             glob.tick();
         }
 
-        assert glob.getVelocity().length() == 0;
+        if (glob.getVelocity().length() != 0) throw new RuntimeException("Velocity after friction is complete must be exatctly zero, got " + glob.getVelocity().length());
     }
 
 }

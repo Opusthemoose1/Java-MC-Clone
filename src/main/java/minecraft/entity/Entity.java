@@ -13,7 +13,6 @@ import minecraft.math.IVector;
 import minecraft.math.Vector;
 
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 abstract public class Entity implements YawPitchObserver, LocationPublisher {
@@ -103,9 +102,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         return block.getMaterial().isSolid();
     }
 
-    private boolean blockIsSolidRadially(float xOffset, float zOffset) {
-        xOffset -= 0.5f;
-        zOffset += 0.5f; //TODO: remove this once rendering issue is fixed
+    private boolean blockIsSolidOnSide(float xOffset, float zOffset) {
         int heightInBlocks = (int) Math.ceil(getHeight());
         for (int i = 0; i < heightInBlocks; i++) {
             ChunkBlock block = context.getChunkLoader().getBlock(location.getX() + xOffset, location.getY() + i + EPSILON, location.getZ() + zOffset);
@@ -142,7 +139,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
 
         if (!velocity.isZero()) {
             if (velocity.lengthSquared() < MINIMUM_VELOCITY) velocity = Vector.newZeroVector();
-            checkSideCollisions();
+            checkBlockCollisions();
             location.add(velocity);
         }
 
@@ -154,17 +151,15 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         IVector walkForce = getInstantaneousForce();
         walkForce.multiply(FREEFALL_VELOCITY_MULTIPLIER); //let entity still move a little bit while in the air
         velocity.add(0, GRAVITY, 0);
-        checkSideCollisions();
+        checkBlockCollisions();
         location.add(velocity.clone().add(walkForce));
         checkIfLandedInsideBlock();
     }
 
-    private void checkSideCollisions() {
-        if (velocity.getX() != 0 && blockIsSolidRadially(velocity.getX(), 0)) velocity.setX(0);
-        if (velocity.getZ() != 0 && blockIsSolidRadially(0, velocity.getZ())) velocity.setZ(0);
-
-//        if (velocity.getZ() > 0 && blockIsSolidRadially(0f, epsilon)) velocity.setZ(0);
-//        else if (velocity.getZ() < 0 && blockIsSolidRadially(0f, -epsilon)) velocity.setZ(0);
+    private void checkBlockCollisions() {
+        if (velocity.getX() != 0 && blockIsSolidOnSide(velocity.getX(), 0)) velocity.setX(0);
+        if (velocity.getY() > 0 && blockIsSolidYOffset(velocity.getY() + getHeight())) velocity.setY(0);
+        if (velocity.getZ() != 0 && blockIsSolidOnSide(0, velocity.getZ())) velocity.setZ(0);
     }
 
     /**
@@ -211,7 +206,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     }
 
     public void jump() {
-        if (hasJumped() || blockIsSolidYOffset(getHeight() + 1)) return;
+        if (hasJumped()) return;
         addVelocity(0, JUMP_DELTA_Y, 0);
         ticksAfterJump = 0;
     }
@@ -237,15 +232,17 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         IVector eye = getEyeLocation().toVector();
 
         float distanceChecked = 0f;
-        IVector alreadyChecked = new Vector(-1, -1, -1);
+        Location previouslyCheckedBlockLocation = Location.createLocation(-1, -1, -1);
         while (distanceChecked < BLOCK_LOOKING_AT_MAX_DISTANCE - BLOCK_LOOKING_AT_STRIDE) {
             eye.add(direction);
             distanceChecked += BLOCK_LOOKING_AT_STRIDE;
-            if ((int) eye.getX() == alreadyChecked.getX() && (int) eye.getY() == alreadyChecked.getY() && (int) eye.getZ() == alreadyChecked.getZ()) continue; //same block coords
+            if (Math.floor(eye.getX()) == previouslyCheckedBlockLocation.getX()
+                    && Math.floor(eye.getY()) == previouslyCheckedBlockLocation.getY() &&
+                    Math.floor(eye.getZ()) == previouslyCheckedBlockLocation.getZ()) continue; //same block coords
 
             ChunkBlock block = context.getChunkLoader().getBlock(eye.getX(), eye.getY(), eye.getZ());
             if (!block.isType(Material.AIR)) return new Block(Location.createLocation(eye), block, context.getChunkLoader());
-            alreadyChecked = new Vector((int) eye.getX(), (int) eye.getY(), (int) eye.getZ());
+            previouslyCheckedBlockLocation = Location.createLocation(eye.getX(), eye.getY(), eye.getZ()).getBlockLocation();
         }
         return null;
     }

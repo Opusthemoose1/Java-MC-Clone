@@ -34,6 +34,7 @@ public class HostileEntityTest {
 
     @Test
     public void testHostileEntityOnlyAgainstPlayer() {
+        WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
         Entity chicken = entityFactory.createChicken(new Location(0, 10, 0));
         HostileEntity ogre = (HostileEntity) entityFactory.createOgre(new Location(2, 10, 0));
 
@@ -45,6 +46,6 @@ public class HostileEntityTest {
 
         assert ogre.isHostile();
         assert !chicken.isHostile();
-        assert ogre.getTarget() == null;
+        assert ogre.getTarget() == null; //ogre cannot target the chicken
     }
 }

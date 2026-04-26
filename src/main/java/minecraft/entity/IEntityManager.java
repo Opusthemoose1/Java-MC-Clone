@@ -10,6 +10,8 @@ public interface IEntityManager extends Iterable<Entity> {
 
     public void removeEntity(Entity entity);
 
+    public int getEntityCount();
+
     public void tickAllEntities();
 
     public Set<Entity> getEntitiesNearby(Location location, double radius);

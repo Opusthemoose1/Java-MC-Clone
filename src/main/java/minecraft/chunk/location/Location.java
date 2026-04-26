@@ -119,6 +119,10 @@ public class Location {
         return getDirection().cross(up).normalize();
     }
 
+    public Location getBlockLocation() {
+        return createLocation((float) Math.floor(x), (float) Math.floor(y), (float) Math.floor(z));
+    }
+
     public IVector getUpDirection() {
         return getRightDirection().clone().cross(getDirection()).normalize();
     }

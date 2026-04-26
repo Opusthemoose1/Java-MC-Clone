@@ -15,7 +15,7 @@ This is more of a facade pattern on top of everything but it reduces parameter p
  */
 public class EntityManager implements IEntityManager {
 
-    static Set<Entity> entities = new HashSet<>();
+    private Set<Entity> entities = new HashSet<>();
 
     public EntityManager() {
     }
@@ -31,6 +31,10 @@ public class EntityManager implements IEntityManager {
     // Force an update on all registered entities
     public void tickAllEntities() {
         for (Entity entity : entities) entity.tick();
+    }
+
+    public int getEntityCount() {
+        return entities.size();
     }
 
     public Set<Entity> getEntitiesNearby(Location location, double radius) {
