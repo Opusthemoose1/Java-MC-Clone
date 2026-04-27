@@ -2,6 +2,7 @@ package minecraft;
 
 import minecraft.chunk.FlatWorldChunk;
 import minecraft.chunk.FlatWorldChunkLoader;
+import minecraft.chunk.HillWorldChunkLoader;
 import minecraft.chunk.IChunkLoader;
 import minecraft.command.*;
 import minecraft.entity.*;
@@ -54,7 +55,7 @@ public class FullGameTest {
         // bindings available for use.
         GL.createCapabilities();
 
-        WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
+        WorldContext context = new WorldContext(new HillWorldChunkLoader(), new EntityManager());
         Player player = new Player(Location.createLocation(0f, 40f, 0f), context);
         context.getEntityManager().addEntity(player);
         spawnEntities(new EntityFactory(context, new Timer()));
