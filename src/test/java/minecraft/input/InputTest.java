@@ -135,6 +135,20 @@ public class InputTest {
     }
 
     @Test
+    public void testAttackCommand() {
+        Entity player = entityFactory.createPlayer(new Location(-10, 10, -10, 0f, 0f));
+        Entity ogre = entityFactory.createOgre(new Location(-10, 10, -8, 0, 0));
+        ICommand attackCommand = new AttackCommand();
+        double ogreInitialHealth = ogre.getHealth();
+        player.tick();
+        ogre.tick();
+
+        attackCommand.execute(player);
+
+        assert ogre.getHealth() < ogreInitialHealth;
+    }
+
+    @Test
     public void testMultipleCommandsInOneTick() {
         Entity player = entityFactory.createPlayer(new Location(10, 10, -10, 0f, 0f));
         IVector initLocation = player.getLocation().toVector();
