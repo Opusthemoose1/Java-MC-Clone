@@ -7,7 +7,7 @@ import minecraft.timer.ITimer;
 
 public class Demon extends HostileEntity {
 
-    static final float INITIAL_HEALTH = 15f, ATTACK_DAMAGE = 3f, WEIGHT = 0.5f, HEIGHT = 1.5f,
+    static final float INITIAL_HEALTH = 9f, ATTACK_DAMAGE = 3f, WEIGHT = 0.4f, HEIGHT = 1.5f,
             JUMP_PROBABILITY = 0.05f, CHASE_RADIUS = 20f, WALK_SPEED = 2f / Minecraft.TICKS_PER_SECOND;
 
     protected Demon(Location location, WorldContext context, ITimer chaseTimer) {

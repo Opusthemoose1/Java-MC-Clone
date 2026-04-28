@@ -10,18 +10,16 @@ import minecraft.timer.ITimer;
 public class Player extends AttackingEntity {
 
     public static final float INITIAL_HEALTH = 20f,
-            ATTACK_DAMAGE = 4f,
-            WEIGHT = 0.8f,
+            ATTACK_DAMAGE = 1f,
+            WEIGHT = 1f,
             HEIGHT = 1.75F;
 
     private static final float WALK_SPEED = 1.5f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 2.5f / Minecraft.TICKS_PER_SECOND;
 
     private boolean sprinting = false;
-    private final ITimer blockBreakPlaceTimer;
 
-    public Player(Location location, WorldContext context, ITimer blockBreakPlaceTimer) {
+    public Player(Location location, WorldContext context) {
         super(location, INITIAL_HEALTH, context);
-        this.blockBreakPlaceTimer = blockBreakPlaceTimer;
     }
 
     @Override
@@ -61,5 +59,13 @@ public class Player extends AttackingEntity {
 
     public EntityType getType() {
         return EntityType.PLAYER;
+    }
+
+    @Override
+    public void kill() {
+        setHealth(getMaximumHealth());
+        int blocksAboveRespawnPoint = 3;
+        Location respawn = Location.createLocation(0, context.getChunkLoader().getSurfaceLevel(0, 0) + blocksAboveRespawnPoint, 0); //world center
+        setLocation(respawn);
     }
 }

@@ -51,6 +51,25 @@ public class DemonTest {
     }
 
     @Test
+    public void testDemonAttacksPlayer() {
+        WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
+        EntityFactory entityFactory = new EntityFactory(context, new TestTimerFactory());
+
+        Entity player = entityFactory.createPlayer(Location.createLocation(0f, 0f, 0f));
+        HostileEntity demon = (HostileEntity) entityFactory.createDemon(Location.createLocation(2, 0, 0));
+
+        double playerInitHealth = player.getHealth();
+
+        for (int i = 0; i < 1000; i++) {
+            demon.tick();
+            player.tick();
+            if (player.getHealth() < playerInitHealth) break;
+        }
+
+        assert player.isDead() || player.getHealth() < playerInitHealth;
+    }
+
+    @Test
     public void testHostileEntityOnlyAgainstPlayer() {
         WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
         Entity chicken = entityFactory.createChicken(new Location(0, 10, 0));

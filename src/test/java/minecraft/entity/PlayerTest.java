@@ -51,7 +51,7 @@ public class PlayerTest {
         TestChunkLoader testChunkLoader = new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL));
         WorldContext context = new WorldContext(testChunkLoader, new EntityManager());
         ICommand breakCommand = commandFactory.newBreakBlockCommand();
-        Entity player = new Player(Location.createLocation(0, Y_LEVEL, 0, 0, -89), context, new TestTimer()); // looking down
+        Entity player = new Player(Location.createLocation(0, Y_LEVEL, 0, 0, -89), context); // looking down
         IVector locationBelowFeet = player.getLocation().toVector().add(0, -1, 0);
 
         assert !(context.getChunkLoader().getBlock(locationBelowFeet.getX(), locationBelowFeet.getY(), locationBelowFeet.getZ()).isType(Material.AIR)); //block not broken initially
@@ -67,7 +67,7 @@ public class PlayerTest {
         TestChunkLoader testChunkLoader = new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL));
         WorldContext context = new WorldContext(testChunkLoader, new EntityManager());
         ICommand placeCommand = commandFactory.newPlaceBlockCommand();
-        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 0, 0, -89), context, new TestTimer());
+        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 0, 0, -89), context);
 
         assert context.getChunkLoader().getBlock(player.getLocation().getBlockLocation()).isType(Material.AIR); //control conditions
         assert player.getBlockLookingAt() != null; //can place a block
@@ -83,7 +83,7 @@ public class PlayerTest {
         TestChunkLoader testChunkLoader = new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL));
         WorldContext context = new WorldContext(testChunkLoader, new EntityManager());
         ICommand placeCommand = commandFactory.newPlaceBlockCommand();
-        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 0, 0, -42), context, new TestTimer());
+        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 0, 0, -42), context);
 
         //control conditions
         Block lookingAt = player.getBlockLookingAt();
@@ -94,6 +94,17 @@ public class PlayerTest {
         placeCommand.execute(player);
 
         assert testChunkLoader.getBlockChangesCount() == 1;
+    }
+
+    @Test
+    public void testPlayerDeath() {
+        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 10), context);
+
+        player.loseHealth(-100);
+
+        //player respawns at world center
+        assert player.getLocation().getX() == 0;
+        assert player.getLocation().getZ() == 0;
     }
 
 }

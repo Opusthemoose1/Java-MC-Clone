@@ -21,6 +21,14 @@ public interface IChunkLoader {
         setBlock(location.getX(), location.getY(), location.getZ(), type);
     }
 
+    default int getSurfaceLevel(float x, float z) {
+        int y = 1;
+        for (; y < IChunk.CHUNK_HEIGHT; y++) {
+            if (getBlock(x, y, z).isType(Material.AIR)) break;
+        }
+        return y;
+    }
+
     void setBlock(double x, double y, double z, Material type);
 
     List<IChunk> getRenderedChunks();

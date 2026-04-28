@@ -26,11 +26,7 @@ public class EntityFactory {
     }
 
     public Entity createEntityAtSurface(EntityType type, float x, float z) {
-        int y = 1;
-        for (; y < IChunk.CHUNK_HEIGHT; y++) {
-            if (context.getChunkLoader().getBlock(x, y, z).isType(Material.AIR)) break;
-        }
-        return createEntity(type, Location.createLocation(x, y + 1, z));
+        return createEntity(type, Location.createLocation(x, context.getChunkLoader().getSurfaceLevel(x, z) + 1, z));
     }
 
     public Entity createEntity(EntityType type, Location location) {
@@ -40,7 +36,7 @@ public class EntityFactory {
         }
 
         Entity entity = switch (type) {
-            case PLAYER -> new Player(location, context, timerFactory.createTimer());
+            case PLAYER -> new Player(location, context);
             case CHICKEN -> new Chicken(location, context);
             case OGRE -> new Ogre(location, context, timerFactory.createTimer());
             case DEMON -> new Demon(location, context, timerFactory.createTimer());

@@ -20,11 +20,11 @@ public class EntityTest {
     public void testEntityDies() {
         Entity chicken = entityFactory.createChicken();
 
-        chicken.addHealth(-1.5f);
+        chicken.loseHealth(1.5f);
 
         assert chicken.getHealth() == Chicken.INITIAL_HEALTH - 1.5;
 
-        chicken.addHealth(-1 * Chicken.INITIAL_HEALTH);
+        chicken.loseHealth(Chicken.INITIAL_HEALTH);
 
         assert chicken.isDead();
     }
@@ -86,6 +86,15 @@ public class EntityTest {
         }
 
         if (glob.getVelocity().length() != 0) throw new RuntimeException("Velocity after friction is complete must be exatctly zero, got " + glob.getVelocity().length());
+    }
+
+    @Test
+    public void testDeath() {
+        Entity chicken = entityFactory.createChicken();
+
+        chicken.loseHealth(-100);
+
+        assert chicken.isDead();
     }
 
 }

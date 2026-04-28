@@ -38,4 +38,8 @@ public class CommandFactory {
         return new PlaceBlockCommand();
     }
 
+    public ICommand newAttackCommand() {
+        return new AttackCommand();
+    }
+
 }

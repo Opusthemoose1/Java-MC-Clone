@@ -164,5 +164,6 @@ public class FullGameTest {
         inputManager.bindKey(GLFW_KEY_C, factory.newPlaceBlockCommand());
         inputManager.bindKey(IInputSource.LEFT_CLICK_KEY, factory.newBreakBlockCommand());
         inputManager.bindKey(IInputSource.RIGHT_CLICK_KEY, factory.newPlaceBlockCommand());
+        inputManager.bindKey(GLFW_KEY_F, factory.newAttackCommand());
     }
 }

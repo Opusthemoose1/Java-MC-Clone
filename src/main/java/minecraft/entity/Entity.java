@@ -34,7 +34,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     private Location location;
     private IVector velocity = Vector.newZeroVector(), instantaneousForce = Vector.newZeroVector();
     protected WorldContext context;
-    private float health, startingFreefallY = -1;
+    private float health, startingFreefallY = -1, maximumHealth;
     private int ticksAfterJump = -1;
 
     private final Set<LocationObserver> locationObservers = new HashSet<>();
@@ -43,6 +43,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         this.location = location.clone();
         this.health = initialHealth;
         this.context = context;
+        this.maximumHealth = initialHealth;
     }
 
     public WorldContext getContext() {
@@ -53,13 +54,12 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         return health <= 0;
     }
 
-    public float getHealth() {
-        return health;
+    public float getMaximumHealth() {
+        return maximumHealth;
     }
 
-    public void addHealth(float healthPoints) {
-        if (isDead()) return;
-        health += healthPoints;
+    public float getHealth() {
+        return health;
     }
 
     public float getWalkSpeed() {
@@ -89,6 +89,10 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     }
 
     abstract float getWeight();
+
+    public boolean canAttack() {
+        return false;
+    }
 
     public abstract float getHeight();
 
@@ -131,6 +135,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         instantaneousForce = Vector.newZeroVector();
         notifyLocationObservers();
         if (hasJumped()) ticksAfterJump++;
+        checkIfLandedInsideBlock();
     }
 
     protected void tickOnGround() {
@@ -156,7 +161,6 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
         velocity.add(0, GRAVITY, 0);
         checkBlockCollisions();
         location.add(velocity.clone().add(walkForce));
-        checkIfLandedInsideBlock();
     }
 
     private void checkBlockCollisions() {
@@ -190,8 +194,19 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
     }
 
     public void loseHealth(float amount) {
+        amount = Math.abs(amount);
         health -= amount;
-        if (health < 0) health = 0;
+        if (health <= 0) kill();
+    }
+
+    public void setHealth(float amount) {
+        health = Math.abs(amount);
+    }
+
+    public void kill() {
+        health = 0;
+        velocity = Vector.newZeroVector();
+        context.getEntityManager().removeEntity(this);
     }
 
     public void setYaw(float yaw) {

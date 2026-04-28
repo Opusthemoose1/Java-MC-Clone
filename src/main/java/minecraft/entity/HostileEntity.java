@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.Minecraft;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
@@ -10,8 +11,10 @@ import java.util.Optional;
 
 abstract public class HostileEntity extends AttackingEntity {
 
-    private static final float DEFAULT_CHASE_RADIUS = 10.0f;
-    private static final float CHASE_OUT_OF_RADIUS_SECONDS = 5.0f;
+    private static final float DEFAULT_CHASE_RADIUS = 10.0f,
+            CHASE_OUT_OF_RADIUS_SECONDS = 5.0f,
+            ATTACK_RADIUS = 2.5f,
+            ATTACK_PROBABILITY_PER_SECOND = 0.6f / Minecraft.TICKS_PER_SECOND;
 
     private Entity target;
     private final ITimer chaseTimer;
@@ -59,6 +62,10 @@ abstract public class HostileEntity extends AttackingEntity {
             setYaw(Location.getYaw(direction));
             setWalkSpeed(getWalkSpeed());
             addInstantaneousForce(getWalkingForce());
+
+            if (getLocation().getDistance(target.getLocation()) <= ATTACK_RADIUS && random.nextFloat() < ATTACK_PROBABILITY_PER_SECOND) {
+                attack(target);
+            }
         }
         super.tick();
     }

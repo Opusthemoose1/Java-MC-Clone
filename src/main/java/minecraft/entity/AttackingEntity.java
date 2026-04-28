@@ -7,17 +7,15 @@ import minecraft.math.Vector;
 
 abstract public class AttackingEntity extends Entity {
 
-    static final float KNOCKBACK_MULTIPLIER = 0.1f;
+    static final float KNOCKBACK_MULTIPLIER = 0.05f, ATTACK_DISPLACEMENT_Y = 0.1f;
 
     protected AttackingEntity(Location location, float initialHealth, WorldContext context) {
         super(location, initialHealth, context);
     }
 
     public void attack(Entity foe) {
-        if (isDead()) throw new IllegalStateException("Cannot attack if already dead");
-        if (foe.isDead()) throw new IllegalStateException("Cannot attack an entity that is not alive");
-
-        foe.addHealth(getAttackDamage());
+        if (foe == this || isDead() || foe.isDead()) return;
+        foe.loseHealth(getAttackDamage());
         applyKnockbackToEntity(foe);
     }
 
@@ -31,8 +29,13 @@ abstract public class AttackingEntity extends Entity {
         );
         displacement = displacement.normalize().multiply(KNOCKBACK_MULTIPLIER);
 
-        addVelocity(displacement.clone().divide(-getWeight())); //opposite direction
-        foe.addVelocity(displacement.clone().divide(foe.getWeight()));
+        addVelocity(displacement.clone().divide(-getWeight()).add(0, ATTACK_DISPLACEMENT_Y, 0)); //opposite direction
+        foe.addVelocity(displacement.clone().divide(foe.getWeight()).add(0, ATTACK_DISPLACEMENT_Y, 0));
+    }
+
+    @Override
+    public boolean canAttack() {
+        return true;
     }
 
     abstract float getAttackDamage();
