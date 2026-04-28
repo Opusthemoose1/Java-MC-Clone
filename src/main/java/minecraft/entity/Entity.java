@@ -25,7 +25,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
             FALL_DAMAGE_DEFAULT_MULTIPLIER = 0.2f, FALL_DAMAGE_MINIMUM_HEIGHT = 3.5f,
             EPSILON = 0.0001f,
             DEFAULT_WALK_SPEED = 1f / Minecraft.TICKS_PER_SECOND,
-            BLOCK_LOOKING_AT_MAX_DISTANCE = 4f, BLOCK_LOOKING_AT_STRIDE = 0.05f,
+            BLOCK_LOOKING_AT_MAX_DISTANCE = 5f, BLOCK_LOOKING_AT_STRIDE = 0.05f,
             JUMP_DELTA_Y = 7f / Minecraft.TICKS_PER_SECOND;
     public static final int JUMP_DELAY_TICKS = (int) (1.1 * Minecraft.TICKS_PER_SECOND);
 

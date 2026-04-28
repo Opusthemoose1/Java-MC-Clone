@@ -14,5 +14,4 @@ public interface IMesh {
         void draw(Entity entity, Camera camera);
         void setShader(Shader shader);
         void setColor(Vector color);
-
 }

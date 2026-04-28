@@ -36,8 +36,17 @@ abstract public class HostileEntity extends AttackingEntity {
     }
 
     protected IVector getWalkingForce() {
-        if (walkSpeed > 0) return new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
+//        if (walkSpeed > 0) return new Vector((float) Math.sin(getLocation().getYaw()), 0, (float) Math.cos(getLocation().getYaw()));
+        if (walkSpeed > 0) {
+            if (target != null) return getTargetDirection();
+            return getLocation().getDirection().multiply(-1);
+        }
         else return new Vector();
+    }
+
+    private IVector getTargetDirection() {
+        if (target == null) return Vector.newZeroVector();
+        return target.getLocation().toVector().subtract(getLocation().toVector());
     }
 
     @Override
@@ -46,7 +55,7 @@ abstract public class HostileEntity extends AttackingEntity {
         if (target == null) {
             setWalkSpeed(0);
         } else {
-            IVector direction = target.getLocation().toVector().subtract(getLocation().toVector());
+            IVector direction = getTargetDirection();
             setYaw(Location.getYaw(direction));
             setWalkSpeed(getWalkSpeed());
             addInstantaneousForce(getWalkingForce());
