@@ -1,5 +1,6 @@
 package minecraft.entity;
 
+import minecraft.TestTimerFactory;
 import minecraft.chunk.TestChunkLoader;
 import minecraft.TestTimer;
 import minecraft.WorldContext;
@@ -13,7 +14,7 @@ public class EntityTest {
     public static final int Y_LEVEL = 10;
 
     private final WorldContext context = new WorldContext(new TestChunkLoader(Y_LEVEL), new EntityManager());
-    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimer());
+    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimerFactory());
 
     @Test
     public void testEntityDies() {

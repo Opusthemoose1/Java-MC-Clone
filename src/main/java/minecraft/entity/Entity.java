@@ -18,7 +18,7 @@ import java.util.Set;
 
 abstract public class Entity implements YawPitchObserver, LocationPublisher {
 
-    public static final float GRAVITY = -0.4f / Minecraft.TICKS_PER_SECOND,
+    public static final float GRAVITY = -0.38f / Minecraft.TICKS_PER_SECOND,
             FRICTION_MULTIPLIER = 0.85f,
             MINIMUM_VELOCITY = 0.005f / Minecraft.TICKS_PER_SECOND,
             FREEFALL_VELOCITY_MULTIPLIER = 0.1f,
@@ -90,7 +90,7 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
 
     abstract float getWeight();
 
-    abstract float getHeight();
+    public abstract float getHeight();
 
     public Location getEyeLocation() {
         return location.clone().add(0, getHeight(), 0);

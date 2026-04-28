@@ -13,6 +13,10 @@ public class Vector implements IVector {
         return new Vector(0, 0, 0);
     }
 
+    public static Vector createVector(float x, float y, float z) {
+        return new Vector(x, y, z);
+    }
+
     public Vector() {
         jomlVector = new Vector3f();
     }

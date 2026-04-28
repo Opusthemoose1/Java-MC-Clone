@@ -9,8 +9,9 @@ import java.util.List;
 public class TestChunkLoader implements IChunkLoader {
 
     private final int yLevel;
-
     private final IChunk testChunk;
+
+    private int blockChanges = 0;
 
     public TestChunkLoader(int yLevel) {
         this(yLevel, null);
@@ -36,10 +37,15 @@ public class TestChunkLoader implements IChunkLoader {
     public void setBlock(double x, double y, double z, Material type) {
         if (testChunk == null) return;
         testChunk.setChunkBlock((int) x % IChunk.CHUNK_SIZE, (int) y, (int) z % IChunk.CHUNK_SIZE, type);
+        blockChanges++;
     }
 
     @Override
     public List<IChunk> getRenderedChunks() {
         return testChunk == null ? List.of() : List.of(testChunk);
+    }
+
+    public int getBlockChangesCount() {
+        return blockChanges;
     }
 }

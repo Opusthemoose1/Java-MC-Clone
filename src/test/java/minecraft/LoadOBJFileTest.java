@@ -1,4 +1,4 @@
-package minecraft.entity;
+package minecraft;
 
 import minecraft.window.rendering.IMesh;
 import minecraft.window.rendering.LoadOBJNoNormals;

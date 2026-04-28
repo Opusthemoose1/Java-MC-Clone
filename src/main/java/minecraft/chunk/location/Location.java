@@ -3,6 +3,8 @@ package minecraft.chunk.location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 
+import java.util.Objects;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
@@ -117,6 +119,19 @@ public class Location {
     public IVector getRightDirection() {
         IVector up = new Vector(0, 1, 0);
         return getDirection().cross(up).normalize();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object instanceof Location other) {
+            return Objects.equals(this.x, other.x)
+                    && Objects.equals(this.y, other.y)
+                    && Objects.equals(this.z, other.z)
+                    && Objects.equals(this.yaw, other.yaw)
+                    && Objects.equals(this.pitch, other.pitch);
+        }
+        return false;
     }
 
     public Location getBlockLocation() {

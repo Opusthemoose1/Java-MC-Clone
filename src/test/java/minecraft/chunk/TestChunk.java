@@ -5,7 +5,7 @@ import minecraft.entity.EntityFactory;
 
 public class TestChunk implements IChunk {
 
-    private ChunkBlock[][][] blocks = new ChunkBlock[IChunk.CHUNK_HEIGHT][IChunk.CHUNK_SIZE][IChunk.CHUNK_SIZE];
+    private final ChunkBlock[][][] blocks = new ChunkBlock[IChunk.CHUNK_HEIGHT][IChunk.CHUNK_SIZE][IChunk.CHUNK_SIZE];
 
     public TestChunk(int yLevel) {
         for (int x = 0; x < IChunk.CHUNK_SIZE; x++) {

@@ -1,6 +1,9 @@
 package minecraft.entity;
 
 import minecraft.Material;
+import minecraft.TestTimerFactory;
+import minecraft.chunk.Block;
+import minecraft.chunk.IChunkLoader;
 import minecraft.chunk.TestChunk;
 import minecraft.chunk.TestChunkLoader;
 import minecraft.TestTimer;
@@ -16,7 +19,7 @@ public class PlayerTest {
     public static final int Y_LEVEL = 10;
 
     private final WorldContext context = new WorldContext(new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL)), new EntityManager());
-    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimer());
+    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimerFactory());
     private final CommandFactory commandFactory = new CommandFactory();
 
     @Test
@@ -45,15 +48,52 @@ public class PlayerTest {
 
     @Test
     public void testBreakBlock() {
+        TestChunkLoader testChunkLoader = new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL));
+        WorldContext context = new WorldContext(testChunkLoader, new EntityManager());
         ICommand breakCommand = commandFactory.newBreakBlockCommand();
-        Entity player = entityFactory.createPlayer(Location.createLocation(0, Y_LEVEL, 0, 0, -89)); //looking down
+        Entity player = new Player(Location.createLocation(0, Y_LEVEL, 0, 0, -89), context, new TestTimer()); // looking down
         IVector locationBelowFeet = player.getLocation().toVector().add(0, -1, 0);
 
         assert !(context.getChunkLoader().getBlock(locationBelowFeet.getX(), locationBelowFeet.getY(), locationBelowFeet.getZ()).isType(Material.AIR)); //block not broken initially
 
         breakCommand.execute(player);
 
+        assert testChunkLoader.getBlockChangesCount() == 1;
         assert context.getChunkLoader().getBlock(locationBelowFeet.getX(), locationBelowFeet.getY(), locationBelowFeet.getZ()).isType(Material.AIR); //block below player is broken
+    }
+
+    @Test
+    public void testCannotPlaceBlockWhereStanding() {
+        TestChunkLoader testChunkLoader = new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL));
+        WorldContext context = new WorldContext(testChunkLoader, new EntityManager());
+        ICommand placeCommand = commandFactory.newPlaceBlockCommand();
+        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 0, 0, -89), context, new TestTimer());
+
+        assert context.getChunkLoader().getBlock(player.getLocation().getBlockLocation()).isType(Material.AIR); //control conditions
+        assert player.getBlockLookingAt() != null; //can place a block
+
+        placeCommand.execute(player);
+
+        assert testChunkLoader.getBlockChangesCount() == 0;
+        assert context.getChunkLoader().getBlock(player.getLocation().getBlockLocation()).isType(Material.AIR); //still air, can't place at feet
+    }
+
+    @Test
+    public void testPlaceBlock() {
+        TestChunkLoader testChunkLoader = new TestChunkLoader(Y_LEVEL, new TestChunk(Y_LEVEL));
+        WorldContext context = new WorldContext(testChunkLoader, new EntityManager());
+        ICommand placeCommand = commandFactory.newPlaceBlockCommand();
+        Entity player = new Player(Location.createLocation(10, Y_LEVEL, 0, 0, -42), context, new TestTimer());
+
+        //control conditions
+        Block lookingAt = player.getBlockLookingAt();
+        assert lookingAt != null;
+        assert (lookingAt.getLocation().getX() != player.getLocation().getBlockLocation().getX()
+                || lookingAt.getLocation().getZ() != player.getLocation().getBlockLocation().getZ()); //ability to place a block, looking at a block that isn't at player's feet
+
+        placeCommand.execute(player);
+
+        assert testChunkLoader.getBlockChangesCount() == 1;
     }
 
 }

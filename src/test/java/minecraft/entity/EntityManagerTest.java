@@ -1,6 +1,7 @@
 package minecraft.entity;
 
 import minecraft.TestTimer;
+import minecraft.TestTimerFactory;
 import minecraft.WorldContext;
 import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.chunk.location.Location;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class EntityManagerTest {
 
     private final WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
-    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimer());
+    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimerFactory());
 
     @Test
     public void testEntityManagerEntitiesNearby() {

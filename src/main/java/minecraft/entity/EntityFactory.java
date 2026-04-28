@@ -5,6 +5,7 @@ import minecraft.WorldContext;
 import minecraft.chunk.IChunk;
 import minecraft.chunk.location.Location;
 import minecraft.timer.ITimer;
+import minecraft.timer.ITimerFactory;
 
 public class EntityFactory {
 
@@ -13,11 +14,11 @@ public class EntityFactory {
     private float nextPositionX = 0;
 
     private final WorldContext context;
-    private final ITimer timer;
+    private final ITimerFactory timerFactory;
 
-    public EntityFactory(WorldContext context, ITimer timer) {
+    public EntityFactory(WorldContext context, ITimerFactory timerFactory) {
         this.context = context;
-        this.timer = timer;
+        this.timerFactory = timerFactory;
     }
 
     public Entity createEntity(EntityType type) {
@@ -39,10 +40,10 @@ public class EntityFactory {
         }
 
         Entity entity = switch (type) {
-            case PLAYER -> new Player(location, context);
+            case PLAYER -> new Player(location, context, timerFactory.createTimer());
             case CHICKEN -> new Chicken(location, context);
-            case OGRE -> new Ogre(location, context, timer);
-            case DEMON -> new Demon(location, context, timer);
+            case OGRE -> new Ogre(location, context, timerFactory.createTimer());
+            case DEMON -> new Demon(location, context, timerFactory.createTimer());
         };
         context.getEntityManager().addEntity(entity);
         return entity;

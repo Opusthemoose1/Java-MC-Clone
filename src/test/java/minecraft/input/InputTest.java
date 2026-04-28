@@ -1,5 +1,6 @@
 package minecraft.input;
 
+import minecraft.TestTimerFactory;
 import minecraft.chunk.TestChunkLoader;
 import minecraft.TestTimer;
 import minecraft.WorldContext;
@@ -21,7 +22,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 public class InputTest {
 
     private final WorldContext context = new WorldContext(new TestChunkLoader(10), new EntityManager());
-    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimer());
+    private final EntityFactory entityFactory = new EntityFactory(context, new TestTimerFactory());
 
     @Test
     public void testInputPollingAndCommandExceutionWalkingForward() {

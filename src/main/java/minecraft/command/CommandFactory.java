@@ -33,4 +33,9 @@ public class CommandFactory {
     public ICommand newBreakBlockCommand() {
         return new BreakBlockCommand();
     }
+
+    public ICommand newPlaceBlockCommand() {
+        return new PlaceBlockCommand();
+    }
+
 }

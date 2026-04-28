@@ -7,6 +7,7 @@ import minecraft.command.*;
 import minecraft.entity.*;
 import minecraft.math.Vector;
 import minecraft.timer.Timer;
+import minecraft.timer.TimerFactory;
 import minecraft.window.IWindow;
 import minecraft.window.input.IInputManager;
 import minecraft.window.input.InputManager;
@@ -66,9 +67,10 @@ public class FullGameTest {
 
         IChunkLoader chunkLoader = flatWorld ? new FlatWorldChunkLoader() : new HillWorldChunkLoader();
         WorldContext context = new WorldContext(chunkLoader, new EntityManager());
-        Player player = new Player(Location.createLocation(0f, 40f, 0f), context);
-        context.getEntityManager().addEntity(player);
-        spawnEntities(new EntityFactory(context, new Timer()));
+
+        EntityFactory factory = new EntityFactory(context, new TimerFactory());
+        spawnEntities(factory);
+        Player player = (Player) factory.createEntityAtSurface(EntityType.PLAYER, 0, 0);
 
         Camera camera = new Camera(INITIAL_CAMERA_POSITION, window.getWidth(), window.getHeight());
         window.setCamera(camera);
@@ -158,5 +160,6 @@ public class FullGameTest {
         inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, factory.newSprintStartCommand());
         inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, factory.newSprintStopCommand());
         inputManager.bindDownKey(GLFW_KEY_R, factory.newBreakBlockCommand());
+        inputManager.bindDownKey(GLFW_KEY_C, factory.newPlaceBlockCommand());
     }
 }

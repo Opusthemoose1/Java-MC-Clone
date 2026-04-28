@@ -25,7 +25,7 @@ public class Demon extends HostileEntity {
     }
 
     @Override
-    float getHeight() {
+    public float getHeight() {
         return HEIGHT;
     }
 

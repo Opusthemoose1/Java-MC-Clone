@@ -5,6 +5,7 @@ import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
+import minecraft.timer.ITimer;
 
 public class Player extends AttackingEntity {
 
@@ -16,9 +17,11 @@ public class Player extends AttackingEntity {
     private static final float WALK_SPEED = 1.5f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 2.5f / Minecraft.TICKS_PER_SECOND;
 
     private boolean sprinting = false;
+    private final ITimer blockBreakPlaceTimer;
 
-    public Player(Location location, WorldContext context) {
+    public Player(Location location, WorldContext context, ITimer blockBreakPlaceTimer) {
         super(location, INITIAL_HEALTH, context);
+        this.blockBreakPlaceTimer = blockBreakPlaceTimer;
     }
 
     @Override
