@@ -17,15 +17,15 @@ public class Timer implements ITimer {
         start = System.nanoTime();
     }
 
-    public void endTimer()
-    {
-        end = System.nanoTime();
-    }
-
-    public double getTimeInMilliseconds()
-    {
-        return (getEnd() - this.start) / 1_000_000.0;
-    }
+//    public void endTimer()
+//    {
+//        end = System.nanoTime();
+//    }
+//
+//    public double getTimeInMilliseconds()
+//    {
+//        return (getEnd() - this.start) / 1_000_000.0;
+//    }
 
     public double getTimeInSeconds()
     {

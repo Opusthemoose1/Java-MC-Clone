@@ -65,8 +65,4 @@ public class Minecraft {
 
         tickTimer.reset();
     }
-
-    public Entity getPlayer() {
-        return player;
-    }
 }

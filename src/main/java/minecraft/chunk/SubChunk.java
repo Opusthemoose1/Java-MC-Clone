@@ -221,9 +221,9 @@ public class SubChunk{
         glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
     }
 
-    public int getXOffset() {return xOffset; }
-    public int getYOffset() {return yOffset; }
-    public int getZOffset() {return zOffset; }
+//    public int getXOffset() {return xOffset; }
+//    public int getYOffset() {return yOffset; }
+//    public int getZOffset() {return zOffset; }
 
 
 }

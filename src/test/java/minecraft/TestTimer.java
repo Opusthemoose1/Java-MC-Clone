@@ -15,16 +15,6 @@ public class TestTimer implements ITimer {
     }
 
     @Override
-    public void endTimer() {
-
-    }
-
-    @Override
-    public double getTimeInMilliseconds() {
-        return 0;
-    }
-
-    @Override
     public double getTimeInSeconds() {
         return 0;
     }

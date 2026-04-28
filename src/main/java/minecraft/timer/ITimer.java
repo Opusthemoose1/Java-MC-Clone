@@ -6,10 +6,6 @@ public interface ITimer {
 
     void startTimer();
 
-    void endTimer();
-
-    double getTimeInMilliseconds();
-
     double getTimeInSeconds();
 
     void reset();

@@ -2,12 +2,11 @@ package minecraft.entity;
 
 import minecraft.TestTimerFactory;
 import minecraft.chunk.FlatWorldChunkLoader;
-import minecraft.TestTimer;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
 import org.junit.jupiter.api.Test;
 
-public class HostileEntityTest {
+public class OgreTest {
 
     private final WorldContext context = new WorldContext(new FlatWorldChunkLoader(), new EntityManager());
     private final EntityFactory entityFactory = new EntityFactory(context, new TestTimerFactory());
@@ -24,6 +23,8 @@ public class HostileEntityTest {
         player.tick();
 
         assert ogre.getTarget() != null;
+        assert ogre.getWalkSpeed() < player.getWalkSpeed();
+        assert ogre.getWeight() > player.getWeight();
 
         player.setLocation(Location.createLocation(100, 0, 0));
 
@@ -31,6 +32,7 @@ public class HostileEntityTest {
         player.tick();
 
         assert ogre.getTarget() == null;
+        assert !ogre.isSprinting();
     }
 
     @Test

@@ -12,7 +12,6 @@ Each chunk is made from subchunks, where each subchunk is 16x16x16
 Each subchunk contains its own VBO (mesh data). Meshes are constructed based on which block faces are visible
 Each block is specified as an offset from the subchunk origin. It's then multiplied in the shader to map blocks to
 world space
-For simplicity and convience, I'll treat a chunk as a subchunk for now
  */
 abstract public class Chunk implements IChunk {
 
@@ -40,25 +39,6 @@ abstract public class Chunk implements IChunk {
     {
         subChunks.add(subChunk);
     }
-
-//    public List<SubChunk> getSubChunks()
-//    {
-//        return subChunks;
-//    }
-
-//    private SubChunk getSubChunk(int x, int y, int z)
-//    {
-//        for (SubChunk subChunk : subChunks)
-//        {
-//            if (subChunk.getXOffset() == x && subChunk.getYOffset() == y && subChunk.getZOffset() == z)
-//            {
-//                return subChunk;
-//            }
-//        }
-//        return null;
-//    }
-
-    //abstract protected void setInitialBlocks();
 
     // Returns true if the face is touching air
     public boolean isAir(int x, int y, int z) {
@@ -96,15 +76,6 @@ abstract public class Chunk implements IChunk {
         }
 
     }
-
-    public int getBlockX() {
-        return offsetX * IChunk.CHUNK_SIZE;
-    }
-
-    public int getBlockZ() {
-        return offsetZ * IChunk.CHUNK_SIZE;
-    }
-
 
     @Override
     public void render()
