@@ -29,7 +29,7 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher, Location
 
     private final Set<YawPitchObserver> observers = new HashSet<>();
 
-    private double lastX, lastY;
+    private double lastMouseX, lastMouseY;
 
     public Camera(Location location, int screenWidth, int screenHeight) {
         this.perspective = new Matrix4f();
@@ -38,8 +38,8 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher, Location
 
         this.location = location.clone();
 
-        this.lastX = screenWidth / 2.0; //initially, assume moues to be at the center of the screen
-        this.lastY = screenHeight / 2.0;
+        this.lastMouseX = screenWidth / 2.0; //initially, assume moues to be at the center of the screen
+        this.lastMouseY = screenHeight / 2.0;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
@@ -67,11 +67,11 @@ public class Camera implements WindowResizeObserver, YawPitchPublisher, Location
     }
 
     public void mouseControl(double mouseX, double mouseY) {
-        double xOffset = mouseX - lastX;
-        double yOffset = lastY - mouseY;
+        double xOffset = mouseX - lastMouseX;
+        double yOffset = lastMouseY - mouseY;
         if (xOffset == 0 && yOffset == 0) return;
-        lastX = mouseX;
-        lastY = mouseY;
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
 
         xOffset *= SENSITIVITY;
         yOffset *= SENSITIVITY;
