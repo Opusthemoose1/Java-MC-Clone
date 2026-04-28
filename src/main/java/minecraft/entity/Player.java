@@ -13,7 +13,7 @@ public class Player extends AttackingEntity {
             WEIGHT = 0.8f,
             HEIGHT = 1.75F;
 
-    private static final float WALK_SPEED = 2f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 4f / Minecraft.TICKS_PER_SECOND;
+    private static final float WALK_SPEED = 1.5f / Minecraft.TICKS_PER_SECOND, SPRINT_SPEED = 2.5f / Minecraft.TICKS_PER_SECOND;
 
     private boolean sprinting = false;
 

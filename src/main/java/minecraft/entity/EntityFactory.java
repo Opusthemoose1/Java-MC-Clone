@@ -1,6 +1,8 @@
 package minecraft.entity;
 
+import minecraft.Material;
 import minecraft.WorldContext;
+import minecraft.chunk.IChunk;
 import minecraft.chunk.location.Location;
 import minecraft.timer.ITimer;
 
@@ -20,6 +22,14 @@ public class EntityFactory {
 
     public Entity createEntity(EntityType type) {
         return createEntity(type, null);
+    }
+
+    public Entity createEntityAtSurface(EntityType type, float x, float z) {
+        int y = 1;
+        for (; y < IChunk.CHUNK_HEIGHT; y++) {
+            if (context.getChunkLoader().getBlock(x, y, z).isType(Material.AIR)) break;
+        }
+        return createEntity(type, Location.createLocation(x, y + 1, z));
     }
 
     public Entity createEntity(EntityType type, Location location) {

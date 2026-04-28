@@ -1,6 +1,5 @@
 package minecraft;
 
-import minecraft.chunk.FlatWorldChunk;
 import minecraft.chunk.FlatWorldChunkLoader;
 import minecraft.chunk.HillWorldChunkLoader;
 import minecraft.chunk.IChunkLoader;
@@ -25,6 +24,7 @@ import minecraft.window.texture.IShader;
 import minecraft.window.texture.Shader;
 import minecraft.window.texture.TextureAtlas;
 import minecraft.window.texture.TextureMap;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.lwjgl.opengl.GL;
 
@@ -42,10 +42,19 @@ public class FullGameTest {
 
     private static final Random random = new Random();
 
+    private static boolean flatWorld = false;
+
     @Test
     public void testFullGame() {
-        //TODO: Initialize GL in a way so that the context can be preserved for making new TextRenderer, Shader, etc., so that these dependencies can be added to Window constructor
-        //TODO: Turn window into a builder pattern
+        testFullGame(false);
+    }
+
+    @Disabled
+    public void testFlatWorldFullGame() {
+        testFullGame(true);
+    }
+
+    private void testFullGame(boolean flatWorld) {
         IWindow window = new Window(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
         // This line is critical for LWJGL's interoperation with GLFW's
@@ -55,7 +64,8 @@ public class FullGameTest {
         // bindings available for use.
         GL.createCapabilities();
 
-        WorldContext context = new WorldContext(new HillWorldChunkLoader(), new EntityManager());
+        IChunkLoader chunkLoader = flatWorld ? new FlatWorldChunkLoader() : new HillWorldChunkLoader();
+        WorldContext context = new WorldContext(chunkLoader, new EntityManager());
         Player player = new Player(Location.createLocation(0f, 40f, 0f), context);
         context.getEntityManager().addEntity(player);
         spawnEntities(new EntityFactory(context, new Timer()));
@@ -89,22 +99,21 @@ public class FullGameTest {
 
     private void spawnEntities(EntityFactory factory) {
         int maxX = 100, maxZ = 100;
-        int y = FlatWorldChunk.HEIGHT;
-        double densityPerBlock = 0.001;
+        double densityPerBlock = 0.002;
         int count = (int) (4 * maxX * maxZ * densityPerBlock);
 
         for (int i = 0; i < count; i++) {
             int x = random.nextInt(-maxX, maxX), z = random.nextInt(-maxZ, maxZ);
-            factory.createEntity(selectRandomEntity(), Location.createLocation(x, y, z));
+            factory.createEntityAtSurface(selectRandomEntity(), x, z);
         }
     }
 
     private EntityType selectRandomEntity() {
-        float demonProbability = 0.1f;
-        float ogrePorbability = 0.35f;
+        float demonProbability = 0.05f;
+        float ogreProbability = 0.35f;
         float spinner = random.nextFloat();
         if (spinner <= demonProbability) return EntityType.DEMON;
-        if (spinner <= demonProbability + ogrePorbability) return EntityType.OGRE;
+        if (spinner <= demonProbability + ogreProbability) return EntityType.OGRE;
         return EntityType.CHICKEN;
     }
 

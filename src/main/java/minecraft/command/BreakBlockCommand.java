@@ -10,6 +10,6 @@ public class BreakBlockCommand implements ICommand {
         if (!player.isPlayer()) throw new RuntimeException("Only players can break blocks");
         Block lookingAt = player.getBlockLookingAt();
         if (lookingAt == null) return;
-        lookingAt.setType(Material.AIR);
+        if (lookingAt.getMaterial().isBreakable()) lookingAt.setType(Material.AIR);
     }
 }

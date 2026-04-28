@@ -5,13 +5,16 @@ import java.util.TreeMap;
 
 public enum Material {
 
-    AIR(0, null, false),
-    DIRT(1, "dirt", true),
-    COBBLESTONE(2, "cobblestone", true);
+    AIR(0, null, false, false),
+    DIRT(1, "dirt", true, true),
+    COBBLESTONE(2, "cobblestone", true, true),
+    GRASS(3, "grass", true, true),
+    STONE(4, "stone", true, true),
+    BEDROCK(5, "bedrock", true, false);
 
     private final byte id;
     private final String textureName;
-    private final boolean solid;
+    private final boolean solid, breakable;
 
     private static final TreeMap<Byte, Material> idMap = new TreeMap<>();
 
@@ -21,10 +24,11 @@ public enum Material {
         }
     }
 
-    Material(int id, String textureName, boolean solid) {
+    Material(int id, String textureName, boolean solid, boolean breakable) {
         this.id = (byte) id;
         this.textureName = textureName;
         this.solid = solid;
+        this.breakable = breakable;
     }
 
     public byte getId() {
@@ -37,6 +41,10 @@ public enum Material {
 
     public boolean isSolid() {
         return solid;
+    }
+
+    public boolean isBreakable() {
+        return breakable;
     }
 
     public static Material fromId(byte id) {

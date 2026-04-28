@@ -2,10 +2,10 @@ package minecraft.chunk;
 
 import minecraft.Material;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 public class HillWorldChunk extends Chunk {
+
+    public static final int BASE_HEIGHT = 20, DIRT_HEIGHT = 3;
+    public static final double AMPLITUDE = 1.5, FREQUENCY = 0.3;
 
     public HillWorldChunk(int xOffset, int zOffset){
         super(xOffset, zOffset);
@@ -13,30 +13,32 @@ public class HillWorldChunk extends Chunk {
 
     @Override
     public void setInitialBlocks() {
+
+        int stoneLayerStart = 1;
+
         // Note that if you decide to update height, you also need to update subchunks
         for (int x = 0; x < IChunk.CHUNK_SIZE; x++) {
             for (int z = 0; z < IChunk.CHUNK_SIZE; z++) {
 
                 // Sum of sines height formula — tweak frequency/amplitude freely
-                final double AMPLITUDE = 1.5;
-                final double FREQUENCY = 0.3;
-                double height = (IChunk.CHUNK_SIZE / 2.0)
+                double height = BASE_HEIGHT
                         + AMPLITUDE * Math.sin(x * FREQUENCY)
                         + AMPLITUDE * Math.sin(z * FREQUENCY)
                         + AMPLITUDE * Math.sin((x + z) * FREQUENCY);
 
                 int surfaceY = (int) Math.round(height);
 
-                for (int y = 0; y < IChunk.CHUNK_SIZE; y++) {
-                    if (y < surfaceY - 3) {
-                        blocks[y][x][z] = new ChunkBlock(Material.COBBLESTONE);
-                    } else if (y < surfaceY) {
-                        blocks[y][x][z] = new ChunkBlock(Material.DIRT);
-                    } else if (y == surfaceY) { // replace if we want / add grass texture
-                        blocks[y][x][z] = new ChunkBlock(Material.DIRT);
-                    }
-                    // else: leave as air / null
+                setChunkBlock(x, 0, z, Material.BEDROCK);
+
+                for (int y = stoneLayerStart; y < surfaceY - DIRT_HEIGHT; y++) {
+                    setChunkBlock(x, y, z, Material.STONE);
                 }
+
+                for (int y = surfaceY - DIRT_HEIGHT; y < surfaceY; y++) {
+                    setChunkBlock(x, y, z, Material.DIRT);
+                }
+
+                setChunkBlock(x, surfaceY, z, Material.GRASS);
             }
         }
     }

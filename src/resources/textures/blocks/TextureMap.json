@@ -1,5 +1,6 @@
 {
   "textures": [
+    {"fileName":  "grass.png", "material":  "GRASS"},
     {"fileName": "dirt.png", "material": "DIRT"},
     {"fileName": "cobblestone.png", "material": "COBBLESTONE"}
   ]
