@@ -50,6 +50,11 @@ public class Player extends AttackingEntity {
     }
 
     @Override
+    public boolean isSprinting() {
+        return sprinting;
+    }
+
+    @Override
     public float getHeight() {
         return HEIGHT;
     }

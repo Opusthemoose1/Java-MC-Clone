@@ -3,6 +3,7 @@ package minecraft.window.input;
 import minecraft.window.WindowResizeObserver;
 import org.joml.Vector2d;
 
+import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class InputSource implements IInputSource {
 
     // A list of all possible keys
     private final boolean[] keys = new boolean[GLFW_KEY_LAST + 1];
+    private boolean leftClick = false, rightClick = false;
     private double mouseX = 0, mouseY = 0;
 
     List<WindowResizeObserver> resizeObservers = new ArrayList<>();
@@ -36,6 +38,11 @@ public class InputSource implements IInputSource {
             }
         });
 
+        glfwSetMouseButtonCallback(windowHandle, (window, button, action, mods) -> {
+            if (button == GLFW_MOUSE_BUTTON_LEFT) leftClick = action == GLFW_PRESS;
+            else if (button == GLFW_MOUSE_BUTTON_RIGHT) rightClick = action == GLFW_PRESS;
+        });
+
         glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
@@ -44,6 +51,8 @@ public class InputSource implements IInputSource {
     }
 
     public boolean isKeyDown(int key) {
+        if (key == IInputSource.LEFT_CLICK_KEY) return leftClick;
+        if (key == IInputSource.RIGHT_CLICK_KEY) return rightClick;
         return keys[key];
     }
 

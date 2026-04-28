@@ -2,13 +2,13 @@ package minecraft.input;
 
 import minecraft.TestTimerFactory;
 import minecraft.chunk.TestChunkLoader;
-import minecraft.TestTimer;
 import minecraft.WorldContext;
 import minecraft.chunk.location.Location;
 import minecraft.command.*;
 import minecraft.entity.Entity;
 import minecraft.entity.EntityFactory;
 import minecraft.entity.EntityManager;
+import minecraft.entity.Player;
 import minecraft.math.IVector;
 import minecraft.math.Vector;
 import minecraft.window.input.IInputSource;
@@ -116,6 +116,22 @@ public class InputTest {
         assert player.getLocation().getY() > initLocation.getY();
         assert player.getLocation().getZ() == initLocation.getZ();
         assert !player.isOnSolidGround();
+    }
+
+    @Test
+    public void testSprintingCommands() {
+        Entity player = entityFactory.createPlayer(new Location(-10, 10, -10, 0f, 0f));
+        ICommand startCommand = new SprintingStartCommand();
+        ICommand stopCommand = new SprintingStopCommand();
+
+        player.tick();
+        startCommand.execute(player);
+
+        assert player.isSprinting();
+
+        stopCommand.execute(player);
+
+        assert !player.isSprinting();
     }
 
     @Test

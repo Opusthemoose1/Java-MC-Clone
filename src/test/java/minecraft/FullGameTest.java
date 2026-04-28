@@ -10,6 +10,7 @@ import minecraft.timer.Timer;
 import minecraft.timer.TimerFactory;
 import minecraft.window.IWindow;
 import minecraft.window.input.IInputManager;
+import minecraft.window.input.IInputSource;
 import minecraft.window.input.InputManager;
 import minecraft.window.rendering.ChunkRenderer;
 import minecraft.chunk.location.Location;
@@ -159,7 +160,9 @@ public class FullGameTest {
         inputManager.bindDownKey(GLFW_KEY_SPACE, factory.newJumpCommand());
         inputManager.bindDownKey(GLFW_KEY_LEFT_CONTROL, factory.newSprintStartCommand());
         inputManager.bindUpKey(GLFW_KEY_LEFT_CONTROL, factory.newSprintStopCommand());
-        inputManager.bindDownKey(GLFW_KEY_R, factory.newBreakBlockCommand());
-        inputManager.bindDownKey(GLFW_KEY_C, factory.newPlaceBlockCommand());
+        inputManager.bindKey(GLFW_KEY_R, factory.newBreakBlockCommand());
+        inputManager.bindKey(GLFW_KEY_C, factory.newPlaceBlockCommand());
+        inputManager.bindKey(IInputSource.LEFT_CLICK_KEY, factory.newBreakBlockCommand());
+        inputManager.bindKey(IInputSource.RIGHT_CLICK_KEY, factory.newPlaceBlockCommand());
     }
 }

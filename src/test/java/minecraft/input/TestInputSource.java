@@ -14,6 +14,8 @@ public class TestInputSource implements IInputSource {
     private final Set<Integer> downKeys = new HashSet<>();
     private final Vector2d mousePosition = new Vector2d();
 
+    private boolean leftClick = false, rigthClick = false;
+
     public TestInputSource(Integer... keysDown) {
         downKeys.addAll(Arrays.asList(keysDown));
     }

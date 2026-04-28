@@ -222,6 +222,10 @@ abstract public class Entity implements YawPitchObserver, LocationPublisher {
 
     }
 
+    public boolean isSprinting() {
+        return false;
+    }
+
     public boolean isPlayer() {
         return false;
     }
