@@ -13,9 +13,9 @@ It'll handle updating, registering, deregistering etc.
 This is more of a facade pattern on top of everything but it reduces parameter passing everywhere
 
  */
-public class EntityManager implements IEntityManager {
+public class EntityManager implements IEntityManager, Iterable<Entity> {
 
-    private Set<Entity> entities = new HashSet<>();
+    private final Set<Entity> entities = new HashSet<>();
 
     public EntityManager() {
     }
@@ -39,7 +39,7 @@ public class EntityManager implements IEntityManager {
 
     public Set<Entity> getEntitiesNearby(Location location, double radius) {
         Set<Entity> nearby = new HashSet<>();
-        for (Entity entity : entities) {
+        for (Entity entity : this) {
             if (entity.getLocation().getDistance(location) <= radius) {
                 nearby.add(entity);
             }

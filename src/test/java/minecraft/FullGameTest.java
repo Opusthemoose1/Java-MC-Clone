@@ -44,8 +44,6 @@ public class FullGameTest {
 
     private static final Random random = new Random();
 
-    private static boolean flatWorld = false;
-
     @Test
     public void testFullGame() {
         testFullGame(false);
