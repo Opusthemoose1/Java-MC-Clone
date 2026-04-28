@@ -57,21 +57,27 @@ public class TextRenderer implements ITextRenderer {
             float atlasSize = 1024.0f;
             float cellSize = 64.0f;
 
-            this.glyphs = new Glyph[255];
-            for (int i = 0; i < 255; i++) {
+            final int ASCII_MAX_SIZE =  255;
+            final int NUM_SPRITES_PER_ROW = 16;
+            final int NUM_SPRITE_PER_COL = 16;
+
+
+
+            this.glyphs = new Glyph[ASCII_MAX_SIZE];
+            for (int i = 0; i < ASCII_MAX_SIZE; i++) {
                 char letter = (char)i;
 
-                int col = i % 16;
-                int row = i / 16;
+                int col = i % NUM_SPRITES_PER_ROW;
+                int row = i / NUM_SPRITE_PER_COL;
 
                 float x = col * cellSize;
                 float y = row * cellSize;
 
-                int sizeX = 64, sizeY = 64;
+                final int sizeX = 64, sizeY = 64;
 
-                float u0 = x / atlasSize, u1 = (x + 64.0f) / atlasSize;
+                float u0 = x / atlasSize, u1 = (x + sizeX) / atlasSize;
 
-                float v0 = y / atlasSize, v1 = (y + 64.0f) / atlasSize;
+                float v0 = y / atlasSize, v1 = (y + sizeY) / atlasSize;
 
                 this.glyphs[i] = new Glyph(letter, sizeX, sizeY, u0, u1, v0, v1, 0, 0);
             }
